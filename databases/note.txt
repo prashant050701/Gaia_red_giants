@@ -1,0 +1,1 @@
+In this folder, I have put the original survey data and the Gaia data for the same objects. App.py script can be used to have various analysis of the databases.
