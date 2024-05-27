@@ -4,24 +4,24 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 
-lick_gk = pd.read_csv("lick_GK_survey_with_gaia_id.csv")
-express = pd.read_csv("express_post_MS_with_gaia_id.csv")
-eapsnet1 = pd.read_csv("EAPSNet1_stellar_params_with_gaia_id.csv")
-ppps = pd.read_csv("PPPS_star_with_gaia_id.csv")
-eapsnet3 = pd.read_csv("EAPSNet3_stellar_params_with_gaia_id.csv")
-eapsnet2 = pd.read_csv("EAPSNet2_stellar_params_with_gaia_id.csv")
-coralie = pd.read_csv("coralie_star_with_gaia_id.csv")
-ptps = pd.read_csv("ptps_with_gaia_id.csv")
+lick_gk = pd.read_csv("database/lick_GK_survey_with_gaia_id.csv")
+express = pd.read_csv("database/express_post_MS_with_gaia_id.csv")
+eapsnet1 = pd.read_csv("database/EAPSNet1_stellar_params_with_gaia_id.csv")
+ppps = pd.read_csv("database/PPPS_star_with_gaia_id.csv")
+eapsnet3 = pd.read_csv("database/EAPSNet3_stellar_params_with_gaia_id.csv")
+eapsnet2 = pd.read_csv("database/EAPSNet2_stellar_params_with_gaia_id.csv")
+coralie = pd.read_csv("database/coralie_star_with_gaia_id.csv")
+ptps = pd.read_csv("database/ptps_with_gaia_id.csv")
 
 gaia_data = {
-    "Lick GK": pd.read_csv("lick_gk-result.csv"),
-    "Express": pd.read_csv("express-result.csv"),
-    "EAPSNet 1": pd.read_csv("eapsnet1-result.csv"),
-    "PPPS": pd.read_csv("PPPS-result.csv"),
-    "EAPSNet 3": pd.read_csv("eapsnet3-result.csv"),
-    "EAPSNet 2": pd.read_csv("eapsnet2-result.csv"),
-    "Coralie": pd.read_csv("coralie-result.csv"),
-    "PTPS": pd.read_csv("ptps-result.csv"),
+    "Lick GK": pd.read_csv("database/lick_gk-result.csv"),
+    "Express": pd.read_csv("database/express-result.csv"),
+    "EAPSNet 1": pd.read_csv("database/eapsnet1-result.csv"),
+    "PPPS": pd.read_csv("database/PPPS-result.csv"),
+    "EAPSNet 3": pd.read_csv("database/eapsnet3-result.csv"),
+    "EAPSNet 2": pd.read_csv("database/eapsnet2-result.csv"),
+    "Coralie": pd.read_csv("database/coralie-result.csv"),
+    "PTPS": pd.read_csv("database/ptps-result.csv"),
 }
 
 tess_data = {
