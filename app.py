@@ -40,7 +40,7 @@ def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion):
     luminosity = np.log10(data[log_l_col]) if log_conversion else data[log_l_col]
     sc = ax.scatter(data[teff_col], luminosity, c=data[logg_col], cmap='viridis', alpha=0.5, s=10, edgecolor='k')
     ax.set_xlabel("Teff (K)")
-    ax.set_ylabel("log(L/Lsun)" if log_conversion else "L/Lsun")
+    ax.set_ylabel("log(L/Lsun)")
     ax.set_title(title)
     plt.colorbar(sc, label="logg")
     plt.gca().invert_xaxis()
