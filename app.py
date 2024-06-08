@@ -88,6 +88,20 @@ def plot_combined_histogram(data_x, x_param, data_y, y_param, title, x_label, y_
     ax.set_title(title)
     ax.legend()
     st.pyplot(fig)
+    
+def handle_scatter_plot(survey_x, x_data_source, x_param, survey_y, y_data_source, y_param):
+    data_x = surveys[survey_x]["data"] if x_data_source == "Original" else gaia_data[survey_x] if x_data_source == "Gaia" else tess_data[survey_x]
+    data_y = surveys[survey_y]["data"] if y_data_source == "Original" else gaia_data[survey_y] if y_data_source == "Gaia" else tess_data[survey_y]
+
+    if survey_x == survey_y and x_data_source == y_data_source and x_param == y_param:
+        plot_scatter(data_x, x_param, data_x, x_param, f"Scatter Plot - {survey_x} (Same Parameter)")
+    else:
+        suffixes = ('_x', '_y') if x_param == y_param else ('', '')
+        merged_data = pd.merge(data_x[['source_id', x_param]], data_y[['source_id', y_param]], on='source_id', suffixes=suffixes)
+        x_col = f"{x_param}{suffixes[0]}"
+        y_col = f"{y_param}{suffixes[1]}"
+        plot_scatter(merged_data, x_col, merged_data, y_col, f"Scatter Plot - {survey_x} vs {survey_y} ({x_data_source} vs {y_data_source})")
+
 
 st.title("Planetary Survey Data Analysis")
 
@@ -126,49 +140,43 @@ if st.button("Plot Distributions"):
     plot_distribution(data, columns2, f"Distributions - {survey2} ({data_source2} Data)")
 
 st.header("Section 3: Scatter Plots")
-survey3 = st.selectbox("Select Survey", list(surveys.keys()), key="survey3")
-
+st.subheader("X-Axis Configuration")
+survey_x = st.selectbox("Select Survey for X Parameter", list(surveys.keys()), key="survey_x")
 x_data_source = st.radio("Select Data Source for X Parameter", ["Original", "Gaia", "TESS"], key="x_data_source")
-x_param3 = st.selectbox("Select X Parameter",
-                        surveys[survey3]["data"].columns if x_data_source == "Original" else
-                        gaia_data[survey3].columns if x_data_source == "Gaia" else
-                        tess_data[survey3].columns, key="x_param3")
-
+x_param = st.selectbox("Select X Parameter",
+                       surveys[survey_x]["data"].columns if x_data_source == "Original" else
+                       gaia_data[survey_x].columns if x_data_source == "Gaia" else
+                       tess_data[survey_x].columns, key="x_param")
+st.subheader("Y-Axis Configuration")
+survey_y = st.selectbox("Select Survey for Y Parameter", list(surveys.keys()), key="survey_y")
 y_data_source = st.radio("Select Data Source for Y Parameter", ["Original", "Gaia", "TESS"], key="y_data_source")
-y_param3 = st.selectbox("Select Y Parameter",
-                        surveys[survey3]["data"].columns if y_data_source == "Original" else
-                        gaia_data[survey3].columns if y_data_source == "Gaia" else
-                        tess_data[survey3].columns, key="y_param3")
+y_param = st.selectbox("Select Y Parameter",
+                       surveys[survey_y]["data"].columns if y_data_source == "Original" else
+                       gaia_data[survey_y].columns if y_data_source == "Gaia" else
+                       tess_data[survey_y].columns, key="y_param")
 
 if st.button("Plot Scatter Plot"):
-    data_x = surveys[survey3]["data"] if x_data_source == "Original" else gaia_data[survey3] if x_data_source == "Gaia" else tess_data[survey3]
-    data_y = surveys[survey3]["data"] if y_data_source == "Original" else gaia_data[survey3] if y_data_source == "Gaia" else tess_data[survey3]
-
-    if x_param3 == y_param3:
-        merged_data = pd.merge(data_x[['source_id', x_param3]], data_y[['source_id', y_param3]], on='source_id', suffixes=('_x', '_y'))
-        plot_scatter(merged_data, f'{x_param3}_x', merged_data, f'{y_param3}_y', f"Scatter Plot - {survey3} ({x_data_source} vs {y_data_source})")
-    else:
-        merged_data = pd.merge(data_x[['source_id', x_param3]], data_y[['source_id', y_param3]], on='source_id')
-        plot_scatter(merged_data, x_param3, merged_data, y_param3, f"Scatter Plot - {survey3} ({x_data_source} vs {y_data_source})")
+    handle_scatter_plot(survey_x, x_data_source, x_param, survey_y, y_data_source, y_param)
 
 st.header("Section 4: Combined Histogram")
-survey4 = st.selectbox("Select Survey", list(surveys.keys()), key="survey4")
+survey_x4 = st.selectbox("Select Survey for First Data Source", list(surveys.keys()), key="survey_x4")
 
-x_data_source4 = st.radio("Select First Data Source ", ["Original", "Gaia", "TESS"], key="x_data_source4")
+x_data_source4 = st.radio("Select First Data Source", ["Original", "Gaia", "TESS"], key="x_data_source4")
 x_param4 = st.selectbox("Select Parameter",
-                        surveys[survey4]["data"].columns if x_data_source4 == "Original" else
-                        gaia_data[survey4].columns if x_data_source4 == "Gaia" else
-                        tess_data[survey4].columns, key="x_param4")
+                        surveys[survey_x4]["data"].columns if x_data_source4 == "Original" else
+                        gaia_data[survey_x4].columns if x_data_source4 == "Gaia" else
+                        tess_data[survey_x4].columns, key="x_param4")
 
+survey_y4 = st.selectbox("Select Survey for Second Data Source", list(surveys.keys()), key="survey_y4")
 y_data_source4 = st.radio("Select Second Data Source", ["Original", "Gaia", "TESS"], key="y_data_source4")
 y_param4 = st.selectbox("Select Parameter",
-                        surveys[survey4]["data"].columns if y_data_source4 == "Original" else
-                        gaia_data[survey4].columns if y_data_source4 == "Gaia" else
-                        tess_data[survey4].columns, key="y_param4")
+                        surveys[survey_y4]["data"].columns if y_data_source4 == "Original" else
+                        gaia_data[survey_y4].columns if y_data_source4 == "Gaia" else
+                        tess_data[survey_y4].columns, key="y_param4")
 
 if st.button("Plot Combined Histogram"):
-    data_x = surveys[survey4]["data"] if x_data_source4 == "Original" else gaia_data[survey4] if x_data_source4 == "Gaia" else tess_data[survey4]
-    data_y = surveys[survey4]["data"] if y_data_source4 == "Original" else gaia_data[survey4] if y_data_source4 == "Gaia" else tess_data[survey4]
+    data_x = surveys[survey_x4]["data"] if x_data_source4 == "Original" else gaia_data[survey_x4] if x_data_source4 == "Gaia" else tess_data[survey_x4]
+    data_y = surveys[survey_y4]["data"] if y_data_source4 == "Original" else gaia_data[survey_y4] if y_data_source4 == "Gaia" else tess_data[survey_y4]
 
     valid_x_count = data_x[x_param4].dropna().shape[0]
     valid_y_count = data_y[y_param4].dropna().shape[0]
@@ -176,7 +184,7 @@ if st.button("Plot Combined Histogram"):
     st.write(f"Total valid entries for {x_param4} from {x_data_source4}: {valid_x_count}")
     st.write(f"Total valid entries for {y_param4} from {y_data_source4}: {valid_y_count}")
 
-    x_label = x_data_source4
-    y_label = y_data_source4
+    x_label = survey_x4
+    y_label = survey_y4
 
-    plot_combined_histogram(data_x, x_param4, data_y, y_param4, f"Combined Histogram - {survey4} ({x_data_source4} vs {y_data_source4})", x_label, y_label)
+    plot_combined_histogram(data_x, x_param4, data_y, y_param4, f"Combined Histogram - {survey_x4} vs {survey_y4} ({x_data_source4} vs {y_data_source4})", x_label, y_label)
