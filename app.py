@@ -3,10 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-from scipy.stats import ks_2samp, anderson, mannwhitneyu
+from scipy.stats import ks_2samp, mannwhitneyu
 import plotly.express as px
 import plotly.graph_objects as go
 from streamlit_plotly_events import plotly_events
+
 lick_gk = pd.read_csv("database/lick_GK_survey_with_gaia_id.csv")
 express = pd.read_csv("database/express_post_MS_with_gaia_id.csv")
 eapsnet1 = pd.read_csv("database/EAPSNet1_stellar_params_with_gaia_id.csv")
@@ -15,6 +16,9 @@ eapsnet3 = pd.read_csv("database/EAPSNet3_stellar_params_with_gaia_id.csv")
 eapsnet2 = pd.read_csv("database/EAPSNet2_stellar_params_with_gaia_id.csv")
 coralie = pd.read_csv("database/coralie_star_with_gaia_id.csv")
 ptps = pd.read_csv("database/ptps_with_gaia_id.csv")
+
+golden_giant_ptps = pd.read_csv("database/golden_sample/golden_giant_ptps-result.csv")
+
 gaia_data = {
     "Lick GK": pd.read_csv("database/lick_gk-result.csv"),
     "Express": pd.read_csv("database/express-result.csv"),
@@ -245,3 +249,39 @@ if st.button(f"Perform {test_type} Test on Overlapping Ranges (Auto Mode)"):
         st.write(f"{test_type} Statistic: {stat:.4f}, P-value: {message:.4f}")
     else:
         st.error(message)
+
+
+st.header("Section 6: Statistical Tests with Golden Giant Data")
+
+survey_6 = st.selectbox("Select Survey for First Dataset", list(surveys.keys()), key="survey_6")
+data_source_6 = st.radio("Select Data Source for First Dataset", ["Original", "Gaia", "TESS"], key="data_source_6")
+param_6 = st.selectbox(
+    "Select Parameter for First Dataset", surveys[survey_6]["data"].columns if data_source_6 == "Original" else gaia_data[survey_6].columns if data_source_6 == "Gaia" else tess_data[survey_6].columns, key="param_6")
+
+param_golden = st.selectbox("Select Parameter from Golden Giant Data", golden_giant_ptps.columns, key="param_golden")
+test_type_6 = st.radio("Select Test Type for Comparison", ["KS", "MWU"], key="test_type_6")
+data_6 = surveys[survey_6]["data"] if data_source_6 == "Original" else gaia_data[survey_6] if data_source_6 == "Gaia" else tess_data[survey_6]
+manual_selection_6 = st.checkbox("Manual Range Selection", key="manual_selection_6")
+
+if manual_selection_6:
+    if is_numeric(data_6[param_6]) and is_numeric(golden_giant_ptps[param_golden]):
+        min_x6, max_x6 = float(data_6[param_6].min()), float(data_6[param_6].max())
+        min_y6, max_y6 = float(golden_giant_ptps[param_golden].min()), float(golden_giant_ptps[param_golden].max())
+        range_x6 = st.slider("Select Range for First Dataset", min_x6, max_x6, (min_x6, max_x6), key="range_x6")
+        range_y6 = st.slider("Select Range for Golden Giant Dataset", min_y6, max_y6, (min_y6, max_y6), key="range_y6")
+
+        if st.button(f"Perform {test_type_6} Test on Selected Ranges"):
+            stat_6, message_6 = perform_statistical_tests(data_6, param_6, golden_giant_ptps, param_golden, test_type_6, auto=False, range_x=range_x6, range_y=range_y6)
+            if stat_6 is not None:
+                st.write(f"{test_type_6} Statistic: {stat_6:.4f}, P-value: {message_6:.4f}")
+            else:
+                st.error("No data available in the selected range for one or both parameters.")
+    else:
+        st.error("Selected parameters must be numeric to perform the selected statistical test and select ranges.")
+
+if st.button(f"Perform {test_type_6} Test on Overlapping Ranges (Auto Mode)"):
+    stat_6, message_6 = perform_statistical_tests(data_6, param_6, golden_giant_ptps, param_golden, test_type_6)
+    if stat_6 is not None:
+        st.write(f"{test_type_6} Statistic: {stat_6:.4f}, P-value: {message_6:.4f}")
+    else:
+        st.error(message_6)
