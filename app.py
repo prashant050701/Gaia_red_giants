@@ -8,7 +8,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from streamlit_plotly_events import plotly_events
 
-
+@st.cache_data
 
 lick_gk = pd.read_csv("database/lick_GK_survey_with_gaia_id.csv")
 express = pd.read_csv("database/express_post_MS_with_gaia_id.csv")
@@ -146,7 +146,6 @@ def is_numeric(series):
 def load_specific_data():
     return pd.read_csv("database/golden_sample/golden_giant_ptps-result.csv")
 
-@st.cache
 st.title("Planetary Survey Data Analysis")
 
 st.header("Section 1: HR Diagram")
