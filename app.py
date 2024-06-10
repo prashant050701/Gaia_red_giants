@@ -107,17 +107,27 @@ def handle_scatter_plot(survey_x, x_data_source, x_param, survey_y, y_data_sourc
         plot_scatter(merged_data, x_col, merged_data, y_col, f"Scatter Plot - {survey_x} vs {survey_y} ({x_data_source} vs {y_data_source})")
 
 def perform_ks_test(data_x, x_param, data_y, y_param, auto=True, range_x=None, range_y=None):
-    if auto:
-        common_min = max(data_x[x_param].min(), data_y[y_param].min())
-        common_max = min(data_x[x_param].max(), data_y[y_param].max())
-        mask_x = (data_x[x_param] >= common_min) & (data_x[x_param] <= common_max)
-        mask_y = (data_y[y_param] >= common_min) & (data_y[y_param] <= common_max)
-    else:
-        mask_x = (data_x[x_param] >= range_x[0]) & (data_x[x_param] <= range_x[1])
-        mask_y = (data_y[y_param] >= range_y[0]) & (data_y[y_param] <= range_y[1])
+    try:
+        if auto:
+            common_min = max(data_x[x_param].min(), data_y[y_param].min())
+            common_max = min(data_x[x_param].max(), data_y[y_param].max())
+            mask_x = (data_x[x_param] >= common_min) & (data_x[x_param] <= common_max)
+            mask_y = (data_y[y_param] >= common_min) & (data_y[y_param] <= common_max)
+        else:
+            mask_x = (data_x[x_param] >= range_x[0]) & (data_x[x_param] <= range_x[1])
+            mask_y = (data_y[y_param] >= range_y[0]) & (data_y[y_param] <= range_y[1])
+        filtered_x = data_x[x_param][mask_x]
+        filtered_y = data_y[y_param][mask_y]
+        
+        if filtered_x.empty or filtered_y.empty:
+            return None, "No data available in the selected range for one or both parameters."
 
-    ks_stat, ks_pvalue = ks_2samp(data_x[x_param][mask_x], data_y[y_param][mask_y])
-    return ks_stat, ks_pvalue
+        ks_stat, ks_pvalue = ks_2samp(filtered_x, filtered_y)
+        return ks_stat, ks_pvalue
+
+    except ValueError as e:
+        return None, f"Error performing K-S test: {str(e)}"
+
 
 
 
@@ -243,15 +253,18 @@ fig.update_layout(barmode='overlay', title_text='Interactive Distribution Compar
 fig.update_traces(opacity=0.6)
 st.plotly_chart(fig)
 
+if st.button("Perform K-S Test on Selected Ranges"):
+    ks_stat, ks_message = perform_ks_test(data_x, param_x5, data_y, param_y5, auto=False, range_x=range_x, range_y=range_y)
+    if ks_stat is not None:
+        st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_message}")
+    else:
+        st.error(ks_message)
 
-if st.checkbox("Manual Range Selection"):
-    range_x = st.slider("Select Range for First Dataset", float(data_x[param_x5].min()), float(data_x[param_x5].max()), (float(data_x[param_x5].min()), float(data_x[param_x5].max())))
-    range_y = st.slider("Select Range for Second Dataset", float(data_y[param_y5].min()), float(data_y[param_y5].max()), (float(data_y[param_y5].min()), float(data_y[param_y5].max())))
-    if st.button("Perform K-S Test on Selected Ranges"):
-        ks_stat, ks_pvalue = perform_ks_test(data_x, param_x5, data_y, param_y5, auto=False, range_x=range_x, range_y=range_y)
-        st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_pvalue}")
-else:
-    if st.button("Perform K-S Test on Overlapping Ranges (Auto Mode)"):
-        ks_stat, ks_pvalue = perform_ks_test(data_x, param_x5, data_y, param_y5)
-        st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_pvalue}")
+if st.button("Perform K-S Test on Overlapping Ranges (Auto Mode)"):
+    ks_stat, ks_message = perform_ks_test(data_x, param_x5, data_y, param_y5)
+    if ks_stat is not None:
+        st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_message}")
+    else:
+        st.error(ks_message)
+
 
