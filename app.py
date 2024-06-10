@@ -8,6 +8,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from streamlit_plotly_events import plotly_events
 
+@st.cache
 lick_gk = pd.read_csv("database/lick_GK_survey_with_gaia_id.csv")
 express = pd.read_csv("database/express_post_MS_with_gaia_id.csv")
 eapsnet1 = pd.read_csv("database/EAPSNet1_stellar_params_with_gaia_id.csv")
@@ -141,6 +142,9 @@ def perform_statistical_tests(data_x, x_param, data_y, y_param, test_type, auto=
 def is_numeric(series):
     return series.dtype.kind in 'biufc'
 
+def load_specific_data():
+    return pd.read_csv("database/golden_sample/golden_giant_ptps-result.csv")
+
 
 st.title("Planetary Survey Data Analysis")
 
@@ -228,23 +232,29 @@ if st.button("Plot Combined Histogram"):
 
     plot_combined_histogram(data_x, x_param4, data_y, y_param4, f"Combined Histogram - {survey_x4} vs {survey_y4} ({x_data_source4} vs {y_data_source4})", x_label, y_label)
 
+if 'Section 5: Statistical Tests' in st.session_state:
+    golden_giant_ptps = load_specific_data()
+
 st.header("Section 5: Statistical Tests")
 
-survey_x5 = st.selectbox("Select Survey for First Dataset", list(surveys.keys()), key="survey_x5")
-data_source_x5 = st.radio("Select Data Source for First Dataset", ["Original", "Gaia", "TESS"], key="data_source_x5")
+survey_options_with_new_dataset = list(surveys.keys()) + ["Golden Giant PTPS"]
+survey_x5 = st.selectbox("Select Survey for First Dataset", survey_options_with_new_dataset, key="survey_x5")
+
+data_source_x5 = st.radio("Select Data Source for First Dataset", ["Original", "Gaia", "TESS", "Golden Giant PTPS"], key="data_source_x5")
 param_x5 = st.selectbox(
     "Select Parameter for First Dataset",
-    surveys[survey_x5]["data"].columns if data_source_x5 == "Original" else
-    gaia_data[survey_x5].columns if data_source_x5 == "Gaia" else tess_data[survey_x5].columns, key=f"param_x5_{survey_x5}_{data_source_x5}"
+    surveys[survey_x5]["data"].columns if data_source_x5 == "Original" else 
+    gaia_data[survey_x5].columns if data_source_x5 == "Gaia" else tess_data[survey_x5].columns if data_source_x5 == "TESS" else golden_giant_ptps.columns if data_source_x5 == "Golden Giant PTPS" else None, key=f"param_x5_{survey_x5}_{data_source_x5}"
 )
 
-survey_y5 = st.selectbox("Select Survey for Second Dataset", list(surveys.keys()), key="survey_y5")
-data_source_y5 = st.radio("Select Data Source for Second Dataset", ["Original", "Gaia", "TESS"], key="data_source_y5")
+survey_y5 = st.selectbox("Select Survey for Second Dataset", survey_options_with_new_dataset, key="survey_y5")
+data_source_y5 = st.radio("Select Data Source for Second Dataset", ["Original", "Gaia", "TESS", "Golden Giant PTPS"], key="data_source_y5")
 param_y5 = st.selectbox(
     "Select Parameter for Second Dataset",
     surveys[survey_y5]["data"].columns if data_source_y5 == "Original" else
-    gaia_data[survey_y5].columns if data_source_y5 == "Gaia" else tess_data[survey_y5].columns, key=f"param_y5_{survey_y5}_{data_source_y5}"
+    gaia_data[survey_y5].columns if data_source_y5 == "Gaia" else tess_data[survey_y5].columns if data_source_y5 == "TESS" else golden_giant_ptps.columns if data_source_y5 == "Golden Giant PTPS" else None, key=f"param_y5_{survey_y5}_{data_source_y5}"
 )
+
 
 data_x = surveys[survey_x5]["data"] if data_source_x5 == "Original" else gaia_data[survey_x5] if data_source_x5 == "Gaia" else tess_data[survey_x5]
 data_y = surveys[survey_y5]["data"] if data_source_y5 == "Original" else gaia_data[survey_y5] if data_source_y5 == "Gaia" else tess_data[survey_y5]
