@@ -279,7 +279,7 @@ if manual_selection_6:
     else:
         st.error("Selected parameters must be numeric to perform the selected statistical test and select ranges.")
 
-if st.button(f"Perform {test_type_6} Test on Overlapping Ranges (Auto Mode)", key="auto_test_section5"):
+if st.button(f"Perform {test_type_6} Test on Overlapping Ranges (Auto Mode)", key="auto_test_section6"):
     stat_6, message_6 = perform_statistical_tests(data_6, param_6, golden_giant_ptps, param_golden, test_type_6)
     if stat_6 is not None:
         st.write(f"{test_type_6} Statistic: {stat_6:.4f}, P-value: {message_6:.4f}")
