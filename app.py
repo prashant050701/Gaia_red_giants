@@ -275,7 +275,7 @@ fig = px.scatter(
 
 fig.update_xaxes(autorange="reversed")
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, use_container_width=False)
 
 
 survey_6 = st.selectbox("Select Survey for First Dataset", list(surveys.keys()), key="survey_6")
