@@ -197,6 +197,7 @@ if st.button("Plot Combined Histogram"):
     x_label = survey_x4
     y_label = survey_y4
     plot_combined_histogram(data_x, x_param4, data_y, y_param4, f"Combined Histogram - {survey_x4} vs {survey_y4} ({x_data_source4} vs {y_data_source4})", x_label, y_label)
+
 st.header("Section 5: Statistical Tests")
 survey_x5 = st.selectbox("Select Survey for First Dataset", list(surveys.keys()), key="survey_x5")
 data_source_x5 = st.radio("Select Data Source for First Dataset", ["Original", "Gaia", "TESS"], key="data_source_x5")
@@ -217,11 +218,11 @@ data_y = surveys[survey_y5]["data"] if data_source_y5 == "Original" else gaia_da
 fig = go.Figure()
 fig.add_trace(go.Histogram(
     x=data_x[param_x5], nbinsx=50, name=f"{survey_x5} {data_source_x5}",
-    marker=dict(line=dict(color='black', width=1))
+    histnorm='probability density', marker=dict(line=dict(color='black', width=1))
 ))
 fig.add_trace(go.Histogram(
     x=data_y[param_y5], nbinsx=50, name=f"{survey_y5} {data_source_y5}",
-    marker=dict(line=dict(color='black', width=1))
+    histnorm='probability density', marker=dict(line=dict(color='black', width=1))
 ))
 fig.update_layout(barmode='overlay', title_text='Interactive Distribution Comparison')
 fig.update_traces(opacity=0.6)
@@ -266,19 +267,19 @@ if st.button("Plot Interactive Histograms", key="plot_interactive_histograms_6")
     fig = go.Figure()
     fig.add_trace(go.Histogram(
         x=data_6[param_6], nbinsx=50, name=f"{survey_6} - {param_6}",
-        marker=dict(color='blue', line=dict(color='black', width=1))
+        histnorm='probability density', marker=dict(color='blue', line=dict(color='black', width=1))
     ))
     fig.add_trace(go.Histogram(
         x=golden_giant_ptps[param_golden], nbinsx=50, name="Golden Giant - {param_golden}",
-        marker=dict(color='red', line=dict(color='black', width=1))
+        histnorm='probability density', marker=dict(color='red', line=dict(color='black', width=1))
     ))
     fig.update_layout(
-        barmode='overlay',  # Allows for histogram bars to overlap
+        barmode='overlay',
         title_text='Interactive Distribution Comparison - Section 6',
-        xaxis_title_text='Value',  # X-axis label
-        yaxis_title_text='Count',  # Y-axis label
+        xaxis_title_text='Value',
+        yaxis_title_text='Count',
     )
-    fig.update_traces(opacity=0.6)  # Reduce opacity to see both histograms
+    fig.update_traces(opacity=0.6)
     st.plotly_chart(fig, use_container_width=True)
 
 
