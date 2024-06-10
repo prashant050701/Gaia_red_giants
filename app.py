@@ -131,14 +131,6 @@ def perform_ks_test(data_x, x_param, data_y, y_param, auto=True, range_x=None, r
     except ValueError as e:
         return None, f"Error performing K-S test: {str(e)}"
 
-def perform_anderson_darling_test(data_x, data_y):
-    result_x = anderson(data_x)
-    result_y = anderson(data_y)
-    return result_x, result_y
-
-def perform_mann_whitney_test(data_x, data_y):
-    mw_stat, mw_pvalue = mannwhitneyu(data_x, data_y)
-    return mw_stat, mw_pvalue
 
 
 
@@ -291,12 +283,3 @@ if st.button("Perform K-S Test on Overlapping Ranges (Auto Mode)"):
         st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_message}")
     else:
         st.error(ks_message)
-
-if st.button("Perform Anderson-Darling Test"):
-    ad_result_x, ad_result_y = perform_anderson_darling_test(filtered_x, filtered_y)
-    st.write(f"Anderson-Darling Test Results for First Dataset: {ad_result_x}")
-    st.write(f"Anderson-Darling Test Results for Second Dataset: {ad_result_y}")
-
-if st.button("Perform Mann-Whitney U Test"):
-    mw_stat, mw_pvalue = perform_mann_whitney_test(filtered_x, filtered_y)
-    st.write(f"Mann-Whitney U Statistic: {mw_stat}, P-value: {mw_pvalue}")
