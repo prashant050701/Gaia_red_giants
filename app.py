@@ -49,25 +49,20 @@ surveys = {
     "Coralie": {"data": coralie, "Teff": "Teff", "log_L": "Lum", "logg": "logg", "log_conversion": True},
     "PTPS": {"data": ptps, "Teff": "Teff", "log_L": "logL", "logg": "logg", "log_conversion": False},
 }
+
 def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, use_cmap=True):
-    fig, ax = plt.subplots(figsize=(8, 6))
     luminosity = np.log10(data[log_l_col]) if log_conversion else data[log_l_col]
     if use_cmap:
-        sc = ax.scatter(data[teff_col], luminosity, c=data[logg_col], cmap='viridis', alpha=0.5, s=10, edgecolor='k')
-        plt.colorbar(sc, label="logg")
-        ax.set_xlabel("Teff (K)")
-        ax.set_ylabel("log(L/Lsun)")
-        ax.set_title(title)
-        plt.gca().invert_xaxis()
-        st.pyplot(fig)
+        fig = px.scatter(data, x=teff_col, y=luminosity, color=logg_col, color_continuous_scale='Viridis', labels={"color": "logg"}, title=title)
     else:
-        ax.scatter(data[teff_col], luminosity, alpha=0.5, s=10, edgecolor='k')
-        ax.set_xlabel("Teff (K)")
-        ax.set_ylabel("GaiaMag")
-        ax.set_title(title)
-        plt.gca().invert_xaxis()
-        plt.gca().invert_yaxis()
-        st.pyplot(fig)
+        fig = px.scatter(data, x=teff_col, y=luminosity, title=title)
+
+    fig.update_xaxes(title="Teff (K)", autorange="reversed")
+    fig.update_yaxes(title="log(L/Lsun)")
+    
+    st.plotly_chart(fig, use_container_width=True)
+
+        
 def plot_distribution(data, columns, title):
     for column in columns:
         fig, ax = plt.subplots(figsize=(8, 6))
