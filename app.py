@@ -233,7 +233,7 @@ if manual_selection:
         range_x = st.slider("Select Range for First Dataset", min_x, max_x, (min_x, max_x))
         range_y = st.slider("Select Range for Second Dataset", min_y, max_y, (min_y, max_y))
 
-        if st.button("Perform {test_type} Test on Selected Ranges", key="perform_test_section5"):
+        if st.button(f"Perform {test_type} Test on Selected Ranges", key="perform_test_section5"):
             stat, message = perform_statistical_tests(data_x, param_x5, data_y, param_y5, test_type, auto=False, range_x=range_x, range_y=range_y)
             if stat is not None:
                 st.write(f"{test_type} Statistic: {stat:.4f}, P-value: {message:.4f}")
