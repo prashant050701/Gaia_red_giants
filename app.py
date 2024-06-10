@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-from scipy.stats import ks_2samp
+from scipy.stats import ks_2samp, anderson, mannwhitneyu
 import plotly.express as px
 import plotly.graph_objects as go
 from streamlit_plotly_events import plotly_events
@@ -131,6 +131,16 @@ def perform_ks_test(data_x, x_param, data_y, y_param, auto=True, range_x=None, r
     except ValueError as e:
         return None, f"Error performing K-S test: {str(e)}"
 
+def perform_anderson_darling_test(data_x, data_y):
+    result_x = anderson(data_x)
+    result_y = anderson(data_y)
+    return result_x, result_y
+
+def perform_mann_whitney_test(data_x, data_y):
+    mw_stat, mw_pvalue = mannwhitneyu(data_x, data_y)
+    return mw_stat, mw_pvalue
+
+
 
 def is_numeric(series):
     return series.dtype.kind in 'biufc'
@@ -222,7 +232,7 @@ if st.button("Plot Combined Histogram"):
 
     plot_combined_histogram(data_x, x_param4, data_y, y_param4, f"Combined Histogram - {survey_x4} vs {survey_y4} ({x_data_source4} vs {y_data_source4})", x_label, y_label)
 
-st.header("Section 5: Distribution Comparison and Statistical Testing")
+st.header("Section 5: Statistical Tests")
 
 survey_x5 = st.selectbox("Select Survey for First Dataset", list(surveys.keys()), key="survey_x5")
 data_source_x5 = st.radio("Select Data Source for First Dataset", ["Original", "Gaia", "TESS"], key="data_source_x5")
@@ -246,10 +256,12 @@ data_y = surveys[survey_y5]["data"] if data_source_y5 == "Original" else gaia_da
 fig = go.Figure()
 fig.add_trace(go.Histogram(
     x=data_x[param_x5], nbinsx=50, name=f"{survey_x5} {data_source_x5}",
+    histnorm='probability density',  # This changes the histogram to show density
     marker=dict(line=dict(color='black', width=1))
 ))
 fig.add_trace(go.Histogram(
     x=data_y[param_y5], nbinsx=50, name=f"{survey_y5} {data_source_y5}",
+    histnorm='probability density',  # This changes the histogram to show density
     marker=dict(line=dict(color='black', width=1))
 ))
 fig.update_layout(barmode='overlay', title_text='Interactive Distribution Comparison')
@@ -281,3 +293,12 @@ if st.button("Perform K-S Test on Overlapping Ranges (Auto Mode)"):
         st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_message}")
     else:
         st.error(ks_message)
+
+if st.button("Perform Anderson-Darling Test"):
+    ad_result_x, ad_result_y = perform_anderson_darling_test(filtered_x, filtered_y)
+    st.write(f"Anderson-Darling Test Results for First Dataset: {ad_result_x}")
+    st.write(f"Anderson-Darling Test Results for Second Dataset: {ad_result_y}")
+
+if st.button("Perform Mann-Whitney U Test"):
+    mw_stat, mw_pvalue = perform_mann_whitney_test(filtered_x, filtered_y)
+    st.write(f"Mann-Whitney U Statistic: {mw_stat}, P-value: {mw_pvalue}")
