@@ -3,3 +3,6 @@ numpy
 matplotlib
 seaborn
 streamlit
+scipy
+plotly
+streamlit_plotly_events
