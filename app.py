@@ -254,7 +254,29 @@ if st.button(f"Perform {test_type} Test on Overlapping Ranges (Auto Mode)", key=
         st.error(message)
 
 
-st.header("Section 6: Statistical Tests with Golden Giant Data")
+st.header("Section 6: Golden Giants")
+
+golden_giant_ptps['log_L'] = np.log10(golden_giant_ptps['luminosity'])
+
+fig = px.scatter(
+    golden_giant_ptps,
+    x='teff',
+    y='log_L',
+    color='logg',
+    labels={
+        "teff": "Effective Temperature (Teff)",
+        "log_L": "Logarithm of Luminosity (log L)",
+        "logg": "Surface Gravity (logg)"
+    },
+    title="HR Diagram of Golden Giant Data",
+    color_continuous_scale=px.colors.sequential.Viridis,
+    range_color=[golden_giant_ptps['logg'].min(), golden_giant_ptps['logg'].max()]
+)
+
+fig.update_xaxes(autorange="reversed")
+
+st.plotly_chart(fig, use_container_width=True)
+
 
 survey_6 = st.selectbox("Select Survey for First Dataset", list(surveys.keys()), key="survey_6")
 data_source_6 = st.radio("Select Data Source for First Dataset", ["Original", "Gaia", "TESS"], key="data_source_6")
