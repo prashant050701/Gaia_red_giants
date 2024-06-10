@@ -133,7 +133,7 @@ def perform_ks_test(data_x, x_param, data_y, y_param, auto=True, range_x=None, r
 
 
 def is_numeric(series):
-    return pd.to_numeric(series, errors='coerce').notna().all()
+    return series.dtype.kind in 'biufc'
 
 
 st.title("Planetary Survey Data Analysis")
