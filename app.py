@@ -218,11 +218,13 @@ data_y = surveys[survey_y5]["data"] if data_source_y5 == "Original" else gaia_da
 fig = go.Figure()
 fig.add_trace(go.Histogram(
     x=data_x[param_x5], nbinsx=50, name=f"{survey_x5} {data_source_x5}",
-    histnorm='probability density', marker=dict(line=dict(color='black', width=1))
+    histnorm='probability density', #will comment this later if count is needed
+    marker=dict(line=dict(color='black', width=1))
 ))
 fig.add_trace(go.Histogram(
     x=data_y[param_y5], nbinsx=50, name=f"{survey_y5} {data_source_y5}",
-    histnorm='probability density', marker=dict(line=dict(color='black', width=1))
+    histnorm='probability density', #will comment this later if count is needed
+    marker=dict(line=dict(color='black', width=1))
 ))
 fig.update_layout(barmode='overlay', title_text='Interactive Distribution Comparison')
 fig.update_traces(opacity=0.6)
@@ -267,11 +269,13 @@ if st.button("Plot Interactive Histograms", key="plot_interactive_histograms_6")
     fig = go.Figure()
     fig.add_trace(go.Histogram(
         x=data_6[param_6], nbinsx=50, name=f"{survey_6} - {param_6}",
-        histnorm='probability density', marker=dict(color='blue', line=dict(color='black', width=1))
+        histnorm='probability density', #will comment this later if count is needed
+        marker=dict(color='blue', line=dict(color='black', width=1))
     ))
     fig.add_trace(go.Histogram(
         x=golden_giant_ptps[param_golden], nbinsx=50, name="Golden Giant - {param_golden}",
-        histnorm='probability density', marker=dict(color='red', line=dict(color='black', width=1))
+        histnorm='probability density', #will comment this later if count is needed
+        marker=dict(color='red', line=dict(color='black', width=1))
     ))
     fig.update_layout(
         barmode='overlay',
