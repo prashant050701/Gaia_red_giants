@@ -3,6 +3,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from scipy.stats import ks_2samp
+import plotly.express as px
+import plotly.graph_objects as go
+from streamlit_plotly_events import plotly_events
 
 lick_gk = pd.read_csv("database/lick_GK_survey_with_gaia_id.csv")
 express = pd.read_csv("database/express_post_MS_with_gaia_id.csv")
@@ -102,6 +106,20 @@ def handle_scatter_plot(survey_x, x_data_source, x_param, survey_y, y_data_sourc
         y_col = f"{y_param}{suffixes[1]}"
         plot_scatter(merged_data, x_col, merged_data, y_col, f"Scatter Plot - {survey_x} vs {survey_y} ({x_data_source} vs {y_data_source})")
 
+def perform_ks_test(data_x, x_param, data_y, y_param, auto=True, range_x=None, range_y=None):
+    if auto:
+        common_min = max(data_x[x_param].min(), data_y[y_param].min())
+        common_max = min(data_x[x_param].max(), data_y[y_param].max())
+        mask_x = (data_x[x_param] >= common_min) & (data_x[x_param] <= common_max)
+        mask_y = (data_y[y_param] >= common_min) & (data_y[y_param] <= common_max)
+    else:
+        mask_x = (data_x[x_param] >= range_x[0]) & (data_x[x_param] <= range_x[1])
+        mask_y = (data_y[y_param] >= range_y[0]) & (data_y[y_param] <= range_y[1])
+
+    ks_stat, ks_pvalue = ks_2samp(data_x[x_param][mask_x], data_y[y_param][mask_y])
+    return ks_stat, ks_pvalue
+
+
 
 st.title("Planetary Survey Data Analysis")
 
@@ -188,3 +206,36 @@ if st.button("Plot Combined Histogram"):
     y_label = survey_y4
 
     plot_combined_histogram(data_x, x_param4, data_y, y_param4, f"Combined Histogram - {survey_x4} vs {survey_y4} ({x_data_source4} vs {y_data_source4})", x_label, y_label)
+
+st.header("Section 5: Distribution Comparison and Statistical Testing")
+
+survey_x5 = st.selectbox("Select Survey for First Dataset", list(surveys.keys()), key="survey_x5")
+data_source_x5 = st.radio("Select Data Source for First Dataset", ["Original", "Gaia", "TESS"], key="data_source_x5")
+param_x5 = st.selectbox("Select Parameter for First Dataset", surveys[survey_x5]["data"].columns, key="param_x5")
+
+survey_y5 = st.selectbox("Select Survey for Second Dataset", list(surveys.keys()), key="survey_y5")
+data_source_y5 = st.radio("Select Data Source for Second Dataset", ["Original", "Gaia", "TESS"], key="data_source_y5")
+param_y5 = st.selectbox("Select Parameter for Second Dataset", surveys[survey_y5]["data"].columns, key="param_y5")
+
+data_x = surveys[survey_x5]["data"] if data_source_x5 == "Original" else gaia_data[survey_x5] if data_source_x5 == "Gaia" else tess_data[survey_x5]
+data_y = surveys[survey_y5]["data"] if data_source_y5 == "Original" else gaia_data[survey_y5] if data_source_y5 == "Gaia" else tess_data[survey_y5]
+
+fig = go.Figure()
+fig.add_trace(go.Histogram(x=data_x[param_x5], nbinsx=50, name=f"{survey_x5}"))
+fig.add_trace(go.Histogram(x=data_y[param_y5], nbinsx=50, name=f"{survey_y5}"))
+
+fig.update_layout(barmode='overlay', title_text='Interactive Distribution Comparison')
+fig.update_traces(opacity=0.6)
+st.plotly_chart(fig)
+
+if st.checkbox("Manual Range Selection"):
+    range_x = st.slider("Select Range for First Dataset", float(data_x[param_x5].min()), float(data_x[param_x5].max()), (float(data_x[param_x5].min()), float(data_x[param_x5].max())))
+    range_y = st.slider("Select Range for Second Dataset", float(data_y[param_y5].min()), float(data_y[param_y5].max()), (float(data_y[param_y5].min()), float(data_y[param_y5].max())))
+    if st.button("Perform K-S Test on Selected Ranges"):
+        ks_stat, ks_pvalue = perform_ks_test(data_x, param_x5, data_y, param_y5, auto=False, range_x=range_x, range_y=range_y)
+        st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_pvalue}")
+else:
+    if st.button("Perform K-S Test on Overlapping Ranges (Auto Mode)"):
+        ks_stat, ks_pvalue = perform_ks_test(data_x, param_x5, data_y, param_y5)
+        st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_pvalue}")
+
