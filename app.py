@@ -270,7 +270,7 @@ if manual_selection:
         if st.button("Perform K-S Test on Selected Ranges"):
             ks_stat, ks_message = perform_ks_test(data_x, param_x5, data_y, param_y5, auto=False, range_x=range_x, range_y=range_y)
             if ks_stat is not None:
-                st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_message}.4f")
+                st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_message:.4f}")
             else:
                 st.error("No data available in the selected range for one or both parameters.")
     else:
@@ -280,6 +280,6 @@ if manual_selection:
 if st.button("Perform K-S Test on Overlapping Ranges (Auto Mode)"):
     ks_stat, ks_message = perform_ks_test(data_x, param_x5, data_y, param_y5)
     if ks_stat is not None:
-        st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_message}.4f")
+        st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_message:.4f}")
     else:
         st.error(ks_message)
