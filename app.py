@@ -95,6 +95,7 @@ def handle_scatter_plot(survey_x, x_data_source, x_param, survey_y, y_data_sourc
         x_col = f"{x_param}{suffixes[0]}"
         y_col = f"{y_param}{suffixes[1]}"
         plot_scatter(merged_data, x_col, merged_data, y_col, f"Scatter Plot - {survey_x} vs {survey_y} ({x_data_source} vs {y_data_source})")
+        
 def perform_statistical_tests(data_x, x_param, data_y, y_param, test_type, auto=True, range_x=None, range_y=None):
     try:
         if not (is_numeric(data_x[x_param]) and is_numeric(data_y[y_param])):
@@ -120,8 +121,10 @@ def perform_statistical_tests(data_x, x_param, data_y, y_param, test_type, auto=
         return stat, pvalue
     except ValueError as e:
         return None, f"Error performing {test_type} test: {str(e)}"
+        
 def is_numeric(series):
     return series.dtype.kind in 'biufc'
+    
 st.title("Planetary Survey Data Analysis")
 st.header("Section 1: HR Diagram")
 survey1 = st.selectbox("Select Survey", list(surveys.keys()), key="survey1")
@@ -129,17 +132,17 @@ plot_original = st.checkbox("Plot HR Diagram from Original Survey")
 plot_gaia = st.checkbox("Plot HR Diagram from Gaia")
 plot_tess = st.checkbox("Plot HR Diagram from TESS")
 if plot_original or plot_gaia:
-    col1, col2 = st.columns(2)
+    #col1, col2 = st.columns(2)
     if plot_original:
-        with col1:
-            data_info = surveys[survey1]
-            plot_hr_diagram(data_info["data"], data_info["Teff"], data_info["log_L"], data_info["logg"],
-                            f"HR Diagram - {survey1} (Original Survey)", data_info["log_conversion"])
+       # with col1:
+        data_info = surveys[survey1]
+        plot_hr_diagram(data_info["data"], data_info["Teff"], data_info["log_L"], data_info["logg"],
+                        f"HR Diagram - {survey1} (Original Survey)", data_info["log_conversion"])
     if plot_gaia:
-        with col2:
-            gaia = gaia_data[survey1]
-            plot_hr_diagram(gaia, "effective_temperature", "luminosity", "surface_gravity",
-                            f"HR Diagram - {survey1} (Gaia Data)", True)
+        #with col2:
+        gaia = gaia_data[survey1]
+        plot_hr_diagram(gaia, "effective_temperature", "luminosity", "surface_gravity",
+                        f"HR Diagram - {survey1} (Gaia Data)", True)
 if plot_tess:
     st.header("TESS HR Diagram")
     tess = tess_data[survey1]
