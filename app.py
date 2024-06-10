@@ -211,22 +211,38 @@ st.header("Section 5: Distribution Comparison and Statistical Testing")
 
 survey_x5 = st.selectbox("Select Survey for First Dataset", list(surveys.keys()), key="survey_x5")
 data_source_x5 = st.radio("Select Data Source for First Dataset", ["Original", "Gaia", "TESS"], key="data_source_x5")
-param_x5 = st.selectbox("Select Parameter for First Dataset", surveys[survey_x5]["data"].columns, key="param_x5")
+param_x5 = st.selectbox(
+    "Select Parameter for First Dataset",
+    surveys[survey_x5]["data"].columns if data_source_x5 == "Original" else
+    gaia_data[survey_x5].columns if data_source_x5 == "Gaia" else tess_data[survey_x5].columns, key=f"param_x5_{survey_x5}_{data_source_x5}")
+
 
 survey_y5 = st.selectbox("Select Survey for Second Dataset", list(surveys.keys()), key="survey_y5")
 data_source_y5 = st.radio("Select Data Source for Second Dataset", ["Original", "Gaia", "TESS"], key="data_source_y5")
-param_y5 = st.selectbox("Select Parameter for Second Dataset", surveys[survey_y5]["data"].columns, key="param_y5")
+param_y5 = st.selectbox(
+    "Select Parameter for Second Dataset",
+    surveys[survey_y5]["data"].columns if data_source_y5 == "Original" else
+    gaia_data[survey_y5].columns if data_source_y5 == "Gaia" else tess_data[survey_y5].columns, key=f"param_y5_{survey_y5}_{data_source_y5}")
+
 
 data_x = surveys[survey_x5]["data"] if data_source_x5 == "Original" else gaia_data[survey_x5] if data_source_x5 == "Gaia" else tess_data[survey_x5]
 data_y = surveys[survey_y5]["data"] if data_source_y5 == "Original" else gaia_data[survey_y5] if data_source_y5 == "Gaia" else tess_data[survey_y5]
 
+
 fig = go.Figure()
-fig.add_trace(go.Histogram(x=data_x[param_x5], nbinsx=50, name=f"{survey_x5}"))
-fig.add_trace(go.Histogram(x=data_y[param_y5], nbinsx=50, name=f"{survey_y5}"))
+fig.add_trace(go.Histogram(
+    x=data_x[param_x5], nbinsx=50, name=f"{survey_x5}",
+    marker=dict(line=dict(color='black', width=1))
+))
+fig.add_trace(go.Histogram(
+    x=data_y[param_y5], nbinsx=50, name=f"{survey_y5}",
+    marker=dict(line=dict(color='black', width=1))
+))
 
 fig.update_layout(barmode='overlay', title_text='Interactive Distribution Comparison')
 fig.update_traces(opacity=0.6)
 st.plotly_chart(fig)
+
 
 if st.checkbox("Manual Range Selection"):
     range_x = st.slider("Select Range for First Dataset", float(data_x[param_x5].min()), float(data_x[param_x5].max()), (float(data_x[param_x5].min()), float(data_x[param_x5].max())))
