@@ -224,20 +224,19 @@ data_source_x5 = st.radio("Select Data Source for First Dataset", ["Original", "
 param_x5 = st.selectbox(
     "Select Parameter for First Dataset",
     surveys[survey_x5]["data"].columns if data_source_x5 == "Original" else
-    gaia_data[survey_x5].columns if data_source_x5 == "Gaia" else tess_data[survey_x5].columns, key=f"param_x5_{survey_x5}_{data_source_x5}")
-
+    gaia_data[survey_x5].columns if data_source_x5 == "Gaia" else tess_data[survey_x5].columns, key=f"param_x5_{survey_x5}_{data_source_x5}"
+)
 
 survey_y5 = st.selectbox("Select Survey for Second Dataset", list(surveys.keys()), key="survey_y5")
 data_source_y5 = st.radio("Select Data Source for Second Dataset", ["Original", "Gaia", "TESS"], key="data_source_y5")
 param_y5 = st.selectbox(
     "Select Parameter for Second Dataset",
     surveys[survey_y5]["data"].columns if data_source_y5 == "Original" else
-    gaia_data[survey_y5].columns if data_source_y5 == "Gaia" else tess_data[survey_y5].columns, key=f"param_y5_{survey_y5}_{data_source_y5}")
-
+    gaia_data[survey_y5].columns if data_source_y5 == "Gaia" else tess_data[survey_y5].columns, key=f"param_y5_{survey_y5}_{data_source_y5}"
+)
 
 data_x = surveys[survey_x5]["data"] if data_source_x5 == "Original" else gaia_data[survey_x5] if data_source_x5 == "Gaia" else tess_data[survey_x5]
 data_y = surveys[survey_y5]["data"] if data_source_y5 == "Original" else gaia_data[survey_y5] if data_source_y5 == "Gaia" else tess_data[survey_y5]
-
 
 fig = go.Figure()
 fig.add_trace(go.Histogram(
@@ -248,17 +247,21 @@ fig.add_trace(go.Histogram(
     x=data_y[param_y5], nbinsx=50, name=f"{survey_y5}",
     marker=dict(line=dict(color='black', width=1))
 ))
-
 fig.update_layout(barmode='overlay', title_text='Interactive Distribution Comparison')
 fig.update_traces(opacity=0.6)
 st.plotly_chart(fig)
 
-if st.button("Perform K-S Test on Selected Ranges"):
-    ks_stat, ks_message = perform_ks_test(data_x, param_x5, data_y, param_y5, auto=False, range_x=range_x, range_y=range_y)
-    if ks_stat is not None:
-        st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_message}")
-    else:
-        st.error(ks_message)
+manual_selection = st.checkbox("Manual Range Selection")
+if manual_selection:
+    range_x = st.slider("Select Range for First Dataset", float(data_x[param_x5].min()), float(data_x[param_x5].max()), (float(data_x[param_x5].min()), float(data_x[param_x5].max())))
+    range_y = st.slider("Select Range for Second Dataset", float(data_y[param_y5].min()), float(data_y[param_y5].max()), (float(data_y[param_y5].min()), float(data_y[param_y5].max())))
+
+    if st.button("Perform K-S Test on Selected Ranges"):
+        ks_stat, ks_message = perform_ks_test(data_x, param_x5, data_y, param_y5, auto=False, range_x=range_x, range_y=range_y)
+        if ks_stat is not None:
+            st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_message}")
+        else:
+            st.error(ks_message)
 
 if st.button("Perform K-S Test on Overlapping Ranges (Auto Mode)"):
     ks_stat, ks_message = perform_ks_test(data_x, param_x5, data_y, param_y5)
@@ -266,5 +269,3 @@ if st.button("Perform K-S Test on Overlapping Ranges (Auto Mode)"):
         st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_message}")
     else:
         st.error(ks_message)
-
-
