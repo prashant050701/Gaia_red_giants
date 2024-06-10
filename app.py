@@ -108,6 +108,9 @@ def handle_scatter_plot(survey_x, x_data_source, x_param, survey_y, y_data_sourc
 
 def perform_ks_test(data_x, x_param, data_y, y_param, auto=True, range_x=None, range_y=None):
     try:
+        if not (is_numeric(data_x[x_param]) and is_numeric(data_y[y_param])):
+            return None, "Selected parameters must be numeric for K-S test."
+
         if auto:
             common_min = max(data_x[x_param].min(), data_y[y_param].min())
             common_max = min(data_x[x_param].max(), data_y[y_param].max())
@@ -118,7 +121,7 @@ def perform_ks_test(data_x, x_param, data_y, y_param, auto=True, range_x=None, r
             mask_y = (data_y[y_param] >= range_y[0]) & (data_y[y_param] <= range_y[1])
         filtered_x = data_x[x_param][mask_x]
         filtered_y = data_y[y_param][mask_y]
-        
+
         if filtered_x.empty or filtered_y.empty:
             return None, "No data available in the selected range for one or both parameters."
 
@@ -128,6 +131,9 @@ def perform_ks_test(data_x, x_param, data_y, y_param, auto=True, range_x=None, r
     except ValueError as e:
         return None, f"Error performing K-S test: {str(e)}"
 
+
+def is_numeric(series):
+    return pd.to_numeric(series, errors='coerce').notna().all()
 
 
 st.title("Planetary Survey Data Analysis")
@@ -251,16 +257,23 @@ fig.update_traces(opacity=0.6)
 st.plotly_chart(fig)
 
 manual_selection = st.checkbox("Manual Range Selection")
-if manual_selection:
-    range_x = st.slider("Select Range for First Dataset", float(data_x[param_x5].min()), float(data_x[param_x5].max()), (float(data_x[param_x5].min()), float(data_x[param_x5].max())))
-    range_y = st.slider("Select Range for Second Dataset", float(data_y[param_y5].min()), float(data_y[param_y5].max()), (float(data_y[param_y5].min()), float(data_y[param_y5].max())))
 
-    if st.button("Perform K-S Test on Selected Ranges"):
-        ks_stat, ks_message = perform_ks_test(data_x, param_x5, data_y, param_y5, auto=False, range_x=range_x, range_y=range_y)
-        if ks_stat is not None:
-            st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_message}")
-        else:
-            st.error(ks_message)
+if manual_selection:
+    if is_numeric(data_x[param_x5]) and is_numeric(data_y[param_y5]):
+        min_x, max_x = float(data_x[param_x5].min()), float(data_x[param_x5].max())
+        min_y, max_y = float(data_y[param_y5].min()), float(data_y[param_y5].max())
+        range_x = st.slider("Select Range for First Dataset", min_x, max_x, (min_x, max_x))
+        range_y = st.slider("Select Range for Second Dataset", min_y, max_y, (min_y, max_y))
+
+        if st.button("Perform K-S Test on Selected Ranges"):
+            ks_stat, ks_message = perform_ks_test(data_x, param_x5, data_y, param_y5, auto=False, range_x=range_x, range_y=range_y)
+            if ks_stat is not None:
+                st.write(f"K-S Statistic: {ks_stat}, P-value: {ks_message}")
+            else:
+                st.error("No data available in the selected range for one or both parameters.")
+    else:
+        st.error("Selected parameters must be numeric to perform K-S Test and select ranges.")
+
 
 if st.button("Perform K-S Test on Overlapping Ranges (Auto Mode)"):
     ks_stat, ks_message = perform_ks_test(data_x, param_x5, data_y, param_y5)
