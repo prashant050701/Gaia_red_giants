@@ -106,10 +106,10 @@ def handle_scatter_plot(survey_x, x_data_source, x_param, survey_y, y_data_sourc
         y_col = f"{y_param}{suffixes[1]}"
         plot_scatter(merged_data, x_col, merged_data, y_col, f"Scatter Plot - {survey_x} vs {survey_y} ({x_data_source} vs {y_data_source})")
 
-def perform_ks_test(data_x, x_param, data_y, y_param, auto=True, range_x=None, range_y=None):
+def perform_statistical_tests(data_x, x_param, data_y, y_param, test_type, auto=True, range_x=None, range_y=None):
     try:
         if not (is_numeric(data_x[x_param]) and is_numeric(data_y[y_param])):
-            return None, "Selected parameters must be numeric for K-S test."
+            return None, "Selected parameters must be numeric for statistical tests."
 
         if auto:
             common_min = max(data_x[x_param].min(), data_y[y_param].min())
@@ -119,20 +119,24 @@ def perform_ks_test(data_x, x_param, data_y, y_param, auto=True, range_x=None, r
         else:
             mask_x = (data_x[x_param] >= range_x[0]) & (data_x[x_param] <= range_x[1])
             mask_y = (data_y[y_param] >= range_y[0]) & (data_y[y_param] <= range_y[1])
+
         filtered_x = data_x[x_param][mask_x]
         filtered_y = data_y[y_param][mask_y]
 
         if filtered_x.empty or filtered_y.empty:
             return None, "No data available in the selected range for one or both parameters."
 
-        ks_stat, ks_pvalue = ks_2samp(filtered_x, filtered_y)
-        return ks_stat, ks_pvalue
+        if test_type == "KS":
+            stat, pvalue = ks_2samp(filtered_x, filtered_y)
+        elif test_type == "MWU":
+            stat, pvalue = mannwhitneyu(filtered_x, filtered_y, alternative='two-sided')
+        else:
+            return None, "Invalid test type specified."
+
+        return stat, pvalue
 
     except ValueError as e:
-        return None, f"Error performing K-S test: {str(e)}"
-
-
-
+        return None, f"Error performing {test_type} test: {str(e)}"
 
 def is_numeric(series):
     return series.dtype.kind in 'biufc'
@@ -246,28 +250,20 @@ data_x = surveys[survey_x5]["data"] if data_source_x5 == "Original" else gaia_da
 data_y = surveys[survey_y5]["data"] if data_source_y5 == "Original" else gaia_data[survey_y5] if data_source_y5 == "Gaia" else tess_data[survey_y5]
 
 fig = go.Figure()
-'''fig.add_trace(go.Histogram(
+fig.add_trace(go.Histogram(
     x=data_x[param_x5], nbinsx=50, name=f"{survey_x5} {data_source_x5}",
     marker=dict(line=dict(color='black', width=1))
 ))
 fig.add_trace(go.Histogram(
     x=data_y[param_y5], nbinsx=50, name=f"{survey_y5} {data_source_y5}",
     marker=dict(line=dict(color='black', width=1))
-))'''
+))
 
-fig.add_trace(go.Histogram(
-    x=data_x[param_x5], nbinsx=50, name=f"{survey_x5} {data_source_x5}",
-    histnorm='probability density',
-    marker=dict(line=dict(color='black', width=1))
-))
-fig.add_trace(go.Histogram(
-    x=data_y[param_y5], nbinsx=50, name=f"{survey_y5} {data_source_y5}",
-    histnorm='probability density',
-    marker=dict(line=dict(color='black', width=1))
-))
 fig.update_layout(barmode='overlay', title_text='Interactive Distribution Comparison')
 fig.update_traces(opacity=0.6)
 st.plotly_chart(fig)
+
+test_type = st.radio("Select Test Type", ["KS", "MWU"], key="test_type")
 
 manual_selection = st.checkbox("Manual Range Selection")
 
@@ -278,19 +274,18 @@ if manual_selection:
         range_x = st.slider("Select Range for First Dataset", min_x, max_x, (min_x, max_x))
         range_y = st.slider("Select Range for Second Dataset", min_y, max_y, (min_y, max_y))
 
-        if st.button("Perform K-S Test on Selected Ranges"):
-            ks_stat, ks_message = perform_ks_test(data_x, param_x5, data_y, param_y5, auto=False, range_x=range_x, range_y=range_y)
-            if ks_stat is not None:
-                st.write(f"K-S Statistic: {ks_stat:.4f}, P-value: {ks_message:.4f}")
+        if st.button("Perform Selected Statistical Test on Selected Ranges"):
+            stat, message = perform_statistical_tests(data_x, param_x5, data_y, param_y5, test_type, auto=False, range_x=range_x, range_y=range_y)
+            if stat is not None:
+                st.write(f"{test_type} Statistic: {stat:.4f}, P-value: {message:.4f}")
             else:
                 st.error("No data available in the selected range for one or both parameters.")
     else:
-        st.error("Selected parameters must be numeric to perform K-S Test and select ranges.")
+        st.error("Selected parameters must be numeric to perform the selected statistical test and select ranges.")
 
-
-if st.button("Perform K-S Test on Overlapping Ranges (Auto Mode)"):
-    ks_stat, ks_message = perform_ks_test(data_x, param_x5, data_y, param_y5)
-    if ks_stat is not None:
-        st.write(f"K-S Statistic: {ks_stat:.4f}, P-value: {ks_message:.4f}")
+if st.button(f"Perform {test_type} Test on Overlapping Ranges (Auto Mode)"):
+    stat, message = perform_statistical_tests(data_x, param_x5, data_y, param_y5, test_type)
+    if stat is not None:
+        st.write(f"{test_type} Statistic: {stat:.4f}, P-value: {message:.4f}")
     else:
-        st.error(ks_message)
+        st.error(message)
