@@ -106,19 +106,30 @@ def handle_scatter_plot(survey_x, x_data_source, x_param, survey_y, y_data_sourc
         y_col = f"{y_param}{suffixes[1]}"
         plot_scatter(merged_data, x_col, merged_data, y_col, f"Scatter Plot - {survey_x} vs {survey_y} ({x_data_source} vs {y_data_source})")
 
+def normalize_data(data):
+    clean_data = data.dropna()
+    min_val = clean_data.min()
+    max_val = clean_data.max()
+    return (clean_data - min_val) / (max_val - min_val)
+
+
 def perform_ks_test(data_x, x_param, data_y, y_param, auto=True, range_x=None, range_y=None):
     try:
+        norm_data_x = normalize_data(data_x[x_param])
+        norm_data_y = normalize_data(data_y[y_param])
+
         if auto:
-            common_min = max(data_x[x_param].min(), data_y[y_param].min())
-            common_max = min(data_x[x_param].max(), data_y[y_param].max())
-            mask_x = (data_x[x_param] >= common_min) & (data_x[x_param] <= common_max)
-            mask_y = (data_y[y_param] >= common_min) & (data_y[y_param] <= common_max)
+            common_min = max(norm_data_x.min(), norm_data_y.min())
+            common_max = min(norm_data_x.max(), norm_data_y.max())
+            mask_x = (norm_data_x >= common_min) & (norm_data_x <= common_max)
+            mask_y = (norm_data_y >= common_min) & (norm_data_y <= common_max)
         else:
-            mask_x = (data_x[x_param] >= range_x[0]) & (data_x[x_param] <= range_x[1])
-            mask_y = (data_y[y_param] >= range_y[0]) & (data_y[y_param] <= range_y[1])
-        filtered_x = data_x[x_param][mask_x]
-        filtered_y = data_y[y_param][mask_y]
-        
+            mask_x = (norm_data_x >= range_x[0]) & (norm_data_x <= range_x[1])
+            mask_y = (norm_data_y >= range_y[0]) & (norm_data_y <= range_y[1])
+
+        filtered_x = norm_data_x[mask_x]
+        filtered_y = norm_data_y[mask_y]
+
         if filtered_x.empty or filtered_y.empty:
             return None, "No data available in the selected range for one or both parameters."
 
@@ -127,8 +138,6 @@ def perform_ks_test(data_x, x_param, data_y, y_param, auto=True, range_x=None, r
 
     except ValueError as e:
         return None, f"Error performing K-S test: {str(e)}"
-
-
 
 
 st.title("Planetary Survey Data Analysis")
