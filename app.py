@@ -259,6 +259,29 @@ param_6 = st.selectbox(
     "Select Parameter for First Dataset", surveys[survey_6]["data"].columns if data_source_6 == "Original" else gaia_data[survey_6].columns if data_source_6 == "Gaia" else tess_data[survey_6].columns, key="param_6")
 
 param_golden = st.selectbox("Select Parameter from Golden Giant Data", golden_giant_ptps.columns, key="param_golden")
+
+data_6 = surveys[survey_6]["data"] if data_source_6 == "Original" else gaia_data[survey_6] if data_source_6 == "Gaia" else tess_data[survey_6]
+
+if st.button("Plot Interactive Histograms", key="plot_interactive_histograms_6"):
+    fig = go.Figure()
+    fig.add_trace(go.Histogram(
+        x=data_6[param_6], nbinsx=50, name=f"{survey_6} - {param_6}",
+        marker=dict(color='blue', line=dict(color='black', width=1))
+    ))
+    fig.add_trace(go.Histogram(
+        x=golden_giant_ptps[param_golden], nbinsx=50, name="Golden Giant - {param_golden}",
+        marker=dict(color='red', line=dict(color='black', width=1))
+    ))
+    fig.update_layout(
+        barmode='overlay',  # Allows for histogram bars to overlap
+        title_text='Interactive Distribution Comparison - Section 6',
+        xaxis_title_text='Value',  # X-axis label
+        yaxis_title_text='Count',  # Y-axis label
+    )
+    fig.update_traces(opacity=0.6)  # Reduce opacity to see both histograms
+    st.plotly_chart(fig, use_container_width=True)
+
+
 test_type_6 = st.radio("Select Test Type for Comparison", ["KS", "MWU"], key="test_type_6")
 data_6 = surveys[survey_6]["data"] if data_source_6 == "Original" else gaia_data[survey_6] if data_source_6 == "Gaia" else tess_data[survey_6]
 manual_selection_6 = st.checkbox("Manual Range Selection", key="manual_selection_6")
