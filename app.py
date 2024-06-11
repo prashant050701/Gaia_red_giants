@@ -203,6 +203,8 @@ y_param4 = st.selectbox("Select Parameter",
 if st.button("Plot Combined Histogram"):
     data_x = surveys[survey_x4]["data"] if x_data_source4 == "Original" else gaia_data[survey_x4] if x_data_source4 == "Gaia" else tess_data[survey_x4]
     data_y = surveys[survey_y4]["data"] if y_data_source4 == "Original" else gaia_data[survey_y4] if y_data_source4 == "Gaia" else tess_data[survey_y4]
+    data_x = data_x.drop_duplicates(subset='source_id', keep='first')
+    data_y = data_y.drop_duplicates(subset='source_id', keep='first')
     valid_x_count = data_x[x_param4].dropna().shape[0]
     valid_y_count = data_y[y_param4].dropna().shape[0]
     st.write(f"Total valid entries for {x_param4} from {x_data_source4}: {valid_x_count}")
