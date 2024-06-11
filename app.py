@@ -69,6 +69,7 @@ def plot_distribution(data, columns, title):
         sns.histplot(data[column], kde=False, ax=ax)
         ax.set_title(f"{title}: {column}")
         st.pyplot(fig)
+        
 def plot_scatter(data_x, x_param, data_y, y_param, title):
     fig, ax = plt.subplots(figsize=(8, 6))
     ax.scatter(data_x[x_param], data_y[y_param], alpha=0.5, s=10, edgecolor='k')
@@ -89,15 +90,20 @@ def handle_scatter_plot(survey_x, x_data_source, x_param, survey_y, y_data_sourc
     data_x = surveys[survey_x]["data"] if x_data_source == "Original" else gaia_data[survey_x] if x_data_source == "Gaia" else tess_data[survey_x]
     data_y = surveys[survey_y]["data"] if y_data_source == "Original" else gaia_data[survey_y] if y_data_source == "Gaia" else tess_data[survey_y]
 
-    data_x_unique = data_x.drop_duplicates(subset='source_id', keep='first')
-    data_y_unique = data_y.drop_duplicates(subset='source_id', keep='first').set_index('source_id')
+    data_x = data_x.drop_duplicates(subset='source_id', keep='first')
+    data_y = data_y.drop_duplicates(subset='source_id', keep='first')
+    y_param_map = data_y.set_index('source_id')[y_param].to_dict()
 
-    y_param_map = data_y_unique[y_param].to_dict()
-
-    data_x_unique['y_param_mapped'] = data_x_unique['source_id'].map(y_param_map)
-    merged_data = data_x_unique.dropna(subset=['y_param_mapped'])
+    data_x['y_param_mapped'] = data_x['source_id'].map(y_param_map)
     
-    plot_scatter(merged_data, x_param, merged_data['y_param_mapped'], f"Scatter Plot - {survey_x} vs {survey_y} ({x_data_source} vs {y_data_source})")
+    filtered_data_x = data_x.dropna(subset=['y_param_mapped'])
+    filtered_data_y = pd.DataFrame()
+    filtered_data_y[y_param] = filtered_data_x['y_param_mapped']
+    
+    title = f"Scatter Plot - {survey_x} vs {survey_y} ({x_data_source} vs {y_data_source})"
+    
+    plot_scatter(filtered_data_x, x_param, filtered_data_y, y_param, title)
+
 
 
         
