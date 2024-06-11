@@ -76,6 +76,7 @@ def plot_scatter(data_x, x_param, data_y, y_param, title):
     ax.set_ylabel(y_param)
     ax.set_title(title)
     st.pyplot(fig)
+    
 def plot_combined_histogram(data_x, x_param, data_y, y_param, title, x_label, y_label):
     fig, ax = plt.subplots(figsize=(8, 6))
     sns.histplot(data_x[x_param].dropna(), color='blue', kde=False, label=x_label, ax=ax)
@@ -87,14 +88,17 @@ def plot_combined_histogram(data_x, x_param, data_y, y_param, title, x_label, y_
 def handle_scatter_plot(survey_x, x_data_source, x_param, survey_y, y_data_source, y_param):
     data_x = surveys[survey_x]["data"] if x_data_source == "Original" else gaia_data[survey_x] if x_data_source == "Gaia" else tess_data[survey_x]
     data_y = surveys[survey_y]["data"] if y_data_source == "Original" else gaia_data[survey_y] if y_data_source == "Gaia" else tess_data[survey_y]
+
+    data_x_unique = data_x.drop_duplicates(subset='source_id', keep='first')
+    data_y_unique = data_y.drop_duplicates(subset='source_id', keep='first').set_index('source_id')
+
+    y_param_map = data_y_unique[y_param].to_dict()
+
+    data_x_unique['y_param_mapped'] = data_x_unique['source_id'].map(y_param_map)
+    merged_data = data_x_unique.dropna(subset=['y_param_mapped'])
     
-    if survey_x == survey_y and x_data_source == y_data_source and x_param == y_param:
-        plot_scatter(data_x, x_param, data_x, x_param, f"Scatter Plot - {survey_x} (Same Parameter)")
-    else:
-        y_param_map = data_y.set_index('source_id')[y_param].to_dict()
-        data_x['y_param_mapped'] = data_x['source_id'].map(y_param_map)
-        merged_data = data_x.dropna(subset=['y_param_mapped'])
-        plot_scatter(merged_data, x_param, merged_data['y_param_mapped'], f"Scatter Plot - {survey_x} vs {survey_y} ({x_data_source} vs {y_data_source})")
+    plot_scatter(merged_data, x_param, merged_data['y_param_mapped'], f"Scatter Plot - {survey_x} vs {survey_y} ({x_data_source} vs {y_data_source})")
+
 
         
 def perform_statistical_tests(data_x, x_param, data_y, y_param, test_type, auto=True, range_x=None, range_y=None):
