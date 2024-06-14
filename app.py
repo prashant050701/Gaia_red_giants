@@ -1,4 +1,4 @@
-import streamlit as st
+fimport streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -233,12 +233,12 @@ data_y = surveys[survey_y5]["data"] if data_source_y5 == "Original" else gaia_da
 fig = go.Figure()
 fig.add_trace(go.Histogram(
     x=data_x[param_x5], nbinsx=50, name=f"{survey_x5} {data_source_x5}",
-    histnorm='probability density', #will comment this later if count is needed
+    #histnorm='probability density', #will comment this later if count is needed
     marker=dict(line=dict(color='black', width=1))
 ))
 fig.add_trace(go.Histogram(
     x=data_y[param_y5], nbinsx=50, name=f"{survey_y5} {data_source_y5}",
-    histnorm='probability density', #will comment this later if count is needed
+    #histnorm='probability density', #will comment this later if count is needed
     marker=dict(line=dict(color='black', width=1))
 ))
 fig.update_layout(barmode='overlay', title_text='Interactive Distribution Comparison')
