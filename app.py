@@ -207,8 +207,8 @@ if st.button("Plot Combined Histogram"):
     data_y = data_y.drop_duplicates(subset='source_id', keep='first')
     valid_x_count = data_x[x_param4].dropna().shape[0]
     valid_y_count = data_y[y_param4].dropna().shape[0]
-    st.write(f"Total valid entries for {x_param4} from {x_data_source4}: {valid_x_count}")
-    st.write(f"Total valid entries for {y_param4} from {y_data_source4}: {valid_y_count}")
+    st.write(f"Total valid entries for {survey_x4} {x_param4} from {x_data_source4}: {valid_x_count}")
+    st.write(f"Total valid entries for {survey_y4} {y_param4} from {y_data_source4}: {valid_y_count}")
     x_label = survey_x4
     y_label = survey_y4
     plot_combined_histogram(data_x, x_param4, data_y, y_param4, f"Combined Histogram - {survey_x4} vs {survey_y4} ({x_data_source4} vs {y_data_source4})", x_label, y_label)
