@@ -306,7 +306,7 @@ if st.button(f"Perform {test_type} Test on Overlapping Ranges (Auto Mode)", key=
 
 st.header("Section 6: Golden Giants")
 
-golden_sample = ['log_L'] = np.log10(golden_sample['luminosity'])
+golden_sample['log_L'] = np.log10(golden_sample['luminosity'])
 #golden_giant_ptps['log_L'] = np.log10(golden_giant_ptps['luminosity'])
 
 fig = px.scatter(
