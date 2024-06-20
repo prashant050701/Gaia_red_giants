@@ -17,6 +17,11 @@ eapsnet2 = pd.read_csv("database/EAPSNet2_stellar_params_with_gaia_id.csv")
 coralie = pd.read_csv("database/coralie_star_with_gaia_id.csv")
 ptps = pd.read_csv("database/ptps_with_gaia_id.csv")
 
+def load_and_concatenate_csv(directory):
+    all_files = [os.path.join(directory, file) for file in os.listdir(directory) if file.endswith('.csv')]
+    df_list = [pd.read_csv(file) for file in all_files]
+    return pd.concat(df_list, ignore_index=True)
+
 #golden_giant_ptps = pd.read_csv("database/golden_sample/golden_giant_ptps-result.csv")
 golden_sample = load_and_concatenate_csv('database/golden_sample/all/')
 
@@ -52,10 +57,6 @@ surveys = {
     "PTPS": {"data": ptps, "Teff": "Teff", "log_L": "logL", "logg": "logg", "log_conversion": False},
 }
 
-def load_and_concatenate_csv(directory):
-    all_files = [os.path.join(directory, file) for file in os.listdir(directory) if file.endswith('.csv')]
-    df_list = [pd.read_csv(file) for file in all_files]
-    return pd.concat(df_list, ignore_index=True)
     
 def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, use_cmap=True):
     luminosity = np.log10(data[log_l_col]) if log_conversion else data[log_l_col]
