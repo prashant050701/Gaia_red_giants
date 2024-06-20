@@ -7,7 +7,6 @@ from scipy.stats import ks_2samp, mannwhitneyu
 import plotly.express as px
 import plotly.graph_objects as go
 from streamlit_plotly_events import plotly_events
-import os
 
 lick_gk = pd.read_csv("database/lick_GK_survey_with_gaia_id.csv")
 express = pd.read_csv("database/express_post_MS_with_gaia_id.csv")
@@ -18,14 +17,7 @@ eapsnet2 = pd.read_csv("database/EAPSNet2_stellar_params_with_gaia_id.csv")
 coralie = pd.read_csv("database/coralie_star_with_gaia_id.csv")
 ptps = pd.read_csv("database/ptps_with_gaia_id.csv")
 
-def load_and_concatenate_csv(directory):
-    all_files = [os.path.join(directory, file) for file in os.listdir(directory) if file.endswith('.csv')]
-    df_list = [pd.read_csv(file) for file in all_files]
-    return pd.concat(df_list, ignore_index=True)
-
-#golden_giant_ptps = pd.read_csv("database/golden_sample/golden_giant_ptps-result.csv")
-golden_sample = load_and_concatenate_csv('database/golden_sample/all/')
-
+golden_giant_ptps = pd.read_csv("database/golden_sample/golden_giant_ptps-result.csv")
 
 gaia_data = {
     "Lick GK": pd.read_csv("database/lick_gk-result.csv"),
@@ -58,7 +50,6 @@ surveys = {
     "PTPS": {"data": ptps, "Teff": "Teff", "log_L": "logL", "logg": "logg", "log_conversion": False},
 }
 
-    
 def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, use_cmap=True):
     luminosity = np.log10(data[log_l_col]) if log_conversion else data[log_l_col]
     if use_cmap:
@@ -308,11 +299,10 @@ if st.button(f"Perform {test_type} Test on Overlapping Ranges (Auto Mode)", key=
 
 st.header("Section 6: Golden Giants")
 
-golden_sample['log_L'] = np.log10(golden_sample['luminosity'])
-#golden_giant_ptps['log_L'] = np.log10(golden_giant_ptps['luminosity'])
+golden_giant_ptps['log_L'] = np.log10(golden_giant_ptps['luminosity'])
 
 fig = px.scatter(
-    golden_sample,#golden_giant_ptps
+    golden_giant_ptps,
     x='teff',
     y='log_L',
     color='logg',
@@ -321,10 +311,9 @@ fig = px.scatter(
         "log_L": "Logarithm of Luminosity (log L)",
         "logg": "Surface Gravity (logg)"
     },
-    title="HR Diagram of Golden Sample Data",
+    title="HR Diagram of Golden Giant Data",
     color_continuous_scale=px.colors.sequential.Viridis,
-    range_color=[golden_sample['logg'].min(), golden_sample['logg'].max()]
-    #range_color=[golden_giant_ptps['logg'].min(), golden_giant_ptps['logg'].max()]
+    range_color=[golden_giant_ptps['logg'].min(), golden_giant_ptps['logg'].max()]
 )
 
 fig.update_xaxes(autorange="reversed")
@@ -337,7 +326,7 @@ data_source_6 = st.radio("Select Data Source for First Dataset", ["Original", "G
 param_6 = st.selectbox(
     "Select Parameter for First Dataset", surveys[survey_6]["data"].columns if data_source_6 == "Original" else gaia_data[survey_6].columns if data_source_6 == "Gaia" else tess_data[survey_6].columns, key="param_6")
 
-param_golden = st.selectbox("Select Parameter from Golden Giant Data", golden_sample.columns, key="param_golden") #golden_giants
+param_golden = st.selectbox("Select Parameter from Golden Giant Data", golden_giant_ptps.columns, key="param_golden")
 
 data_6 = surveys[survey_6]["data"] if data_source_6 == "Original" else gaia_data[survey_6] if data_source_6 == "Gaia" else tess_data[survey_6]
 
@@ -349,7 +338,7 @@ fig.add_trace(go.Histogram(
     marker=dict(color='blue', line=dict(color='black', width=1))
 ))
 fig.add_trace(go.Histogram(
-    x=golden_sample[param_golden], nbinsx=50, name="Golden Giant - {param_golden}",
+    x=golden_giant_ptps[param_golden], nbinsx=50, name="Golden Giant - {param_golden}",
     histnorm='probability density', #will comment this later if count is needed
     marker=dict(color='red', line=dict(color='black', width=1))
 ))
@@ -357,7 +346,7 @@ fig.update_layout(
     barmode='overlay',
     title_text='Interactive Distribution Comparison - Section 6',
     xaxis_title_text='Value',
-    yaxis_title_text='Density', #put count
+    yaxis_title_text='Count',
 )
 fig.update_traces(opacity=0.6)
 st.plotly_chart(fig, use_container_width=True)
@@ -368,14 +357,14 @@ data_6 = surveys[survey_6]["data"] if data_source_6 == "Original" else gaia_data
 manual_selection_6 = st.checkbox("Manual Range Selection", key="manual_selection_6")
 
 if manual_selection_6:
-    if is_numeric(data_6[param_6]) and is_numeric(golden_sample[param_golden]):
+    if is_numeric(data_6[param_6]) and is_numeric(golden_giant_ptps[param_golden]):
         min_x6, max_x6 = float(data_6[param_6].min()), float(data_6[param_6].max())
-        min_y6, max_y6 = float(golden_sample[param_golden].min()), float(golden_sample[param_golden].max())
+        min_y6, max_y6 = float(golden_giant_ptps[param_golden].min()), float(golden_giant_ptps[param_golden].max())
         range_x6 = st.slider("Select Range for First Dataset", min_x6, max_x6, (min_x6, max_x6), key="range_x6")
-        range_y6 = st.slider("Select Range for Golden Sample Dataset", min_y6, max_y6, (min_y6, max_y6), key="range_y6")
+        range_y6 = st.slider("Select Range for Golden Giant Dataset", min_y6, max_y6, (min_y6, max_y6), key="range_y6")
 
         if st.button(f"Perform {test_type_6} Test on Selected Ranges", key="perform_test_section6"):
-            stat_6, message_6 = perform_statistical_tests(data_6, param_6, golden_sample, param_golden, test_type_6, auto=False, range_x=range_x6, range_y=range_y6)
+            stat_6, message_6 = perform_statistical_tests(data_6, param_6, golden_giant_ptps, param_golden, test_type_6, auto=False, range_x=range_x6, range_y=range_y6)
             if stat_6 is not None:
                 st.write(f"{test_type_6} Statistic: {stat_6:.4f}, P-value: {message_6:.4f}")
             else:
@@ -384,7 +373,7 @@ if manual_selection_6:
         st.error("Selected parameters must be numeric to perform the selected statistical test and select ranges.")
 
 if st.button(f"Perform {test_type_6} Test on Overlapping Ranges (Auto Mode)", key="auto_test_section6"):
-    stat_6, message_6 = perform_statistical_tests(data_6, param_6, golden_sample, param_golden, test_type_6)
+    stat_6, message_6 = perform_statistical_tests(data_6, param_6, golden_giant_ptps, param_golden, test_type_6)
     if stat_6 is not None:
         st.write(f"{test_type_6} Statistic: {stat_6:.4f}, P-value: {message_6:.4f}")
     else:
