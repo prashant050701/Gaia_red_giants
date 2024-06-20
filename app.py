@@ -7,6 +7,7 @@ from scipy.stats import ks_2samp, mannwhitneyu
 import plotly.express as px
 import plotly.graph_objects as go
 from streamlit_plotly_events import plotly_events
+import os
 
 lick_gk = pd.read_csv("database/lick_GK_survey_with_gaia_id.csv")
 express = pd.read_csv("database/express_post_MS_with_gaia_id.csv")
