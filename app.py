@@ -29,7 +29,7 @@ gaia_data = {
     "EAPSNet 2": pd.read_csv("database/eapsnet2-result.csv"),
     "Coralie": pd.read_csv("database/coralie-result.csv"),
     "PTPS": pd.read_csv("database/ptps-result.csv"),
-    "Keck HIRES" pd.read_csv("database/keck_hires-result.csv")
+    "Keck HIRES": pd.read_csv("database/keck_hires-result.csv")
 }
 tess_data = {
     "Lick GK": pd.read_csv("database/TESS/lick_gk_unique_tic.csv"),
