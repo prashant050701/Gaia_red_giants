@@ -16,6 +16,7 @@ eapsnet3 = pd.read_csv("database/EAPSNet3_stellar_params_with_gaia_id.csv")
 eapsnet2 = pd.read_csv("database/EAPSNet2_stellar_params_with_gaia_id.csv")
 coralie = pd.read_csv("database/coralie_star_with_gaia_id.csv")
 ptps = pd.read_csv("database/ptps_with_gaia_id.csv")
+keck = pd.read_csv("database/keck_hires_with_gaia_id.csv")
 
 golden_giant_ptps = pd.read_csv("database/golden_sample/golden_giant_ptps-result.csv")
 
@@ -28,6 +29,7 @@ gaia_data = {
     "EAPSNet 2": pd.read_csv("database/eapsnet2-result.csv"),
     "Coralie": pd.read_csv("database/coralie-result.csv"),
     "PTPS": pd.read_csv("database/ptps-result.csv"),
+    "Keck HIRES" pd.read_csv("database/keck_hires-result.csv")
 }
 tess_data = {
     "Lick GK": pd.read_csv("database/TESS/lick_gk_unique_tic.csv"),
@@ -38,6 +40,7 @@ tess_data = {
     "EAPSNet 2": pd.read_csv("database/TESS/eapsnet2_tic.csv"),
     "Coralie": pd.read_csv("database/TESS/coralie_tic.csv"),
     "PTPS": pd.read_csv("database/TESS/ptps_tic.csv"),
+    "Keck HIRES": pd.read_csv("database/TESS/keck_hires_tic.csv")
 }
 surveys = {
     "Lick GK": {"data": lick_gk, "Teff": "Teff", "log_L": "L*", "logg": "logg", "log_conversion": True},
@@ -48,6 +51,7 @@ surveys = {
     "EAPSNet 2": {"data": eapsnet2, "Teff": "T_eff", "log_L": "log_L", "logg": "log_g", "log_conversion": False},
     "Coralie": {"data": coralie, "Teff": "Teff", "log_L": "Lum", "logg": "logg", "log_conversion": True},
     "PTPS": {"data": ptps, "Teff": "Teff", "log_L": "logL", "logg": "logg", "log_conversion": False},
+    "Keck HIRES": {"data": keck, "Teff": "Teff", "log_L": "log_L", "logg": "log(g)", "log_conversion": False}
 }
 
 def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, use_cmap=True):
@@ -346,7 +350,7 @@ fig.update_layout(
     barmode='overlay',
     title_text='Interactive Distribution Comparison - Section 6',
     xaxis_title_text='Value',
-    yaxis_title_text='Count',
+    yaxis_title_text='Density', #count
 )
 fig.update_traces(opacity=0.6)
 st.plotly_chart(fig, use_container_width=True)
