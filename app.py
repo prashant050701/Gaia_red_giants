@@ -78,10 +78,10 @@ def plot_distribution(data, columns, title):
             if is_numeric(valid_data):
                 min_val = valid_data.min()
                 max_val = valid_data.max()
-                mean_val = valid_data.mean()
+                median_val = valid_data.median()
                 std_val = valid_data.std()
 
-                stats_text = f"Min: {min_val:.3f}, Max: {max_val:.3f}, Mean: {mean_val:.4f}, Sigma: {std_val:.4f}"
+                stats_text = f"Min: {min_val:.3f}, Max: {max_val:.3f}, Median: {median_val:.4f}, Sigma: {std_val:.4f}"
                 ax.annotate(stats_text, xy=(0.5, -0.1), xycoords='axes fraction', ha='center', va='top')
             else:
                 ax.annotate("Selected data is non-numeric", xy=(0.5, -0.1), xycoords='axes fraction', ha='center', va='top')
@@ -108,8 +108,8 @@ def plot_combined_histogram(data_x, x_param, data_y, y_param, title, x_label, y_
         x_stats = data_x[x_param].dropna()
         y_stats = data_y[y_param].dropna()
         if is_numeric(x_stats) and is_numeric(y_stats):
-            stats_x = f"{x_label} - Min: {x_stats.min():.3f}, Max: {x_stats.max():.3f}, Mean: {x_stats.mean():.4f}, Sigma: {x_stats.std():.4f}"
-            stats_y = f"{y_label} - Min: {y_stats.min():.3f}, Max: {y_stats.max():.3f}, Mean: {y_stats.mean():.4f}, Sigma: {y_stats.std():.4f}"
+            stats_x = f"{x_label} - Min: {x_stats.min():.3f}, Max: {x_stats.max():.3f}, Median: {x_stats.median():.4f}, Sigma: {x_stats.std():.4f}"
+            stats_y = f"{y_label} - Min: {y_stats.min():.3f}, Max: {y_stats.max():.3f}, Median: {y_stats.median():.4f}, Sigma: {y_stats.std():.4f}"
             st.write(stats_x)
             st.write(stats_y)
         else:
