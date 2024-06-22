@@ -102,13 +102,6 @@ def main():
     column_to_plot = st.selectbox("Select Column for Histogram", numeric_columns)
     hist_figure = plot_histogram(filtered_data, column_to_plot)
     st.pyplot(hist_figure)
-
-    st.sidebar.subheader("Section 2: Planetary 2D Histogram Settings")
-    parameter1, parameter2, bin_edges_param1, bin_edges_param2 = section2_settings(data, "2")
-    filtered_data = filter_data(data.copy(), "2")
-    st.header("Section 2: Planetary 2D Histogram")
-    occurrence_figure = plot_occurrence_rates(filtered_data, parameter1, parameter2, bin_edges_param1, bin_edges_param2, normalize=False)
-    st.pyplot(occurrence_figure)
     column_data = filtered_data[column_to_plot].dropna()
     range_of_data = f"{column_data.min()} - {column_data.max()}"
     median_of_data = column_data.median()
@@ -118,6 +111,14 @@ def main():
     st.write(f"Range of the {column_to_plot}: {range_of_data}")
     st.write(f"Median of the {column_to_plot}: {median_of_data}")
     st.write(f"Standard Deviation (Dispersion) of the {column_to_plot}: {std_deviation}")
+    
+
+    st.sidebar.subheader("Section 2: Planetary 2D Histogram Settings")
+    parameter1, parameter2, bin_edges_param1, bin_edges_param2 = section2_settings(data, "2")
+    filtered_data = filter_data(data.copy(), "2")
+    st.header("Section 2: Planetary 2D Histogram")
+    occurrence_figure = plot_occurrence_rates(filtered_data, parameter1, parameter2, bin_edges_param1, bin_edges_param2, normalize=False)
+    st.pyplot(occurrence_figure)
 
     
     st.header("Section 3: Advanced Occurrence Rate")
