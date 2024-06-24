@@ -169,12 +169,12 @@ def main():
         total_gg = len(filtered_data_gg)
         n_ps_norm = n_ps_counts / total_ps
         n_g_norm = n_g_counts / total_gg
-        eta = np.divide(n_ps_norm, n_g_norm, out=np.zeros_like(n_ps_norm), where=n_g_norm != 0)
+        eta = np.divide(n_ps_norm, n_g_norm, out=np.full_like(n_ps_norm, np.inf), where=n_g_norm != 0)
 
         fig, ax = plt.subplots()
         for i in range(bins):
             for j in range(bins):
-                eta_val = eta[i, j] if not np.isnan(eta[i, j]) else inf
+                eta_val = eta[i, j] if not np.isnan(eta[i, j]) else 0
                 x_center = (xedges[j] + xedges[j + 1]) / 2
                 y_center = (yedges[i] + yedges[i + 1]) / 2
                 ax.text(x_center, y_center,
