@@ -174,7 +174,7 @@ def main():
         fig, ax = plt.subplots()
         for i in range(bins):
             for j in range(bins):
-                eta_val = eta[i, j] if not np.isnan(eta[i, j]) else 0
+                eta_val = eta[i, j] if not np.isnan(eta[i, j]) else inf
                 x_center = (xedges[j] + xedges[j + 1]) / 2
                 y_center = (yedges[i] + yedges[i + 1]) / 2
                 ax.text(x_center, y_center,
