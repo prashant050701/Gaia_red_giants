@@ -145,8 +145,10 @@ def main():
         (data1_ps, data2_ps), filtered_data_ps = prepare_data(data_ps, col1_ps, scale1, col2_ps, scale2)
         (data1_gg, data2_gg), filtered_data_gg = prepare_data(data_gg, col1_gg, scale1_gg, col2_gg, scale2_gg)
 
-        xedges = np.linspace(min(data1_ps.min(), data1_gg.min()), max(data1_ps.max(), data1_gg.max()), bins + 1)
-        yedges = np.linspace(min(data2_ps.min(), data2_gg.min()), max(data2_ps.max(), data2_gg.max()), bins + 1)
+        #xedges = np.linspace(min(data1_ps.min(), data1_gg.min()), max(data1_ps.max(), data1_gg.max()), bins + 1)
+        xedges = np.linspace(data1_ps.min(), data1_ps.max(), bins + 1)
+        #yedges = np.linspace(min(data2_ps.min(), data2_gg.min()), max(data2_ps.max(), data2_gg.max()), bins + 1)
+        yedges = np.linspace(data2_ps.min(), data2_ps.max(), bins + 1)
 
         n_ps_counts = np.zeros((bins, bins))
         n_g_counts = np.zeros((bins, bins))
