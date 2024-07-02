@@ -8,7 +8,7 @@ import seaborn as sns
 def load_all_data():
     data = pd.read_csv('database/updated_exoplanet_data.csv')
     data_ps = pd.read_csv('database/updated_exoplanet_data.csv')
-    data_gg = pd.read_csv('database/golden_sample/golden_giant_ptps-modified.csv')
+    data_gg = pd.read_csv('database/golden_sample/golden_giant_ptps-result.csv')
     return data, data_ps, data_gg
 
 def filter_data(df, section):
