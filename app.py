@@ -204,9 +204,9 @@ if plot_original or plot_gaia or plot_tess:
 
     
 survey2 = st.selectbox("Select Survey", ["All Surveys"] + list(surveys.keys()), key="survey2")
-plot_original2 = st.checkbox("Original Survey")
-plot_gaia2 = st.checkbox("Gaia")
-plot_tess2 = st.checkbox("TESS")
+plot_original2 = st.checkbox("Original Survey Distrubution")
+plot_gaia2 = st.checkbox("Gaia Distribution")
+plot_tess2 = st.checkbox("TESS Distribution")
 columns2 = st.multiselect("Select Parameters to Plot",
                           surveys[survey2]["data"].columns if plot_original2 else gaia_data[survey2].columns if plot_gaia2 else tess_data[survey2].columns)
 
