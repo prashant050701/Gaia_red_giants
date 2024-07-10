@@ -170,26 +170,33 @@ def is_numeric(series):
     
 st.title("Planetary Survey Data Analysis")
 st.header("Section 1: HR Diagram")
-survey1 = st.selectbox("Select Survey", list(surveys.keys()), key="survey1")
+survey1 = st.selectbox("Select Survey", ["All Surveys"] + list(surveys.keys()), key="survey1")
 plot_original = st.checkbox("Plot HR Diagram from Original Survey")
 plot_gaia = st.checkbox("Plot HR Diagram from Gaia")
 plot_tess = st.checkbox("Plot HR Diagram from TESS")
-if plot_original or plot_gaia:
-    #col1, col2 = st.columns(2)
-    if plot_original:
-       # with col1:
-        data_info = surveys[survey1]
-        plot_hr_diagram(data_info["data"], data_info["Teff"], data_info["log_L"], data_info["logg"],
-                        f"HR Diagram - {survey1} (Original Survey)", data_info["log_conversion"])
-    if plot_gaia:
-        #with col2:
-        gaia = gaia_data[survey1]
-        plot_hr_diagram(gaia, "effective_temperature", "luminosity", "surface_gravity",
-                        f"HR Diagram - {survey1} (Gaia Data)", True)
-if plot_tess:
-    st.header("TESS HR Diagram")
-    tess = tess_data[survey1]
-    plot_hr_diagram(tess, "Teff", "GAIAmag", "logg", f"HR Diagram - {survey1} (TESS Data)", False, use_cmap=False)
+
+if plot_original or plot_gaia or plot_tess:
+    if survey1 == "All Surveys":
+        if plot_original:
+            all_data = pd.read_csv("database/all_planetary_survey_original.csv")
+            plot_hr_diagram(all_data, "Teff", "Lum", "logg", "HR Diagram - All Surveys (Original Data)", True)
+        if plot_gaia or plot_tess:
+            combined_gaia_tess = pd.concat([gaia_data[key] for key in gaia_data] + [tess_data[key] for key in tess_data])
+            plot_hr_diagram(combined_gaia_tess, "effective_temperature", "luminosity", "surface_gravity",
+                            "HR Diagram - All Surveys (Combined Gaia/TESS Data)", True)
+    else:
+        if plot_original:
+            data_info = surveys[survey1]
+            plot_hr_diagram(data_info["data"], data_info["Teff"], data_info["log_L"], data_info["logg"],
+                            f"HR Diagram - {survey1} (Original Survey)", data_info["log_conversion"])
+        if plot_gaia:
+            gaia = gaia_data[survey1]
+            plot_hr_diagram(gaia, "effective_temperature", "luminosity", "surface_gravity",
+                            f"HR Diagram - {survey1} (Gaia Data)", True)
+        if plot_tess:
+            tess = tess_data[survey1]
+            plot_hr_diagram(tess, "Teff", "GAIAmag", "logg", f"HR Diagram - {survey1} (TESS Data)", False, use_cmap=False)
+
     
 st.header("Section 2: Distribution Plots")
 survey2 = st.selectbox("Select Survey", list(surveys.keys()), key="survey2")
