@@ -203,14 +203,7 @@ if plot_original or plot_gaia or plot_tess:
             plot_hr_diagram(tess, "Teff", "GAIAmag", "logg", f"HR Diagram - {survey1} (TESS Data)", False, use_cmap=False)
 
 st.header("Section 2: Distribution Plots")
-survey2 = st.selectbox("Select Survey", ["All Surveys"] + list(surveys.keys()), key="survey2")
-plot_original2 = st.checkbox("Original Survey Distrubution")
-plot_gaia2 = st.checkbox("Gaia Distribution")
-plot_tess2 = st.checkbox("TESS Distribution")
-columns2 = st.multiselect("Select Parameters to Plot",
-                          surveys[survey2]["data"].columns if plot_original2 else gaia_data[survey2].columns if plot_gaia2 else tess_data[survey2].columns)
 
-if st.button("Plot Distributions"):
 survey2 = st.selectbox("Select Survey", ["All Surveys"] + list(surveys.keys()), key="survey2")
 plot_original2 = st.checkbox("Plot Distributions from Original Survey")
 plot_gaia2 = st.checkbox("Plot Distributions from Gaia")
@@ -258,8 +251,6 @@ if st.button("Plot Distributions"):
         if plot_tess2:
             tess = tess_data[survey2]
             plot_distribution(tess, selected_columns, f"Distributions - {survey2} (TESS Data)")
-
-
 
     
 st.header("Section 3: Scatter Plots")
