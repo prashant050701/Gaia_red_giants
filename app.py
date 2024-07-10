@@ -202,7 +202,7 @@ if plot_original or plot_gaia or plot_tess:
             tess = tess_data[survey1]
             plot_hr_diagram(tess, "Teff", "GAIAmag", "logg", f"HR Diagram - {survey1} (TESS Data)", False, use_cmap=False)
 
-    
+st.header("Section 2: Distribution Plots")
 survey2 = st.selectbox("Select Survey", ["All Surveys"] + list(surveys.keys()), key="survey2")
 plot_original2 = st.checkbox("Original Survey Distrubution")
 plot_gaia2 = st.checkbox("Gaia Distribution")
@@ -211,25 +211,54 @@ columns2 = st.multiselect("Select Parameters to Plot",
                           surveys[survey2]["data"].columns if plot_original2 else gaia_data[survey2].columns if plot_gaia2 else tess_data[survey2].columns)
 
 if st.button("Plot Distributions"):
+survey2 = st.selectbox("Select Survey", ["All Surveys"] + list(surveys.keys()), key="survey2")
+plot_original2 = st.checkbox("Plot Distributions from Original Survey")
+plot_gaia2 = st.checkbox("Plot Distributions from Gaia")
+plot_tess2 = st.checkbox("Plot Distributions from TESS")
+
+columns2 = []
+if survey2 == "All Surveys":
+    if plot_original2:
+        all_data = pd.read_csv("database/all_planetary_survey_original.csv")
+        columns2 = all_data.columns
+    elif plot_gaia2:
+        combined_gaia = pd.concat([gaia_data[key] for key in gaia_data])
+        columns2 = combined_gaia.columns
+    elif plot_tess2:
+        combined_tess = pd.concat([tess_data[key] for key in tess_data])
+        columns2 = combined_tess.columns
+else:
+    if plot_original2:
+        columns2 = surveys[survey2]["data"].columns
+    elif plot_gaia2:
+        columns2 = gaia_data[survey2].columns
+    elif plot_tess2:
+        columns2 = tess_data[survey2].columns
+
+selected_columns = st.multiselect("Select Parameters to Plot", columns2)
+
+if st.button("Plot Distributions"):
     if survey2 == "All Surveys":
         if plot_original2:
-            plot_distribution(all_data, columns2, f"Distributions - All Surveys (Original Data)")
+            all_data = pd.read_csv("database/all_planetary_survey_original.csv")
+            plot_distribution(all_data, selected_columns, f"Distributions - All Surveys (Original Data)")
         if plot_gaia2:
             combined_gaia = pd.concat([gaia_data[key] for key in gaia_data])
-            plot_distribution(combined_gaia, columns2, f"Distributions - All Surveys (Gaia Data)")
+            plot_distribution(combined_gaia, selected_columns, f"Distributions - All Surveys (Gaia Data)")
         if plot_tess2:
             combined_tess = pd.concat([tess_data[key] for key in tess_data])
-            plot_distribution(combined_tess, columns2, f"Distributions - All Surveys (TESS Data)")
+            plot_distribution(combined_tess, selected_columns, f"Distributions - All Surveys (TESS Data)")
     else:
         if plot_original2:
             data_info = surveys[survey2]
-            plot_distribution(data_info["data"], columns2, f"Distributions - {survey2} (Original Survey)")
+            plot_distribution(data_info["data"], selected_columns, f"Distributions - {survey2} (Original Survey)")
         if plot_gaia2:
             gaia = gaia_data[survey2]
-            plot_distribution(gaia, columns2, f"Distributions - {survey2} (Gaia Data)")
+            plot_distribution(gaia, selected_columns, f"Distributions - {survey2} (Gaia Data)")
         if plot_tess2:
             tess = tess_data[survey2]
-            plot_distribution(tess, columns2, f"Distributions - {survey2} (TESS Data)")
+            plot_distribution(tess, selected_columns, f"Distributions - {survey2} (TESS Data)")
+
 
 
     
