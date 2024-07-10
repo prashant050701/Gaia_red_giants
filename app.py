@@ -20,6 +20,8 @@ keck = pd.read_csv("database/keck_hires_with_gaia_id.csv")
 
 golden_giant_ptps = pd.read_csv("database/golden_sample/golden_giant_ptps-result.csv")
 
+all_data = pd.read_csv("database/all_planetary_survey_original.csv")
+
 gaia_data = {
     "Lick GK": pd.read_csv("database/lick_gk-result.csv"),
     "Express": pd.read_csv("database/express-result.csv"),
@@ -171,19 +173,22 @@ def is_numeric(series):
 st.title("Planetary Survey Data Analysis")
 st.header("Section 1: HR Diagram")
 survey1 = st.selectbox("Select Survey", ["All Surveys"] + list(surveys.keys()), key="survey1")
-plot_original = st.checkbox("Plot HR Diagram from Original Survey")
-plot_gaia = st.checkbox("Plot HR Diagram from Gaia")
-plot_tess = st.checkbox("Plot HR Diagram from TESS")
+plot_original = st.checkbox("Original Survey")
+plot_gaia = st.checkbox("Gaia")
+plot_tess = st.checkbox("TESS")
 
 if plot_original or plot_gaia or plot_tess:
     if survey1 == "All Surveys":
         if plot_original:
-            all_data = pd.read_csv("database/all_planetary_survey_original.csv")
             plot_hr_diagram(all_data, "Teff", "Lum", "logg", "HR Diagram - All Surveys (Original Data)", True)
-        if plot_gaia or plot_tess:
-            combined_gaia_tess = pd.concat([gaia_data[key] for key in gaia_data] + [tess_data[key] for key in tess_data])
-            plot_hr_diagram(combined_gaia_tess, "effective_temperature", "luminosity", "surface_gravity",
-                            "HR Diagram - All Surveys (Combined Gaia/TESS Data)", True)
+        if plot_gaia:
+            combined_gaia = pd.concat([gaia_data[key] for key in gaia_data])
+            plot_hr_diagram(combined_gaia, "effective_temperature", "luminosity", "surface_gravity",
+                            "HR Diagram - All Surveys (Gaia Data)", True)
+        if plot_tess:
+            combined_tess = pd.concat([tess_data[key] for key in tess_data])
+            plot_hr_diagram(combined_tess, "Teff", "GAIAmag", "logg", "HR Diagram - All Surveys (TESS Data)", False, use_cmap=False)
+   
     else:
         if plot_original:
             data_info = surveys[survey1]
@@ -198,14 +203,35 @@ if plot_original or plot_gaia or plot_tess:
             plot_hr_diagram(tess, "Teff", "GAIAmag", "logg", f"HR Diagram - {survey1} (TESS Data)", False, use_cmap=False)
 
     
-st.header("Section 2: Distribution Plots")
-survey2 = st.selectbox("Select Survey", list(surveys.keys()), key="survey2")
-data_source2 = st.radio("Select Data Source", ["Original", "Gaia", "TESS"], key="data_source2")
+survey2 = st.selectbox("Select Survey", ["All Surveys"] + list(surveys.keys()), key="survey2")
+plot_original2 = st.checkbox("Original Survey")
+plot_gaia2 = st.checkbox("Gaia")
+plot_tess2 = st.checkbox("TESS")
 columns2 = st.multiselect("Select Parameters to Plot",
-                          surveys[survey2]["data"].columns if data_source2 == "Original" else gaia_data[survey2].columns if data_source2 == "Gaia" else tess_data[survey2].columns)
+                          surveys[survey2]["data"].columns if plot_original2 else gaia_data[survey2].columns if plot_gaia2 else tess_data[survey2].columns)
+
 if st.button("Plot Distributions"):
-    data = surveys[survey2]["data"] if data_source2 == "Original" else gaia_data[survey2] if data_source2 == "Gaia" else tess_data[survey2]
-    plot_distribution(data, columns2, f"Distributions - {survey2} ({data_source2} Data)")
+    if survey2 == "All Surveys":
+        if plot_original2:
+            plot_distribution(all_data, columns2, f"Distributions - All Surveys (Original Data)")
+        if plot_gaia2:
+            combined_gaia = pd.concat([gaia_data[key] for key in gaia_data])
+            plot_distribution(combined_gaia, columns2, f"Distributions - All Surveys (Gaia Data)")
+        if plot_tess2:
+            combined_tess = pd.concat([tess_data[key] for key in tess_data])
+            plot_distribution(combined_tess, columns2, f"Distributions - All Surveys (TESS Data)")
+    else:
+        if plot_original2:
+            data_info = surveys[survey2]
+            plot_distribution(data_info["data"], columns2, f"Distributions - {survey2} (Original Survey)")
+        if plot_gaia2:
+            gaia = gaia_data[survey2]
+            plot_distribution(gaia, columns2, f"Distributions - {survey2} (Gaia Data)")
+        if plot_tess2:
+            tess = tess_data[survey2]
+            plot_distribution(tess, columns2, f"Distributions - {survey2} (TESS Data)")
+
+
     
 st.header("Section 3: Scatter Plots")
 st.subheader("X-Axis Configuration")
