@@ -5,10 +5,23 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 @st.cache_data
+
+def load_combine_csv_files():
+    parameters = ['radius', 'logg', 'luminosity', 'mass', 'parallax', 'teff', 'metallicity']
+    data_dict = {}
+    for param in parameters:
+        file_1 = pd.read_csv(f"database/golden_sample/{param}_1.csv")
+        file_2 = pd.read_csv(f"database/golden_sample/{param}_2.csv")
+        combined_data = pd.concat([file_1, file_2], ignore_index=True)
+        data_dict[param] = combined_data
+    golden_sample = pd.concat(data_dict.values(), axis=1)
+    return golden_sample
+
 def load_all_data():
     data = pd.read_csv('database/updated_exoplanet_data.csv')
     data_ps = pd.read_csv('database/updated_exoplanet_data.csv')
-    data_gg = pd.read_csv('database/golden_sample/golden_giant_ptps-result.csv')
+    #data_gg = pd.read_csv('database/golden_sample/golden_giant_ptps-result.csv')
+    data_gg = load_combine_csv_files()
     return data, data_ps, data_gg
 
 def filter_data(df, section):
