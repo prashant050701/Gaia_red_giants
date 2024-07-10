@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-@st.cache_data
+#@st.cache_data
 
 def load_combine_csv_files():
     parameters = ['radius', 'logg', 'luminosity', 'mass', 'parallax', 'teff', 'metallicity']
