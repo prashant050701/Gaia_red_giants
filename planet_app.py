@@ -84,8 +84,8 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
 
     # Customizing tick positions and labels
     # Set the ticks to be at the edges of the bins
-    ax.set_xticks(np.arange(len(bin_edges_param2) + 1) - 0.5, minor=True)
-    ax.set_yticks(np.arange(len(bin_edges_param1) + 1) - 0.5, minor=True)
+    ax.set_xticks(np.arange(len(bin_edges_param2)) - 0.5, minor=True)
+    ax.set_yticks(np.arange(len(bin_edges_param1)) - 0.5, minor=True)
     ax.set_xticklabels(np.round(bin_edges_param2, 2), minor=True)
     ax.set_yticklabels(np.round(bin_edges_param1, 2), minor=True)
 
