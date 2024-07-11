@@ -79,16 +79,22 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
         occurrence_rates /= np.outer(param1_bin_sizes, param2_bin_sizes)
 
     fig, ax = plt.subplots(figsize=(10, 8))
-    c = ax.pcolormesh(bin_edges_param2, bin_edges_param1, occurrence_rates.T, cmap='viridis', shading='flat')
+    c = ax.pcolormesh(bin_edges_param2, bin_edges_param1, occurrence_rates.T, cmap='viridis', shading='flat', edgecolor='black', linewidth=0.5)
+    
     fig.colorbar(c, ax=ax)
+
+    for i in range(len(bin_edges_param1) - 1):
+        for j in range(len(bin_edges_param2) - 1):
+            ax.text((bin_edges_param2[j] + bin_edges_param2[j+1]) / 2, (bin_edges_param1[i] + bin_edges_param1[i+1]) / 2, 
+                    f'{occurrence_rates[i, j]:.2f}',
+                    ha='center', va='center', fontsize=8)
 
     ax.set_xticks(bin_edges_param2)
     ax.set_yticks(bin_edges_param1)
-
     ax.set_xticklabels(np.round(bin_edges_param2, 2))
     ax.set_yticklabels(np.round(bin_edges_param1, 2))
 
-    ax.invert_yaxis()
+    #ax.invert_yaxis()
     ax.set_xlabel(param2)
     ax.set_ylabel(param1)
     ax.set_title('Normalized Planet Occurrence Rates' if normalize else 'Planet Occurrence Rates')
