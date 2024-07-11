@@ -79,8 +79,8 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
         occurrence_rates /= np.outer(param1_bin_sizes, param2_bin_sizes)
 
     fig, ax = plt.subplots(figsize=(10, 8))
-    c = ax.pcolormesh(bin_edges_param2, bin_edges_param1, occurrence_rates.T, cmap='viridis_r', shading='flat', edgecolor='black', linewidth=0.5)
-    
+    ax.pcolormesh(bin_edges_param2, bin_edges_param1, occurrence_rates.T, cmap='Greys', alpha=0, edgecolor='black', linewidth=1)
+
     fig.colorbar(c, ax=ax)
 
     for i in range(len(bin_edges_param1) - 1):
@@ -88,8 +88,8 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
             percentage_value = occurrence_rates[i, j] * 100
             ax.text((bin_edges_param2[j] + bin_edges_param2[j+1]) / 2, (bin_edges_param1[i] + bin_edges_param1[i+1]) / 2, 
                     f'{percentage_value:.4f}%',
-                    color='white',
-                    ha='center', va='center', fontsize=10)
+                     color='black', ha='center', va='center', fontsize=10, fontweight='bold')
+
 
     ax.set_xticks(bin_edges_param2)
     ax.set_yticks(bin_edges_param1)
