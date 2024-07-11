@@ -64,30 +64,30 @@ def plot_histogram(data, column):
     return fig
 
 def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2, normalize=False):
+    
     filtered_data = df[[param1, param2]].dropna()
-    counts, xedges, yedges = np.histogram2d(filtered_data[param1], filtered_data[param2],
-                                            bins=[bin_edges_param1, bin_edges_param2])
+    counts, xedges, yedges = np.histogram2d(filtered_data[param1], filtered_data[param2], bins=[bin_edges_param1, bin_edges_param2])
 
-    #total_planets = len(filtered_data) It should come from all the stars in the Planetary Surveys, not just the ones that have planets
-    total_stars = 2950 # number of stars in all the planetary surveys
-
-    occurrence_rates = counts / total_stars
+    total_stars = 2950 
+    occurrence_rates = counts / total stars
 
     if normalize:
         param1_bin_sizes = np.diff(bin_edges_param1)
         param2_bin_sizes = np.diff(bin_edges_param2)
         occurrence_rates /= np.outer(param1_bin_sizes, param2_bin_sizes)
+        
+    occurrence_rates *= 100
 
     fig, ax = plt.subplots(figsize=(10, 8))
-    ax.pcolormesh(bin_edges_param2, bin_edges_param1, occurrence_rates.T, cmap='Greys', alpha=0, edgecolor='black', linewidth=1.5)
-    
+    mesh = ax.pcolormesh(bin_edges_param2, bin_edges_param1, occurrence_rates.T, cmap='Greys', edgecolor='black', linewidth=1)
+    mesh.set_facecolor("none")
+
     for i in range(len(bin_edges_param1) - 1):
         for j in range(len(bin_edges_param2) - 1):
-            percentage_value = occurrence_rates[i, j] * 100
+            percentage_value = occurrence_rates[i, j]
             ax.text((bin_edges_param2[j] + bin_edges_param2[j+1]) / 2, (bin_edges_param1[i] + bin_edges_param1[i+1]) / 2, 
                     f'{percentage_value:.4f}%',
-                     color='black', ha='center', va='center', fontsize=10)
-
+                    color='black', ha='center', va='center', fontsize=10)
 
     ax.set_xticks(bin_edges_param2)
     ax.set_yticks(bin_edges_param1)
