@@ -69,7 +69,7 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
     counts, xedges, yedges = np.histogram2d(filtered_data[param1], filtered_data[param2], bins=[bin_edges_param1, bin_edges_param2])
 
     total_stars = 2950 
-    occurrence_rates = counts / total stars
+    occurrence_rates = counts / total_stars
 
     if normalize:
         param1_bin_sizes = np.diff(bin_edges_param1)
