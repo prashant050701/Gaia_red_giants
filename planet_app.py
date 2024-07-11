@@ -81,11 +81,13 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
     fig, ax = plt.subplots(figsize=(10, 8))
 
     sns.heatmap(occurrence_rates, annot=True, cmap='viridis', ax=ax)
-    
-    half_bin_width_x = np.diff(bin_edges_param2) / 2
-    half_bin_width_y = np.diff(bin_edges_param1) / 2
-    ax.set_xticks(np.arange(len(bin_edges_param2)) - 0.5 + half_bin_width_x)
-    ax.set_yticks(np.arange(len(bin_edges_param1)) - 0.5 + half_bin_width_y)
+
+
+    x_ticks_positions = np.arange(len(bin_edges_param2) - 1) + half_bin_width_x
+    y_ticks_positions = np.arange(len(bin_edges_param1) - 1) + half_bin_width_y
+
+    ax.set_xticks(x_ticks_positions)
+    ax.set_yticks(y_ticks_positions)
 
     ax.set_xticklabels(["{:.2f}".format(edge) for edge in bin_edges_param2[:-1]])
     ax.set_yticklabels(["{:.2f}".format(edge) for edge in bin_edges_param1[:-1]])
