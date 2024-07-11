@@ -4,8 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-#@st.cache_data
-
+#@st.cache
 def load_combine_csv_files():
     parameters = ['radius', 'logg', 'luminosity', 'mass', 'parallax', 'teff', 'metallicity']
     data_dict = {}
@@ -20,18 +19,34 @@ def load_combine_csv_files():
 def load_all_data():
     data = pd.read_csv('database/updated_exoplanet_data.csv')
     data_ps = pd.read_csv('database/updated_exoplanet_data.csv')
-    #data_gg = pd.read_csv('database/golden_sample/golden_giant_ptps-result.csv')
     data_gg = load_combine_csv_files()
     return data, data_ps, data_gg
 
-def filter_data(df, section):
+def filter_data(df, section, survey):
     st.sidebar.subheader(f"Filters for Section {section}")
+
     if st.sidebar.checkbox("Giants only", key=f"giants_only_section_{section}"):
         df = df[df['log_g'] < 3.7]
-    if st.sidebar.checkbox(f"Stellar mass > 2.2 M_☉", key=f"mass_gt_section_{section}"):
-        df = df[df['star_mass'] > 2.2]
-    if st.sidebar.checkbox(f"Stellar mass < 2.2 M_☉", key=f"mass_lt_section_{section}"):
-        df = df[df['star_mass'] < 2.2]
+
+    # Mapping survey names to their corresponding source file names
+    survey_mapping = {
+        'All': None,
+        'Lick': 'lick_GK_survey_with_gaia_id.csv',
+        'EAPSNet1': 'EAPSNet1_stellar_params_with_gaia_id.csv',
+        'EAPSNet2': 'EAPSNet2_stellar_params_with_gaia_id.csv',
+        'EAPSNet3': 'EAPSNet3_stellar_params_with_gaia_id.csv',
+        'Keck HIRES': 'keck_hires_with_gaia_id.csv',
+        'PTPS': 'ptps_with_gaia_id.csv',
+        'PPPS': 'PPPS_star_with_gaia_id.csv',
+        'Express': 'express_post_MS_with_gaia_id.csv',
+        'Coralie': 'coralie_star_with_gaia_id.csv'
+    }
+
+    if survey != 'All':
+        source_file = survey_mapping.get(survey, None)
+        if source_file:
+            df = df[df['source_file'] == source_file]
+
     return df
 
 def plot_histogram(data, column):
@@ -109,7 +124,8 @@ def main():
     data, data_ps, data_gg = load_all_data()
 
     st.sidebar.subheader("Section 1: Histogram Filters")
-    filtered_data = filter_data(data.copy(), "1")
+    survey1 = st.sidebar.selectbox("Select Survey", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'])
+    filtered_data = filter_data(data.copy(), "1", survey1)
     st.header("Section 1: Histogram")
     numeric_columns = data.select_dtypes(include=[np.number]).columns.tolist()
     column_to_plot = st.selectbox("Select Column for Histogram", numeric_columns)
@@ -124,21 +140,24 @@ def main():
     st.write(f"Range of the {column_to_plot}: {range_of_data}")
     st.write(f"Median of the {column_to_plot}: {median_of_data}")
     st.write(f"Standard Deviation (Dispersion) of the {column_to_plot}: {std_deviation}")
-    
 
     st.sidebar.subheader("Section 2: Planetary 2D Histogram Settings")
     parameter1, parameter2, bin_edges_param1, bin_edges_param2 = section2_settings(data, "2")
-    filtered_data = filter_data(data.copy(), "2")
+    survey2 = st.sidebar.selectbox("Select Survey", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'])
+    filtered_data = filter_data(data.copy(), "2", survey2)
     st.header("Section 2: Planetary 2D Histogram")
     occurrence_figure = plot_occurrence_rates(filtered_data, parameter1, parameter2, bin_edges_param1, bin_edges_param2, normalize=False)
     st.pyplot(occurrence_figure)
 
-    
     st.header("Section 3: Advanced Occurrence Rate")
     st.sidebar.header('Section 3: Parameter Selection')
+    survey3 = st.sidebar.selectbox("Select Survey", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'])
+    filtered_data_ps = filter_data(data_ps.copy(), "3", survey3)
+    filtered_data_gg = filter_data(data_gg.copy(), "3", survey3)
     param1 = st.sidebar.selectbox('Select X-axis parameter', ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax'])
     param2 = st.sidebar.selectbox('Select Y-axis parameter', ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax'])
     bins = st.sidebar.number_input('Number of bins', min_value=1, value=3)
+
 
     if True:
         col1_ps, scale1 = get_column_name_and_scale(param1, 'ps')
