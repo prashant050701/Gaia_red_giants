@@ -68,8 +68,10 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
     counts, xedges, yedges = np.histogram2d(filtered_data[param1], filtered_data[param2],
                                             bins=[bin_edges_param1, bin_edges_param2])
 
-    total_planets = len(filtered_data)
-    occurrence_rates = counts / total_planets
+    #total_planets = len(filtered_data) It should come from all the stars in the Planetary Surveys, not just the ones that have planets
+    total_stars = 2950 # number of stars in all the planetary surveys
+
+    occurrence_rates = counts / total_stars
 
     if normalize:
         param1_bin_sizes = np.diff(bin_edges_param1)
@@ -77,13 +79,19 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
         occurrence_rates /= np.outer(param1_bin_sizes, param2_bin_sizes)
 
     fig, ax = plt.subplots(figsize=(10, 8))
-    sns.heatmap(occurrence_rates, annot=True, cmap='viridis', ax=ax,
-                xticklabels=np.round(bin_edges_param2[:], 2),
-                yticklabels=np.round(bin_edges_param1[:], 2))
-    ax.invert_yaxis()
+
+    sns.heatmap(occurrence_rates, annot=True, cmap='viridis', ax=ax)
+
+    ax.set_xticks(np.arange(len(bin_edges_param2)))
+    ax.set_yticks(np.arange(len(bin_edges_param1)))
+
+    ax.set_xticklabels(["{:.2f}".format(edge) for edge in bin_edges_param2])
+    ax.set_yticklabels(["{:.2f}".format(edge) for edge in bin_edges_param1])
+
     ax.set_xlabel(param2)
     ax.set_ylabel(param1)
     ax.set_title('Normalized Planet Occurrence Rates' if normalize else 'Planet Occurrence Rates')
+
     return fig
 
 def section2_settings(data, section):
@@ -158,8 +166,8 @@ def main():
     st.header("Section 3: Advanced Occurrence Rate")
     st.sidebar.header('Section 3: Parameter Selection')
     survey3 = st.sidebar.selectbox("Select Survey (Section 3)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey3')
-    filtered_data_ps = filter_data(data_ps.copy(), "3", survey3)
-    filtered_data_gg = filter_data(data_gg.copy(), "3_gg", survey3)
+    filtered_data_ps = filter_data(data_ps.copy(), "3: Planetary Search Data", survey3)
+    filtered_data_gg = filter_data(data_gg.copy(), "3 Golden Sample Data", survey3)
     param1 = st.sidebar.selectbox('Select X-axis parameter', ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax'], key='param1_sec3')
     param2 = st.sidebar.selectbox('Select Y-axis parameter', ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax'], key='param2_sec3')
     bins = st.sidebar.number_input('Number of bins', min_value=1, value=3, key='bins_sec3')
