@@ -159,7 +159,7 @@ def main():
     st.sidebar.header('Section 3: Parameter Selection')
     survey3 = st.sidebar.selectbox("Select Survey (Section 3)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey3')
     filtered_data_ps = filter_data(data_ps.copy(), "3", survey3)
-    filtered_data_gg = filter_data(data_gg.copy(), "3", survey3)
+    filtered_data_gg = filter_data(data_gg.copy(), "3_gg", survey3)
     param1 = st.sidebar.selectbox('Select X-axis parameter', ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax'], key='param1_sec3')
     param2 = st.sidebar.selectbox('Select Y-axis parameter', ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax'], key='param2_sec3')
     bins = st.sidebar.number_input('Number of bins', min_value=1, value=3, key='bins_sec3')
