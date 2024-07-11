@@ -86,7 +86,7 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
     ax.set_yticks(bin_edges_param1)
 
     ax.set_xticklabels(np.round(bin_edges_param2[:], 2))
-    ax.set_yticklabels(np.round(bin_edges_param1[:], 2)))
+    ax.set_yticklabels(np.round(bin_edges_param1[:], 2))
 
     ax.set_xlabel(param2)
     ax.set_ylabel(param1)
