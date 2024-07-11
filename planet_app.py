@@ -166,11 +166,12 @@ def main():
     parameter1, parameter2, bin_edges_param1, bin_edges_param2 = section2_settings(data, "2")
     survey2 = st.sidebar.selectbox("Select Survey (Section 2)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey2')
     filtered_data = filter_data(data.copy(), "2", survey2)
-    st.header("Section 2: Planetary 2D Histogram")
+    
+    st.header("Section 2: Occurrence Rate")
     occurrence_figure = plot_occurrence_rates(filtered_data, parameter1, parameter2, bin_edges_param1, bin_edges_param2, normalize=False)
     st.pyplot(occurrence_figure)
 
-    st.header("Section 3: Advanced Occurrence Rate")
+    st.header("Section 3: Planetary Search Efficiency")
     st.sidebar.header('Section 3: Parameter Selection')
     survey3 = st.sidebar.selectbox("Select Survey (Section 3)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey3')
     filtered_data_ps = filter_data(data_ps.copy(), "3: Planetary Search Data", survey3)
