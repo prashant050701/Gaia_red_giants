@@ -82,8 +82,8 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
 
 def section2_settings(data, section):
     parameters = ['mass', 'radius', 'orbital_period', 'semi_major_axis', 'eccentricity']
-    parameter1 = st.sidebar.selectbox("Select Parameter 1 for Analysis", parameters, key=f'param1_section_{section}')
-    parameter2 = st.sidebar.selectbox("Select Parameter 2 for Analysis", [p for p in parameters if p != parameter1], key=f'param2_section_{section}')
+    parameter1 = st.sidebar.selectbox(f"Select Parameter 1 for Analysis (Section {section})", parameters, key=f'param1_section_{section}')
+    parameter2 = st.sidebar.selectbox(f"Select Parameter 2 for Analysis (Section {section})", [p for p in parameters if p != parameter1], key=f'param2_section_{section}')
 
     scale_param1 = st.sidebar.selectbox(f"Scale for {parameter1}", ["Linear", "Logarithmic"], key=f'scale_param1_section_{section}')
     scale_param2 = st.sidebar.selectbox(f"Scale for {parameter2}", ["Linear", "Logarithmic"], key=f'scale_param2_section_{section}')
@@ -124,11 +124,11 @@ def main():
     data, data_ps, data_gg = load_all_data()
 
     st.sidebar.subheader("Section 1: Histogram Filters")
-    survey1 = st.sidebar.selectbox("Select Survey", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'])
+    survey1 = st.sidebar.selectbox("Select Survey (Section 1)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey1')
     filtered_data = filter_data(data.copy(), "1", survey1)
     st.header("Section 1: Histogram")
     numeric_columns = data.select_dtypes(include=[np.number]).columns.tolist()
-    column_to_plot = st.selectbox("Select Column for Histogram", numeric_columns)
+    column_to_plot = st.selectbox("Select Column for Histogram", numeric_columns, key='column_hist_1')
     hist_figure = plot_histogram(filtered_data, column_to_plot)
     st.pyplot(hist_figure)
     column_data = filtered_data[column_to_plot].dropna()
@@ -143,7 +143,7 @@ def main():
 
     st.sidebar.subheader("Section 2: Planetary 2D Histogram Settings")
     parameter1, parameter2, bin_edges_param1, bin_edges_param2 = section2_settings(data, "2")
-    survey2 = st.sidebar.selectbox("Select Survey", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'])
+    survey2 = st.sidebar.selectbox("Select Survey (Section 2)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey2')
     filtered_data = filter_data(data.copy(), "2", survey2)
     st.header("Section 2: Planetary 2D Histogram")
     occurrence_figure = plot_occurrence_rates(filtered_data, parameter1, parameter2, bin_edges_param1, bin_edges_param2, normalize=False)
@@ -151,12 +151,13 @@ def main():
 
     st.header("Section 3: Advanced Occurrence Rate")
     st.sidebar.header('Section 3: Parameter Selection')
-    survey3 = st.sidebar.selectbox("Select Survey", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'])
+    survey3 = st.sidebar.selectbox("Select Survey (Section 3)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey3')
     filtered_data_ps = filter_data(data_ps.copy(), "3", survey3)
     filtered_data_gg = filter_data(data_gg.copy(), "3", survey3)
-    param1 = st.sidebar.selectbox('Select X-axis parameter', ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax'])
-    param2 = st.sidebar.selectbox('Select Y-axis parameter', ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax'])
-    bins = st.sidebar.number_input('Number of bins', min_value=1, value=3)
+    param1 = st.sidebar.selectbox('Select X-axis parameter', ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax'], key='param1_sec3')
+    param2 = st.sidebar.selectbox('Select Y-axis parameter', ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax'], key='param2_sec3')
+    bins = st.sidebar.number_input('Number of bins', min_value=1, value=3, key='bins_sec3')
+
 
 
     if True:
