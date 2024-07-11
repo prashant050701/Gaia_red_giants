@@ -79,7 +79,7 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
         occurrence_rates /= np.outer(param1_bin_sizes, param2_bin_sizes)
 
     fig, ax = plt.subplots(figsize=(10, 8))
-    c = ax.pcolormesh(bin_edges_param2, bin_edges_param1, occurrence_rates.T, cmap='viridis', shading='flat', edgecolor='black', linewidth=0.5)
+    c = ax.pcolormesh(bin_edges_param2, bin_edges_param1, occurrence_rates.T, cmap='viridis_r', shading='flat', edgecolor='black', linewidth=0.5)
     
     fig.colorbar(c, ax=ax)
 
