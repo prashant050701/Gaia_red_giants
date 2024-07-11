@@ -80,19 +80,27 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
 
     fig, ax = plt.subplots(figsize=(10, 8))
 
-    sns.heatmap(occurrence_rates, annot=True, cmap='viridis', ax=ax, xticklabels=np.round(bin_edges_param2[:], 2),
-                yticklabels=np.round(bin_edges_param1[:], 2))
+    sns.heatmap(occurrence_rates, annot=True, cmap='viridis', ax=ax)
+
+    # Customizing tick positions and labels
+    # Set the ticks to be at the edges of the bins
+    ax.set_xticks(np.arange(len(bin_edges_param2) + 1) - 0.5, minor=True)
+    ax.set_yticks(np.arange(len(bin_edges_param1) + 1) - 0.5, minor=True)
+    ax.set_xticklabels(np.round(bin_edges_param2, 2), minor=True)
+    ax.set_yticklabels(np.round(bin_edges_param1, 2), minor=True)
+
+    # Ensure major ticks are not visible
+    ax.tick_params(which='major', size=0)
+
+    # Only show minor ticks and labels
+    ax.tick_params(which='minor', width=0)
+    ax.set_xticks(ax.get_xticks(minor=True), minor=True)
+    ax.set_yticks(ax.get_yticks(minor=True), minor=True)
+
     ax.invert_yaxis()
-    # ax.set_xticks(bin_edges_param2)
-    # ax.set_yticks(bin_edges_param1)
-
-    # ax.set_xticklabels(np.round(bin_edges_param2[:-1], 2))
-    # ax.set_yticklabels(np.round(bin_edges_param1[:-1], 2))
-
     ax.set_xlabel(param2)
     ax.set_ylabel(param1)
     ax.set_title('Normalized Planet Occurrence Rates' if normalize else 'Planet Occurrence Rates')
-
 
     return fig
 
