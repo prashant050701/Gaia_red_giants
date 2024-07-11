@@ -88,8 +88,8 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
     x_ticks_positions = np.arange(len(bin_edges_param2) - 1) + half_bin_width_x
     y_ticks_positions = np.arange(len(bin_edges_param1) - 1) + half_bin_width_y
 
-    ax.set_xticks(x_ticks_positions)
-    ax.set_yticks(y_ticks_positions)
+    ax.set_xticks(x_ticks_positions,param2)
+    ax.set_yticks(y_ticks_positions,param1)
 
     ax.set_xticklabels(["{:.2f}".format(edge) for edge in bin_edges_param2[:-1]])
     ax.set_yticklabels(["{:.2f}".format(edge) for edge in bin_edges_param1[:-1]])
