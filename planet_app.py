@@ -81,16 +81,19 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
     fig, ax = plt.subplots(figsize=(10, 8))
 
     sns.heatmap(occurrence_rates, annot=True, cmap='viridis', ax=ax)
+    
+    half_bin_width_x = np.diff(bin_edges_param2) / 2
+    half_bin_width_y = np.diff(bin_edges_param1) / 2
+    ax.set_xticks(np.arange(len(bin_edges_param2)) - 0.5 + half_bin_width_x)
+    ax.set_yticks(np.arange(len(bin_edges_param1)) - 0.5 + half_bin_width_y)
 
-    ax.set_xticks(np.arange(len(bin_edges_param2)))
-    ax.set_yticks(np.arange(len(bin_edges_param1)))
-
-    ax.set_xticklabels(["{:.2f}".format(edge) for edge in bin_edges_param2])
-    ax.set_yticklabels(["{:.2f}".format(edge) for edge in bin_edges_param1])
+    ax.set_xticklabels(["{:.2f}".format(edge) for edge in bin_edges_param2[:-1]])
+    ax.set_yticklabels(["{:.2f}".format(edge) for edge in bin_edges_param1[:-1]])
 
     ax.set_xlabel(param2)
     ax.set_ylabel(param1)
     ax.set_title('Normalized Planet Occurrence Rates' if normalize else 'Planet Occurrence Rates')
+
 
     return fig
 
