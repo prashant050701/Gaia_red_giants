@@ -158,8 +158,6 @@ def main():
     param2 = st.sidebar.selectbox('Select Y-axis parameter', ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax'], key='param2_sec3')
     bins = st.sidebar.number_input('Number of bins', min_value=1, value=3, key='bins_sec3')
 
-
-
     if True:
         col1_ps, scale1 = get_column_name_and_scale(param1, 'ps')
         col2_ps, scale2 = get_column_name_and_scale(param2, 'ps')
