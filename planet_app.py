@@ -85,10 +85,11 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
 
     for i in range(len(bin_edges_param1) - 1):
         for j in range(len(bin_edges_param2) - 1):
+            percentage_value = occurrence_rates[i, j] * 100
             ax.text((bin_edges_param2[j] + bin_edges_param2[j+1]) / 2, (bin_edges_param1[i] + bin_edges_param1[i+1]) / 2, 
-                    f'{occurrence_rates[i, j]:.5f}',
-                    color='white' if occurrence_rates[i, j] > occurrence_rates.max() / 2 else 'black',
-                    ha='center', va='center', fontsize=8)
+                    f'{percentage_value:.4f}%',
+                    color='white',
+                    ha='center', va='center', fontsize=10)
 
     ax.set_xticks(bin_edges_param2)
     ax.set_yticks(bin_edges_param1)
