@@ -22,11 +22,17 @@ def load_all_data():
     data_gg = load_combine_csv_files()
     return data, data_ps, data_gg
 
-def filter_data(df, section, survey):
+def filter_data(df, section, survey, filter_type='main'):
     st.sidebar.subheader(f"Filters for Section {section}")
+    giants_key = f"giants_only_{filter_type}_section_{section}"
+    if st.sidebar.checkbox("Giants only", key=giants_key):
+        if 'log_g' in df.columns:
+            df = df[df['log_g'] < 3.7]
+        elif 'logg' in df.columns:
+            df = df[df['logg'] < 3.7]
 
-    if st.sidebar.checkbox("Giants only", key=f"giants_only_section_{section}"):
-        df = df[df['log_g'] < 3.7]
+    return df
+
 
     # Mapping survey names to their corresponding source file names
     survey_mapping = {
