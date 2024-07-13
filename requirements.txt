@@ -6,3 +6,4 @@ streamlit
 scipy
 plotly
 streamlit_plotly_events
+streamlit-bokeh-events
