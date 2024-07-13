@@ -3,10 +3,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from bokeh.models import ColumnDataSource
+from bokeh.models import ColumnDataSource, CustomJS
 from bokeh.plotting import figure
-from bokeh.layouts import column
-from bokeh.events import SelectionGeometry
+from streamlit_bokeh_events import streamlit_bokeh_events
 
 #@st.cache
 def load_combine_csv_files():
@@ -105,38 +104,96 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
 
     return fig
 
+def update_efficiency_plots(selected_data, data_gg, param1, param2, xedges, yedges):
+    col1, _ = get_column_name_and_scale(param1, 'ps_all')
+    col2, _ = get_column_name_and_scale(param2, 'ps_all')
+    col1_gg, _ = get_column_name_and_scale(param1, 'gg')
+    col2_gg, _ = get_column_name_and_scale(param2, 'gg')
+
+    bins_x = len(xedges) - 1
+    bins_y = len(yedges) - 1
+    n_ps_counts = np.zeros((bins_x, bins_y))
+    n_g_counts = np.zeros((bins_x, bins_y))
+
+    for i in range(bins_x):
+        for j in range(bins_y):
+            bin_x_min, bin_x_max = xedges[i], xedges[i + 1]
+            bin_y_min, bin_y_max = yedges[j], yedges[j + 1]
+            n_ps_counts[i, j] = selected_data[(selected_data[col1] >= bin_x_min) & (selected_data[col1] < bin_x_max) &
+                                              (selected_data[col2] >= bin_y_min) & (
+                                                          selected_data[col2] < bin_y_max)].shape[0]
+            n_g_counts[i, j] = data_gg[(data_gg[col1_gg] >= bin_x_min) & (data_gg[col1_gg] < bin_x_max) &
+                                       (data_gg[col2_gg] >= bin_y_min) & (data_gg[col2_gg] < bin_y_max)].shape[0]
+
+    total_ps_in_bins = n_ps_counts.sum()
+    total_gg_in_bins = n_g_counts.sum()
+    n_ps_norm = n_ps_counts / total_ps_in_bins if total_ps_in_bins > 0 else n_ps_counts
+    n_g_norm = n_g_counts / total_gg_in_bins if total_gg_in_bins > 0 else n_g_counts
+    eta = np.divide(n_ps_norm, n_g_norm, out=np.zeros_like(n_ps_norm), where=n_g_norm != 0)
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+    for i in range(bins_x):
+        for j in range(bins_y):
+            eta_val = eta[i, j] if not np.isnan(eta[i, j]) else 0
+            x_center = (xedges[i] + xedges[i + 1]) / 2
+            y_center = (yedges[j] + yedges[j + 1]) / 2
+            ax.text(x_center, y_center,
+                    f'N_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}', color='blue',
+                    ha='center', va='center')
+
+    ax.set_xlim([xedges[0], xedges[-1]])
+    ax.set_ylim([yedges[0], yedges[-1]])
+    ax.set_xlabel(param1)
+    ax.set_ylabel(param2)
+    ax.grid(True)
+    st.pyplot(fig)
+
+    if selected_data.shape[0] > 0:
+        st.write("Selected Data Summary:")
+        st.write(selected_data.describe())
+
+
 def section4_main(data_ps_all, data_gg):
     st.header("Section 4: Interactive Data Selection and Analysis")
     params = ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax']
-    x_param = st.sidebar.selectbox("Select X-axis Parameter", params, index=0, key="x_param_section4")
-    y_param = st.sidebar.selectbox("Select Y-axis Parameter", params, index=1, key="y_param_section4")
+    if 'x_param_section4' not in st.session_state:
+        st.session_state['x_param_section4'] = params[0]
+    if 'y_param_section4' not in st.session_state:
+        st.session_state['y_param_section4'] = params[1]
+
+    x_param = st.sidebar.selectbox("Select X-axis Parameter", params, key="x_param_section4")
+    y_param = st.sidebar.selectbox("Select Y-axis Parameter", params, key="y_param_section4")
 
     x_col, x_scale = get_column_name_and_scale(x_param, 'ps_all')
     y_col, y_scale = get_column_name_and_scale(y_param, 'ps_all')
 
-    if x_scale == 'log':
-        data_ps_all = data_ps_all[data_ps_all[x_col] > 0]  # Filter out non-positive values for log scale
-        data_ps_all[x_col] = np.log10(data_ps_all[x_col])
-    if y_scale == 'log':
-        data_ps_all = data_ps_all[data_ps_all[y_col] > 0]  # Same for y
-        data_ps_all[y_col] = np.log10(data_ps_all[y_col])
+    data_ps_all[x_col] = np.log10(data_ps_all[x_col]) if x_scale == 'log' else data_ps_all[x_col]
+    data_ps_all[y_col] = np.log10(data_ps_all[y_col]) if y_scale == 'log' else data_ps_all[y_col]
 
     source = ColumnDataSource(data_ps_all[[x_col, y_col]])
 
     plot = figure(width=800, height=400, tools="lasso_select,reset")
     plot.circle(x=x_col, y=y_col, source=source, alpha=0.6)
 
-    def callback(event):
-        indices = source.selected.indices
-        selected_data = data_ps_all.iloc[indices]
-        update_efficiency_plots(selected_data, data_gg, x_param, y_param)
+    source.selected.js_on_change("indices", CustomJS(
+        args=dict(source=source),
+        code="""
+        document.dispatchEvent(new CustomEvent("TestSelectEvent", {detail: {indices: cb_obj.indices}}))
+        """
+    ))
 
-    plot.on_event(SelectionGeometry, callback)
+    result = streamlit_bokeh_events(
+        bokeh_plot=plot,
+        events="TestSelectEvent",
+        key="foo",
+        debounce_time=250
+    )
 
-    st.bokeh_chart(plot, use_container_width=True)
-
-def update_efficiency_plots(selected_data, data_gg, x_param, y_param):
-    st.write("Selected data:", selected_data.describe())
+    if result:
+        if "TestSelectEvent" in result:
+            selected_indices = result["TestSelectEvent"]["indices"]
+            selected_data = data_ps_all.iloc[selected_indices]
+            update_efficiency_plots(selected_data, data_gg, x_param, y_param)
 
 
 
