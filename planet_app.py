@@ -130,21 +130,27 @@ def update_efficiency_plots(selected_data, data_gg, param1, param2, bins_x, bins
 
     eta = np.divide(n_ps_norm, n_g_norm, out=np.zeros_like(n_ps_norm), where=n_g_norm != 0)
 
-    fig, ax = plt.subplots(figsize=(10, 8))
+    fig, ax = plt.subplots()
     for i in range(bins_x):
         for j in range(bins_y):
             eta_val = eta[i, j] if not np.isnan(eta[i, j]) else 0
             x_center = (xedges[i] + xedges[i + 1]) / 2
             y_center = (yedges[j] + yedges[j + 1]) / 2
-            ax.text(x_center, y_center, f'N_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}', 
-                    color='blue', ha='center', va='center')
+            ax.text(x_center, y_center, f'N_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}', color='blue', ha='center', va='center')
 
     ax.set_xlim([xedges[0], xedges[-1]])
     ax.set_ylim([yedges[0], yedges[-1]])
     ax.set_xlabel(param1)
     ax.set_ylabel(param2)
     ax.grid(True)
-    ax.set_title('Efficiency Plot')
+    
+    xedgeslabel = np.round(xedges, 3)
+    yedgeslabel = np.round(yedges, 3)
+    
+    plt.xticks(xedges, xedgeslabel)
+    plt.yticks(yedges, yedgeslabel)
+    
+    ax.set_title('Dynamic Efficiency Plot')
     st.pyplot(fig)
 
 
