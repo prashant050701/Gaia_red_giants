@@ -31,7 +31,7 @@ def filter_data(df, section, survey, filter_type='main'):
         elif 'logg' in df.columns:
             df = df[df['logg'] < 3.7]
 
-    return df
+        #return df
 
     survey_mapping = {
         'All': None,
