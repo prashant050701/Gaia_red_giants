@@ -6,4 +6,5 @@ streamlit
 scipy
 plotly
 streamlit_plotly_events
-streamlit-bokeh-events==2.4.3
+streamlit-bokeh-events
+bokeh==2.4.3
