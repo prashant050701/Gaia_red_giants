@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from bokeh.plotting import figure, show
-from bokeh.models import ColumnDataSource, BoxSelectTool
+from bokeh.models import ColumnDataSource, BoxSelectTool, ResetTool
 from bokeh.events import SelectionGeometry
 
 #@st.cache
