@@ -253,11 +253,6 @@ def main():
     xedgeslabel = np.round(xedges, 3)
     yedgeslabel = np.round(yedges, 3)
 
-    if scale1 == 'log':
-        xedgeslabel = np.round(10 ** xedges, 1)
-    if scale2 == 'log':
-        yedgeslabel = np.round(10 ** yedges, 1)
-
     plt.xticks(xedges, xedgeslabel)
     plt.yticks(yedges, yedgeslabel)
 
