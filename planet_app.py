@@ -205,7 +205,7 @@ def main():
     st.sidebar.header('Section 3: Parameter Selection')
     survey3 = st.sidebar.selectbox("Select Survey (Section 3)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey3')
     filtered_data_ps = filter_data(data_ps.copy(), "3: Planetary Search Data", survey3)
-    filtered_data_gg = filter_data(data_gg.copy(), "3: Golden Sample Data", survey3)
+    filtered_data_gg = filter_data(data_gg.copy(), "3: Golden Sample Data", 'All')
     
     param1, param2, xedges, yedges = section3_settings(filtered_data_ps, "3")
     col1_ps, scale1_ps = get_column_name_and_scale(param1, 'ps')
