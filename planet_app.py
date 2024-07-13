@@ -166,7 +166,7 @@ def section4_main(data_ps_all, data_gg):
 
     source = ColumnDataSource(data_ps_all[[x_col, y_col]])
 
-    plot = figure(plot_width=800, plot_height=400, tools="lasso_select,reset")
+    plot = figure(width=800, height=400, tools="lasso_select,reset")
     plot.circle(x=x_col, y=y_col, source=source, alpha=0.6)
 
     source.selected.js_on_change("indices", CustomJS(
