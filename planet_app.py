@@ -235,22 +235,34 @@ def main():
     n_g_norm = n_g_counts / total_gg_in_bins if total_gg_in_bins > 0 else n_g_counts
 
     eta = np.divide(n_ps_norm, n_g_norm, out=np.zeros_like(n_ps_norm), where=n_g_norm != 0)
+    
+    fig, ax = plt.subplots()
+        for i in range(bins):
+            for j in range(bins):
+                eta_val = eta[i, j] if not np.isnan(eta[i, j]) else 0
+                x_center = (xedges[j] + xedges[j + 1]) / 2
+                y_center = (yedges[i] + yedges[i + 1]) / 2
+                ax.text(x_center, y_center, f'N_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}',
+                        color='blue', ha='center', va='center')
 
-    fig, ax = plt.subplots(figsize=(10, 8))
-    for i in range(bins):
-        for j in range(bins):
-            eta_val = eta[i, j]
-            x_center = (xedges[j] + xedges[j + 1]) / 2
-            y_center = (yedges[i] + yedges[i + 1]) / 2
-            ax.text(x_center, y_center, f'N_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}',
-                    color='blue', ha='center', va='center', fontsize=10)
+        ax.set_xlim([xedges[0], xedges[-1]])
+        ax.set_ylim([yedges[0], yedges[-1]])
+        ax.set_xlabel(param1)
+        ax.set_ylabel(param2)
+        ax.grid(True)
 
-    ax.set_xlim([xedges[0], xedges[-1]])
-    ax.set_ylim([yedges[0], yedges[-1]])
-    ax.set_xlabel(col1_gg)
-    ax.set_ylabel(col2_gg)
-    ax.grid(True)
-    st.pyplot(fig)
+        xedgeslabel = np.round(xedges, 3)
+        yedgeslabel = np.round(yedges, 3)
+
+        if scale1 == 'log':
+            xedgeslabel = np.round(10 ** xedges, 1)
+        if scale2 == 'log':
+            yedgeslabel = np.round(10 ** yedges, 1)
+
+        plt.xticks(xedges, xedgeslabel)
+        plt.yticks(yedges, yedgeslabel)
+
+        st.pyplot(fig)
 
 def get_column_name_and_scale(param, dataset):
     mapping = {
