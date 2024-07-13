@@ -18,9 +18,9 @@ def load_combine_csv_files():
 
 def load_all_data():
     data = pd.read_csv('database/updated_exoplanet_data.csv')
-    data_ps = pd.read_csv('database/updated_exoplanet_data.csv')
+    data_ps_planet = pd.read_csv('database/updated_exoplanet_data.csv')
     data_gg = load_combine_csv_files()
-    return data, data_ps, data_gg
+    return data, data_ps_planet, data_gg
 
 def filter_data(df, section, survey, filter_type='main'):
     st.sidebar.subheader(f"Filters for Section {section}")
@@ -171,7 +171,7 @@ def section3_settings(data, section):
 def main():
     st.title("Exoplanet Data Analysis")
 
-    data, data_ps, data_gg = load_all_data()
+    data, data_ps_planet, data_gg = load_all_data()
 
     st.sidebar.subheader("Section 1: Histogram Filters")
     survey1 = st.sidebar.selectbox("Select Survey (Section 1)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey1')
@@ -204,37 +204,37 @@ def main():
     st.header("Section 3: Planetary Search Efficiency")
     st.sidebar.header('Section 3: Parameter Selection')
     survey3 = st.sidebar.selectbox("Select Survey (Section 3)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey3')
-    filtered_data_ps = filter_data(data_ps.copy(), "3: Planetary Search Data", survey3)
+    filtered_data_ps_planet = filter_data(data_ps_planet.copy(), "3: Planetary Search Data", survey3)
     filtered_data_gg = filter_data(data_gg.copy(), "3: Golden Sample Data", 'All')
     
-    param1, param2, xedges, yedges = section3_settings(filtered_data_ps, "3")
-    col1_ps, scale1_ps = get_column_name_and_scale(param1, 'ps')
-    col2_ps, scale2_ps = get_column_name_and_scale(param2, 'ps')
+    param1, param2, xedges, yedges = section3_settings(filtered_data_ps_planet, "3")
+    col1_ps_planet, scale1_ps_planet = get_column_name_and_scale(param1, 'ps')
+    col2_ps_planet, scale2_ps_planet = get_column_name_and_scale(param2, 'ps')
     col1_gg, scale1_gg = get_column_name_and_scale(param1, 'gg')
     col2_gg, scale2_gg = get_column_name_and_scale(param2, 'gg')
 
-    data1_ps, data2_ps = filtered_data_ps[col1_ps], filtered_data_ps[col2_ps]
+    data1_ps_planet, data2_ps_planet = filtered_data_ps_planet[col1_ps_planet], filtered_data_ps_planet[col2_ps_planet]
     data1_gg, data2_gg = filtered_data_gg[col1_gg], filtered_data_gg[col2_gg]
 
     bins = len(xedges) - 1
-    n_ps_counts = np.zeros((bins, bins))
+    n_ps_planet_counts = np.zeros((bins, bins))
     n_g_counts = np.zeros((bins, bins))
 
     for i in range(bins):
         for j in range(bins):
             bin_x_min, bin_x_max = xedges[j], xedges[j + 1]
             bin_y_min, bin_y_max = yedges[i], yedges[i + 1]
-            n_ps_counts[i, j] = np.sum((data1_ps >= bin_x_min) & (data1_ps < bin_x_max) &
-                                       (data2_ps >= bin_y_min) & (data2_ps < bin_y_max))
+            n_ps_planet_counts[i, j] = np.sum((data1_ps_planet >= bin_x_min) & (data1_ps_planet < bin_x_max) &
+                                       (data2_ps_planet >= bin_y_min) & (data2_ps_planet < bin_y_max))
             n_g_counts[i, j] = np.sum((data1_gg >= bin_x_min) & (data1_gg < bin_x_max) &
                                       (data2_gg >= bin_y_min) & (data2_gg < bin_y_max))
 
-    total_ps_in_bins = np.sum(n_ps_counts)
+    total_ps_planet_in_bins = np.sum(n_ps_planet_counts)
     total_gg_in_bins = np.sum(n_g_counts)
-    n_ps_norm = n_ps_counts / total_ps_in_bins if total_ps_in_bins > 0 else n_ps_counts
+    n_ps_planet_norm = n_ps_planet_counts / total_ps_planet_in_bins if total_ps_planet_in_bins > 0 else n_ps_planet_counts
     n_g_norm = n_g_counts / total_gg_in_bins if total_gg_in_bins > 0 else n_g_counts
 
-    eta = np.divide(n_ps_norm, n_g_norm, out=np.zeros_like(n_ps_norm), where=n_g_norm != 0)
+    eta = np.divide(n_ps_planet_norm, n_g_norm, out=np.zeros_like(n_ps_planet_norm), where=n_g_norm != 0)
     
     fig, ax = plt.subplots()
     for i in range(bins):
@@ -242,7 +242,7 @@ def main():
             eta_val = eta[i, j] if not np.isnan(eta[i, j]) else 0
             x_center = (xedges[j] + xedges[j + 1]) / 2
             y_center = (yedges[i] + yedges[i + 1]) / 2
-            ax.text(x_center, y_center, f'N_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}',color='blue', ha='center', va='center')
+            ax.text(x_center, y_center, f'N_psOcc: {n_ps_planet_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}',color='blue', ha='center', va='center')
 
     ax.set_xlim([xedges[0], xedges[-1]])
     ax.set_ylim([yedges[0], yedges[-1]])
