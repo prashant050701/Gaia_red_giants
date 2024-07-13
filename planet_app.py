@@ -3,9 +3,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from bokeh.plotting import figure, show
-from bokeh.models import ColumnDataSource, BoxSelectTool, ResetTool
-from bokeh.events import SelectionGeometry
+from bokeh.models import ColumnDataSource, CustomJS
+from bokeh.plotting import figure
+from streamlit_bokeh_events import streamlit_bokeh_events
 
 #@st.cache
 def load_combine_csv_files():
@@ -106,6 +106,7 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
 
 
 def update_efficiency_plots(selected_data, data_gg, param1, param2, xedges, yedges):
+    
     col1, _ = get_column_name_and_scale(param1, 'ps_all')
     col2, _ = get_column_name_and_scale(param2, 'ps_all')
     col1_gg, _ = get_column_name_and_scale(param1, 'gg')
@@ -131,27 +132,25 @@ def update_efficiency_plots(selected_data, data_gg, param1, param2, xedges, yedg
     n_g_norm = n_g_counts / total_gg_in_bins if total_gg_in_bins > 0 else n_g_counts
     eta = np.divide(n_ps_norm, n_g_norm, out=np.zeros_like(n_ps_norm), where=n_g_norm != 0)
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(10, 8))
     for i in range(bins_x):
         for j in range(bins_y):
             eta_val = eta[i, j] if not np.isnan(eta[i, j]) else 0
             x_center = (xedges[i] + xedges[i + 1]) / 2
             y_center = (yedges[j] + yedges[j + 1]) / 2
             ax.text(x_center, y_center, f'N_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}', color='blue', ha='center', va='center')
-
+    
     ax.set_xlim([xedges[0], xedges[-1]])
     ax.set_ylim([yedges[0], yedges[-1]])
     ax.set_xlabel(param1)
     ax.set_ylabel(param2)
     ax.grid(True)
-
-    xedgeslabel = np.round(xedges, 3)
-    yedgeslabel = np.round(yedges, 3)
-
-    plt.xticks(xedges, xedgeslabel)
-    plt.yticks(yedges, yedgeslabel)
-
     st.pyplot(fig)
+
+    if selected_data.shape[0] > 0:
+        st.write("Selected Data Summary:")
+        st.write(selected_data.describe())
+
 
 def section4_main(data_ps_all, data_gg):
     st.header("Section 4: Interactive Data Selection and Analysis")
@@ -162,22 +161,34 @@ def section4_main(data_ps_all, data_gg):
     x_col, x_scale = get_column_name_and_scale(x_param, 'ps_all')
     y_col, y_scale = get_column_name_and_scale(y_param, 'ps_all')
 
-    xedges = np.linspace(data_ps_all[x_col].min(), data_ps_all[x_col].max(), 10)
-    yedges = np.linspace(data_ps_all[y_col].min(), data_ps_all[y_col].max(), 10)
+    data_ps_all[x_col] = np.log10(data_ps_all[x_col]) if x_scale == 'log' else data_ps_all[x_col]
+    data_ps_all[y_col] = np.log10(data_ps_all[y_col]) if y_scale == 'log' else data_ps_all[y_col]
 
-    source = ColumnDataSource(data_ps_all)
+    source = ColumnDataSource(data_ps_all[[x_col, y_col]])
 
-    p = figure(plot_width=800, plot_height=400)
-    p.add_tools(BoxSelectTool(), ResetTool())
-    p.circle(x=x_col, y=y_col, source=source, selection_color="firebrick")
+    plot = figure(plot_width=800, plot_height=400, tools="lasso_select,reset")
+    plot.circle(x=x_col, y=y_col, source=source, alpha=0.6)
 
-    def selection_callback(event):
-        indices = source.selected.indices
-        selected_data = data_ps_all.iloc[indices]
-        update_efficiency_plots(selected_data, data_gg, x_param, y_param, xedges, yedges)
+    source.selected.js_on_change("indices", CustomJS(
+        args=dict(source=source),
+        code="""
+        document.dispatchEvent(new CustomEvent("TestSelectEvent", {detail: {indices: cb_obj.indices}}))
+        """
+    ))
 
-    p.on_event(SelectionGeometry, selection_callback)
-    st.bokeh_chart(p, use_container_width=True)
+    event_result = streamlit_bokeh_events(
+        bokeh_plot=plot,
+        events="TestSelectEvent",
+        key="foo",
+        debounce_time=250
+    )
+
+    if event_result is not None:
+        if "TestSelectEvent" in event_result:
+            selected_indices = event_result["TestSelectEvent"]["indices"]
+            selected_data = data_ps_all.iloc[selected_indices]
+            update_efficiency_plots(selected_data, data_gg, x_param, y_param)
+
 
 def section2_settings(data, section):
     parameters = ['mass', 'radius', 'orbital_period', 'semi_major_axis', 'eccentricity']
