@@ -152,7 +152,7 @@ def section4_main(data_ps_all, data_gg):
     params = ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax']
     st.sidebar.subheader("Section 4 Configuration")
     survey4 = st.sidebar.selectbox("Select Survey", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey4')
-    filtered_data_ps_all = filter_data(data_ps_all.copy(), "1", survey1)
+    filtered_data_ps_all = filter_data(data_ps_all.copy(), "4", survey4)
     x_param = st.sidebar.selectbox("Select X-axis Parameter", params, index=0)
     y_param = st.sidebar.selectbox("Select Y-axis Parameter", params, index=1)
 
