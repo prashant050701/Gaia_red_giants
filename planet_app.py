@@ -159,20 +159,21 @@ def section4_main(data_ps_all, data_gg):
     x_col, x_scale = get_column_name_and_scale(x_param, 'ps_all')
     y_col, y_scale = get_column_name_and_scale(y_param, 'ps_all')
 
-    if x_scale == 'log':
-        filtered_data_ps_all[x_col] = np.log10(filtered_data_ps_all[x_col]) if x_scale == 'log' else filtered_data_ps_all[x_col]
-    if y_scale == 'log':
-        filtered_data_ps_all[y_col] = np.log10(filtered_data_ps_all[y_col]) if y_scale == 'log' else filtered_data_ps_all[y_col]
+    filtered_data_ps_all[x_col] = np.log10(filtered_data_ps_all[x_col].replace(0, np.nan).dropna()) if x_scale == 'log' else filtered_data_ps_all[x_col]
+    filtered_data_ps_all[y_col] = np.log10(filtered_data_ps_all[y_col].replace(0, np.nan).dropna()) if y_scale == 'log' else filtered_data_ps_all[y_col]
 
-    fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis")
-    event_data = st.plotly_chart(fig, on_select="rerun")
+    fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis",
+                     labels={x_col: x_param, y_col: y_param})  # Use parameter names for labels
 
-    if event_data:
+    event_data = st.plotly_chart(fig, use_container_width=True, on_select="rerun")
+
+    if event_data and 'selectedData' in event_data:
         selected_indices = [point["pointIndex"] for point in event_data["selectedData"]["points"]]
         selected_data = filtered_data_ps_all.iloc[selected_indices]
         xedges = np.linspace(selected_data[x_col].min(), selected_data[x_col].max(), 10)
         yedges = np.linspace(selected_data[y_col].min(), selected_data[y_col].max(), 10)
         update_efficiency_plots(selected_data, data_gg, x_param, y_param, xedges, yedges)
+
 
 def section2_settings(data, section):
     parameters = ['mass', 'radius', 'orbital_period', 'semi_major_axis', 'eccentricity']
