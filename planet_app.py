@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from bokeh.plotting import figure, show
+from bokeh.models import ColumnDataSource, BoxSelectTool
+from bokeh.events import SelectionGeometry
 
 #@st.cache
 def load_combine_csv_files():
@@ -15,12 +18,14 @@ def load_combine_csv_files():
         data_dict[param] = combined_data
     golden_sample = pd.concat(data_dict.values(), axis=1)
     return golden_sample
-
+    
 def load_all_data():
     data = pd.read_csv('database/updated_exoplanet_data.csv')
     data_ps_planet = pd.read_csv('database/updated_exoplanet_data.csv')
     data_gg = load_combine_csv_files()
-    return data, data_ps_planet, data_gg
+    data_ps_all = pd.read_csv('database/all_planetary_survey_original.csv')
+    return data, data_ps_planet, data_gg, data_ps_all
+
 
 def filter_data(df, section, survey, filter_type='main'):
     st.sidebar.subheader(f"Filters for Section {section}")
@@ -99,6 +104,80 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
 
     return fig
 
+
+def update_efficiency_plots(selected_data, data_gg, param1, param2, xedges, yedges):
+    col1, _ = get_column_name_and_scale(param1, 'ps_all')
+    col2, _ = get_column_name_and_scale(param2, 'ps_all')
+    col1_gg, _ = get_column_name_and_scale(param1, 'gg')
+    col2_gg, _ = get_column_name_and_scale(param2, 'gg')
+
+    bins_x = len(xedges) - 1
+    bins_y = len(yedges) - 1
+    n_ps_counts = np.zeros((bins_x, bins_y))
+    n_g_counts = np.zeros((bins_x, bins_y))
+
+    for i in range(bins_x):
+        for j in range(bins_y):
+            bin_x_min, bin_x_max = xedges[i], xedges[i + 1]
+            bin_y_min, bin_y_max = yedges[j], yedges[j + 1]
+            n_ps_counts[i, j] = selected_data[(selected_data[col1] >= bin_x_min) & (selected_data[col1] < bin_x_max) &
+                                              (selected_data[col2] >= bin_y_min) & (selected_data[col2] < bin_y_max)].shape[0]
+            n_g_counts[i, j] = data_gg[(data_gg[col1_gg] >= bin_x_min) & (data_gg[col1_gg] < bin_x_max) &
+                                       (data_gg[col2_gg] >= bin_y_min) & (data_gg[col2_gg] < bin_y_max)].shape[0]
+
+    total_ps_in_bins = n_ps_counts.sum()
+    total_gg_in_bins = n_g_counts.sum()
+    n_ps_norm = n_ps_counts / total_ps_in_bins if total_ps_in_bins > 0 else n_ps_counts
+    n_g_norm = n_g_counts / total_gg_in_bins if total_gg_in_bins > 0 else n_g_counts
+    eta = np.divide(n_ps_norm, n_g_norm, out=np.zeros_like(n_ps_norm), where=n_g_norm != 0)
+
+    fig, ax = plt.subplots()
+    for i in range(bins_x):
+        for j in range(bins_y):
+            eta_val = eta[i, j] if not np.isnan(eta[i, j]) else 0
+            x_center = (xedges[i] + xedges[i + 1]) / 2
+            y_center = (yedges[j] + yedges[j + 1]) / 2
+            ax.text(x_center, y_center, f'N_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}', color='blue', ha='center', va='center')
+
+    ax.set_xlim([xedges[0], xedges[-1]])
+    ax.set_ylim([yedges[0], yedges[-1]])
+    ax.set_xlabel(param1)
+    ax.set_ylabel(param2)
+    ax.grid(True)
+
+    xedgeslabel = np.round(xedges, 3)
+    yedgeslabel = np.round(yedges, 3)
+
+    plt.xticks(xedges, xedgeslabel)
+    plt.yticks(yedges, yedgeslabel)
+
+    st.pyplot(fig)
+
+def section4_main(data_ps_all, data_gg):
+    st.header("Section 4: Interactive Data Selection and Analysis")
+    params = ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax']
+    x_param = st.sidebar.selectbox("Select X-axis Parameter", params, key="x_param_section4")
+    y_param = st.sidebar.selectbox("Select Y-axis Parameter", params, key="y_param_section4")
+    
+    x_col, x_scale = get_column_name_and_scale(x_param, 'ps_all')
+    y_col, y_scale = get_column_name_and_scale(y_param, 'ps_all')
+
+    xedges = np.linspace(data_ps_all[x_col].min(), data_ps_all[x_col].max(), 10)  # Predefined bins
+    yedges = np.linspace(data_ps_all[y_col].min(), data_ps_all[y_col].max(), 10)
+
+    source = ColumnDataSource(data_ps_all)
+    p = figure(plot_width=800, plot_height=400, tools="box_select,reset")
+    p.circle(x=x_col, y=y_col, source=source, selection_color="firebrick")
+    p.add_tools(BoxSelectTool(dimensions="both"))
+
+    def selection_callback(event):
+        indices = source.selected.indices
+        selected_data = data_ps_all.iloc[indices]
+        update_efficiency_plots(selected_data, data_gg, x_param, y_param, xedges, yedges)
+
+    p.on_event(SelectionGeometry, selection_callback)
+    st.bokeh_chart(p, use_container_width=True)
+
 def section2_settings(data, section):
     parameters = ['mass', 'radius', 'orbital_period', 'semi_major_axis', 'eccentricity']
     parameter1 = st.sidebar.selectbox(f"Select Parameter 1 for Analysis (Section {section})", parameters, key=f'param1_section_{section}')
@@ -171,7 +250,7 @@ def section3_settings(data, section):
 def main():
     st.title("Exoplanet Data Analysis")
 
-    data, data_ps_planet, data_gg = load_all_data()
+    data, data_ps_planet, data_gg, data_ps_all = load_all_data()
 
     st.sidebar.subheader("Section 1: Histogram Filters")
     survey1 = st.sidebar.selectbox("Select Survey (Section 1)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey1')
@@ -258,6 +337,9 @@ def main():
 
     st.pyplot(fig)
 
+
+    section4_main(data_ps_all, data_gg)
+
 def get_column_name_and_scale(param, dataset):
     mapping = {
         'ps': {'Mass': ('star_mass', 'log'), 'Teff': ('star_teff', 'log'),
@@ -265,9 +347,13 @@ def get_column_name_and_scale(param, dataset):
                'radius': ('star_radius', 'log'), 'parallax': ('parallax', 'log')},
         'gg': {'Mass': ('mass', 'log'), 'Teff': ('teff', 'log'),
                'Fe/H': ('metallicity', 'linear'), 'log_g': ('logg', 'linear'),
-               'radius': ('radius', 'log'), 'parallax': ('parallax', 'log')}
+               'radius': ('radius', 'log'), 'parallax': ('parallax', 'log')},
+        'ps_all': {'Mass': ('Mass', 'log'), 'Teff': ('Teff', 'log'),
+                   'Fe/H': ('Fe/H', 'linear'), 'log_g': ('logg', 'linear'),
+                   'radius': ('log_Radius', 'linear'), 'parallax': ('plx', 'log')}
     }
     return mapping[dataset][param]
+
 
 if __name__ == "__main__":
     main()
