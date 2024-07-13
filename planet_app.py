@@ -142,7 +142,7 @@ def section3_settings(data, section):
     param1 = st.sidebar.selectbox(f"Select X-axis parameter (Section {section})", parameters, key=f'param1_section_{section}')
     param2 = st.sidebar.selectbox(f"Select Y-axis parameter (Section {section})", parameters, key=f'param2_section_{section}')
 
-    col1, scale1 = get_column_name_and_scale(param1, 'ps')  # Assuming 'ps' dataset for the example, adjust as needed
+    col1, scale1 = get_column_name_and_scale(param1, 'ps')
     col2, scale2 = get_column_name_and_scale(param2, 'ps')
 
     custom_scale_param1 = st.sidebar.radio(f"Custom scale for {param1}?", ["No", "Yes"], key=f'custom_scale_param1_section_{section}')
@@ -163,7 +163,8 @@ def section3_settings(data, section):
     xedges = np.linspace(min_param1, max_param1, bins + 1)
     yedges = np.linspace(min_param2, max_param2, bins + 1)
 
-    return col1, col2, xedges, yedges
+    return param1, param2, xedges, yedges
+
 
 
 
@@ -205,12 +206,14 @@ def main():
     survey3 = st.sidebar.selectbox("Select Survey (Section 3)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey3')
     filtered_data_ps = filter_data(data_ps.copy(), "3: Planetary Search Data", survey3)
     filtered_data_gg = filter_data(data_gg.copy(), "3: Golden Sample Data", survey3)
-    col1_ps, col2_ps, xedges, yedges = section3_settings(filtered_data_ps, "3")
+    
+    param1, param2, xedges, yedges = section3_settings(filtered_data_ps, "3")
+    col1_ps, scale1_ps = get_column_name_and_scale(param1, 'ps')
+    col2_ps, scale2_ps = get_column_name_and_scale(param2, 'ps')
+    col1_gg, scale1_gg = get_column_name_and_scale(param1, 'gg')
+    col2_gg, scale2_gg = get_column_name_and_scale(param2, 'gg')
 
     data1_ps, data2_ps = filtered_data_ps[col1_ps], filtered_data_ps[col2_ps]
-
-    col1_gg, scale1_gg = get_column_name_and_scale(col1_ps, 'gg')
-    col2_gg, scale2_gg = get_column_name_and_scale(col2_ps, 'gg')
     data1_gg, data2_gg = filtered_data_gg[col1_gg], filtered_data_gg[col2_gg]
 
     bins = len(xedges) - 1
