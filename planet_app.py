@@ -102,14 +102,15 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
 
     return fig
     
-def update_efficiency_plots(selected_data, data_gg, param1, param2, xedges, yedges):
+def update_efficiency_plots(selected_data, data_gg, param1, param2, bins_x, bins_y):
     col1, _ = get_column_name_and_scale(param1, 'ps_all')
     col2, _ = get_column_name_and_scale(param2, 'ps_all')
     col1_gg, _ = get_column_name_and_scale(param1, 'gg')
     col2_gg, _ = get_column_name_and_scale(param2, 'gg')
 
-    bins_x = len(xedges) - 1
-    bins_y = len(yedges) - 1
+    xedges = np.linspace(selected_data[col1].min(), selected_data[col1].max(), bins_x + 1)
+    yedges = np.linspace(selected_data[col2].min(), selected_data[col2].max(), bins_y + 1)
+
     n_ps_counts = np.zeros((bins_x, bins_y))
     n_g_counts = np.zeros((bins_x, bins_y))
 
@@ -126,6 +127,7 @@ def update_efficiency_plots(selected_data, data_gg, param1, param2, xedges, yedg
     total_gg_in_bins = n_g_counts.sum()
     n_ps_norm = n_ps_counts / total_ps_in_bins if total_ps_in_bins > 0 else n_ps_counts
     n_g_norm = n_g_counts / total_gg_in_bins if total_gg_in_bins > 0 else n_g_counts
+
     eta = np.divide(n_ps_norm, n_g_norm, out=np.zeros_like(n_ps_norm), where=n_g_norm != 0)
 
     fig, ax = plt.subplots(figsize=(10, 8))
@@ -134,18 +136,17 @@ def update_efficiency_plots(selected_data, data_gg, param1, param2, xedges, yedg
             eta_val = eta[i, j] if not np.isnan(eta[i, j]) else 0
             x_center = (xedges[i] + xedges[i + 1]) / 2
             y_center = (yedges[j] + yedges[j + 1]) / 2
-            ax.text(x_center, y_center, f'N_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}', color='blue', ha='center', va='center')
+            ax.text(x_center, y_center, f'N_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}', 
+                    color='blue', ha='center', va='center')
 
     ax.set_xlim([xedges[0], xedges[-1]])
     ax.set_ylim([yedges[0], yedges[-1]])
     ax.set_xlabel(param1)
     ax.set_ylabel(param2)
     ax.grid(True)
+    ax.set_title('Efficiency Plot')
     st.pyplot(fig)
 
-    if selected_data.shape[0] > 0:
-        st.write("Selected Data Summary:")
-        st.write(selected_data.describe())
 
 def section4_main(data_ps_all, data_gg):
     st.header("Section 4: Interactive Data Selection and Analysis")
@@ -153,29 +154,30 @@ def section4_main(data_ps_all, data_gg):
     st.sidebar.subheader("Section 4 Configuration")
     survey4 = st.sidebar.selectbox("Select Survey", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey4')
     filtered_data_ps_all = filter_data(data_ps_all.copy(), "4", survey4)
-    x_param = st.sidebar.selectbox("Select X-axis Parameter", params, index=0)
-    y_param = st.sidebar.selectbox("Select Y-axis Parameter", params, index=1)
-
+    x_param = st.sidebar.selectbox("Select X-axis Parameter", params, index=0, key="x_param_section4")
+    y_param = st.sidebar.selectbox("Select Y-axis Parameter", params, index=1, key="y_param_section4")
+    
+    bins_x = st.sidebar.number_input("Number of bins for X-axis", min_value=1, value=5, key="bins_x_section4")
+    bins_y = st.sidebar.number_input("Number of bins for Y-axis", min_value=1, value=5, key="bins_y_section4")
+    
     x_col, x_scale = get_column_name_and_scale(x_param, 'ps_all')
     y_col, y_scale = get_column_name_and_scale(y_param, 'ps_all')
 
     #filtered_data_ps_all[x_col] = np.log10(filtered_data_ps_all[x_col].replace(0, np.nan).dropna()) if x_scale == 'log' else filtered_data_ps_all[x_col]
     #filtered_data_ps_all[y_col] = np.log10(filtered_data_ps_all[y_col].replace(0, np.nan).dropna()) if y_scale == 'log' else filtered_data_ps_all[y_col]
 
-    fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis",
-                     labels={x_col: x_param, y_col: y_param})
-
+    fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis")
     event_data = st.plotly_chart(fig, use_container_width=True, on_select="rerun")
-    st.write("Event data:", event_data)
-    if event_data:
-        if 'selection' in event_data:
-            selected_indices = event_data['selection']['point_indices']
+
+    if event_data and "select" in event_data:
+        selected_indices = event_data["select"]["point_indices"]
+        if selected_indices:
             selected_data = filtered_data_ps_all.iloc[selected_indices]
-            xedges = np.linspace(selected_data[x_col].min(), selected_data[x_col].max(), 10)
-            yedges = np.linspace(selected_data[y_col].min(), selected_data[y_col].max(), 10)
-            update_efficiency_plots(selected_data, data_gg, x_param, y_param, xedges, yedges)
+            update_efficiency_plots(selected_data, data_gg, x_param, y_param, bins_x, bins_y)
         else:
             st.write("No data selected. Please select data points in the graph.")
+    else:
+        st.write("No data selected. Please select data points in the graph.")
 
 
 def section2_settings(data, section):
