@@ -158,17 +158,18 @@ def section4_main(data_ps_all, data_gg):
     params = ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax']
     x_param = st.sidebar.selectbox("Select X-axis Parameter", params, key="x_param_section4")
     y_param = st.sidebar.selectbox("Select Y-axis Parameter", params, key="y_param_section4")
-    
+
     x_col, x_scale = get_column_name_and_scale(x_param, 'ps_all')
     y_col, y_scale = get_column_name_and_scale(y_param, 'ps_all')
 
-    xedges = np.linspace(data_ps_all[x_col].min(), data_ps_all[x_col].max(), 10)  # Predefined bins
+    xedges = np.linspace(data_ps_all[x_col].min(), data_ps_all[x_col].max(), 10)
     yedges = np.linspace(data_ps_all[y_col].min(), data_ps_all[y_col].max(), 10)
 
     source = ColumnDataSource(data_ps_all)
-    p = figure(plot_width=800, plot_height=400, tools="box_select,reset")
+
+    p = figure(plot_width=800, plot_height=400)
+    p.add_tools(BoxSelectTool(), ResetTool())
     p.circle(x=x_col, y=y_col, source=source, selection_color="firebrick")
-    p.add_tools(BoxSelectTool(dimensions="both"))
 
     def selection_callback(event):
         indices = source.selected.indices
