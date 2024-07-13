@@ -180,7 +180,7 @@ plot_tess = st.checkbox("TESS")
 if plot_original or plot_gaia or plot_tess:
     if survey1 == "All Surveys":
         if plot_original:
-            plot_hr_diagram(all_data, "Teff", "Lum", "logg", "HR Diagram - All Surveys (Original Data)", True)
+            plot_hr_diagram(all_data, "Teff", "Lum", "logg", "HR Diagram - All Surveys (Original Data)", False)
         if plot_gaia:
             combined_gaia = pd.concat([gaia_data[key] for key in gaia_data])
             plot_hr_diagram(combined_gaia, "effective_temperature", "luminosity", "surface_gravity",
