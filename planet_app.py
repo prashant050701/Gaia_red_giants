@@ -155,6 +155,11 @@ def update_efficiency_plots(selected_data, data_gg, param1, param2, xedges, yedg
 def section4_main(data_ps_all, data_gg):
     st.header("Section 4: Interactive Data Selection and Analysis")
     params = ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax']
+    if 'x_param_section4' not in st.session_state:
+        st.session_state['x_param_section4'] = params[0]
+    if 'y_param_section4' not in st.session_state:
+        st.session_state['y_param_section4'] = params[1]
+    
     x_param = st.sidebar.selectbox("Select X-axis Parameter", params, key="x_param_section4")
     y_param = st.sidebar.selectbox("Select Y-axis Parameter", params, key="y_param_section4")
 
@@ -166,7 +171,7 @@ def section4_main(data_ps_all, data_gg):
 
     source = ColumnDataSource(data_ps_all[[x_col, y_col]])
 
-    plot = figure(width=800, height=400, tools="lasso_select,reset")
+    plot = figure(plot_width=800, plot_height=400, tools="lasso_select,reset")
     plot.circle(x=x_col, y=y_col, source=source, alpha=0.6)
 
     source.selected.js_on_change("indices", CustomJS(
@@ -176,18 +181,19 @@ def section4_main(data_ps_all, data_gg):
         """
     ))
 
-    event_result = streamlit_bokeh_events(
+    result = streamlit_bokeh_events(
         bokeh_plot=plot,
         events="TestSelectEvent",
         key="foo",
         debounce_time=250
     )
 
-    if event_result is not None:
-        if "TestSelectEvent" in event_result:
-            selected_indices = event_result["TestSelectEvent"]["indices"]
+    if result:
+        if "TestSelectEvent" in result:
+            selected_indices = result["TestSelectEvent"]["indices"]
             selected_data = data_ps_all.iloc[selected_indices]
             update_efficiency_plots(selected_data, data_gg, x_param, y_param)
+
 
 
 def section2_settings(data, section):
