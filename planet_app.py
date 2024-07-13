@@ -169,8 +169,8 @@ def section4_main(data_ps_all, data_gg):
     fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis")
     event_data = st.plotly_chart(fig, use_container_width=True, on_select="rerun")
 
-    if event_data and "select" in event_data:
-        selected_indices = event_data["select"]["point_indices"]
+    if event_data and "selection" in event_data:
+        selected_indices = event_data["selection"]["point_indices"]
         if selected_indices:
             selected_data = filtered_data_ps_all.iloc[selected_indices]
             update_efficiency_plots(selected_data, data_gg, x_param, y_param, bins_x, bins_y)
