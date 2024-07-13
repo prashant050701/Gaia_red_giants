@@ -168,8 +168,8 @@ def section4_main(data_ps_all, data_gg):
     event_data = st.plotly_chart(fig, use_container_width=True, on_select="rerun")
     st.write("Event data:", event_data)
     if event_data:
-        if 'select' in event_data:
-            selected_indices = event_data['select']['point_indices']
+        if 'selection' in event_data:
+            selected_indices = event_data['selection']['point_indices']
             selected_data = filtered_data_ps_all.iloc[selected_indices]
             xedges = np.linspace(selected_data[x_col].min(), selected_data[x_col].max(), 10)
             yedges = np.linspace(selected_data[y_col].min(), selected_data[y_col].max(), 10)
