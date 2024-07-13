@@ -160,9 +160,9 @@ def section4_main(data_ps_all, data_gg):
     y_col, y_scale = get_column_name_and_scale(y_param, 'ps_all')
 
     if x_scale == 'log':
-        data_ps_all[x_col] = np.log10(filtered_data_ps_all[x_col]) if x_scale == 'log' else filtered_data_ps_all[x_col]
+        filtered_data_ps_all[x_col] = np.log10(filtered_data_ps_all[x_col]) if x_scale == 'log' else filtered_data_ps_all[x_col]
     if y_scale == 'log':
-        data_ps_all[y_col] = np.log10(filtered_data_ps_all[y_col]) if y_scale == 'log' else filtered_data_ps_all[y_col]
+        filtered_data_ps_all[y_col] = np.log10(filtered_data_ps_all[y_col]) if y_scale == 'log' else filtered_data_ps_all[y_col]
 
     fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis")
     event_data = st.plotly_chart(fig, on_select="rerun")
