@@ -166,7 +166,7 @@ def section4_main(data_ps_all, data_gg):
                      labels={x_col: x_param, y_col: y_param})
 
     event_data = st.plotly_chart(fig, use_container_width=True, on_select="rerun")
-
+    st.write("Event data:", event_data)
     if event_data:
         if 'select' in event_data:
             selected_indices = event_data['select']['point_indices']
