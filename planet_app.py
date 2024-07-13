@@ -3,9 +3,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from bokeh.models import ColumnDataSource, CustomJS
+from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
-from streamlit_bokeh_events import streamlit_bokeh_events
+from bokeh.layouts import column
+from bokeh.events import SelectionGeometry
+
 
 #@st.cache
 def load_combine_csv_files():
