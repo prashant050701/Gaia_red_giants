@@ -199,7 +199,7 @@ def main():
     occurrence_figure = plot_occurrence_rates(filtered_data, parameter1, parameter2, bin_edges_param1, bin_edges_param2, normalize=False)
     st.pyplot(occurrence_figure)
     
-
+    
     st.header("Section 3: Planetary Search Efficiency")
     st.sidebar.header('Section 3: Parameter Selection')
     survey3 = st.sidebar.selectbox("Select Survey (Section 3)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey3')
@@ -208,7 +208,10 @@ def main():
     col1_ps, col2_ps, xedges, yedges = section3_settings(filtered_data_ps, "3")
 
     data1_ps, data2_ps = filtered_data_ps[col1_ps], filtered_data_ps[col2_ps]
-    data1_gg, data2_gg = filtered_data_gg[col1_ps], filtered_data_gg[col2_ps]
+
+    col1_gg, scale1_gg = get_column_name_and_scale(col1_ps, 'gg')
+    col2_gg, scale2_gg = get_column_name_and_scale(col2_ps, 'gg')
+    data1_gg, data2_gg = filtered_data_gg[col1_gg], filtered_data_gg[col2_gg]
 
     bins = len(xedges) - 1
     n_ps_counts = np.zeros((bins, bins))
@@ -241,8 +244,8 @@ def main():
 
     ax.set_xlim([xedges[0], xedges[-1]])
     ax.set_ylim([yedges[0], yedges[-1]])
-    ax.set_xlabel(col1_ps)
-    ax.set_ylabel(col2_ps)
+    ax.set_xlabel(col1_gg)
+    ax.set_ylabel(col2_gg)
     ax.grid(True)
     st.pyplot(fig)
 
