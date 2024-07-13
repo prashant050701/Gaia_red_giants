@@ -150,7 +150,9 @@ def update_efficiency_plots(selected_data, data_gg, param1, param2, xedges, yedg
 def section4_main(data_ps_all, data_gg):
     st.header("Section 4: Interactive Data Selection and Analysis")
     params = ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax']
-    st.sidebar.subheader("Section 4 Filters")
+    st.sidebar.subheader("Section 4 Configuration")
+    survey4 = st.sidebar.selectbox("Select Survey", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey1')
+    filtered_data_ps_all = filter_data(data_ps_all.copy(), "1", survey1)
     x_param = st.sidebar.selectbox("Select X-axis Parameter", params, index=0)
     y_param = st.sidebar.selectbox("Select Y-axis Parameter", params, index=1)
 
@@ -158,16 +160,16 @@ def section4_main(data_ps_all, data_gg):
     y_col, y_scale = get_column_name_and_scale(y_param, 'ps_all')
 
     if x_scale == 'log':
-        data_ps_all[x_col] = np.log10(data_ps_all[x_col]) if x_scale == 'log' else data_ps_all[x_col]
+        data_ps_all[x_col] = np.log10(filtered_data_ps_all[x_col]) if x_scale == 'log' else filtered_data_ps_all[x_col]
     if y_scale == 'log':
-        data_ps_all[y_col] = np.log10(data_ps_all[y_col]) if y_scale == 'log' else data_ps_all[y_col]
+        data_ps_all[y_col] = np.log10(filtered_data_ps_all[y_col]) if y_scale == 'log' else filtered_data_ps_all[y_col]
 
-    fig = px.scatter(data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis")
+    fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis")
     event_data = st.plotly_chart(fig, on_select="rerun")
 
     if event_data:
         selected_indices = [point["pointIndex"] for point in event_data["selectedData"]["points"]]
-        selected_data = data_ps_all.iloc[selected_indices]
+        selected_data = filtered_data_ps_all.iloc[selected_indices]
         xedges = np.linspace(selected_data[x_col].min(), selected_data[x_col].max(), 10)
         yedges = np.linspace(selected_data[y_col].min(), selected_data[y_col].max(), 10)
         update_efficiency_plots(selected_data, data_gg, x_param, y_param, xedges, yedges)
