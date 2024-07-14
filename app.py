@@ -65,6 +65,7 @@ def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, 
 
     fig.update_xaxes(title="Teff (K)", autorange="reversed")
     if 'TESS' in title:
+        st.write("*"*100)
         fig.update_yaxes(title="V_mag")
     else:
         fig.update_yaxes(title="log(L/Lsun)")
