@@ -80,7 +80,7 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
     occurrence_rates *= 100
 
     fig, ax = plt.subplots(figsize=(10, 8))
-    mesh = ax.pcolormesh(bin_edges_param2, bin_edges_param1, occurrence_rates.T, cmap='Greys', edgecolor='black', linewidth=1)
+    mesh = ax.pcolormesh(bin_edges_param2, bin_edges_param1, occurrence_rates, shading='auto', cmap='Greys', edgecolor='black', linewidth=1)
     mesh.set_facecolor("none")
 
     for i in range(len(bin_edges_param1) - 1):
