@@ -382,14 +382,15 @@ fig.update_xaxes(autorange="reversed")
 st.plotly_chart(fig, use_container_width=False)
 
 
-survey_6 = st.selectbox("Select Survey for First Dataset", list(surveys.keys()), key="survey_6")
-data_source_6 = st.radio("Select Data Source for First Dataset", ["Original", "Gaia", "TESS"], key="data_source_6")
-param_6 = st.selectbox(
-    "Select Parameter for First Dataset", surveys[survey_6]["data"].columns if data_source_6 == "Original" else gaia_data[survey_6].columns if data_source_6 == "Gaia" else tess_data[survey_6].columns, key="param_6")
-
-param_golden = st.selectbox("Select Parameter from Golden Giant Data", golden_giant_ptps.columns, key="param_golden")
-
-data_6 = surveys[survey_6]["data"] if data_source_6 == "Original" else gaia_data[survey_6] if data_source_6 == "Gaia" else tess_data[survey_6]
+survey_6 = st.selectbox("Select Survey for First Dataset", ["All Surveys"] + list(surveys.keys()), key="survey_6")
+if survey_6 == "All Surveys":
+    param_6 = st.selectbox("Select Parameter for First Dataset", all_data.columns, key="param_6")
+    data_6 = all_data
+    
+else:
+    data_source_6 = st.radio("Select Data Source for First Dataset", ["Original", "Gaia", "TESS"], key="data_source_6")
+    data_6 = surveys[survey_6]["data"] if data_source_6 == "Original" else gaia_data[survey_6] if data_source_6 == "Gaia" else tess_data[survey_6]
+    param_6 = st.selectbox("Select Parameter for First Dataset", data_6.columns, key="param_6")
 
 #if st.button("Plot Interactive Histograms", key="plot_interactive_histograms_6"): # if needed as a button, will uncomment this
 fig = go.Figure()
