@@ -391,6 +391,8 @@ else:
     data_source_6 = st.radio("Select Data Source for First Dataset", ["Original", "Gaia", "TESS"], key="data_source_6")
     data_6 = surveys[survey_6]["data"] if data_source_6 == "Original" else gaia_data[survey_6] if data_source_6 == "Gaia" else tess_data[survey_6]
     param_6 = st.selectbox("Select Parameter for First Dataset", data_6.columns, key="param_6")
+    
+param_golden = st.selectbox("Select Parameter from Golden Giant Data", golden_giant_ptps.columns, key="param_golden")
 
 #if st.button("Plot Interactive Histograms", key="plot_interactive_histograms_6"): # if needed as a button, will uncomment this
 fig = go.Figure()
