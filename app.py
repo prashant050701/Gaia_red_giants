@@ -417,7 +417,12 @@ st.plotly_chart(fig, use_container_width=True)
 
 
 test_type_6 = st.radio("Select Test Type for Comparison", ["KS", "MWU"], key="test_type_6")
-data_6 = surveys[survey_6]["data"] if data_source_6 == "Original" else gaia_data[survey_6] if data_source_6 == "Gaia" else tess_data[survey_6]
+
+if survey_6 == "All Surveys":
+    data_6 = all_data
+else:
+    data_6 = surveys[survey_6]["data"] if data_source_6 == "Original" else gaia_data[survey_6] if data_source_6 == "Gaia" else tess_data[survey_6]
+
 manual_selection_6 = st.checkbox("Manual Range Selection", key="manual_selection_6")
 
 if manual_selection_6:
