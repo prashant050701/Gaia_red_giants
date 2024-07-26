@@ -199,7 +199,7 @@ Where:
   $$
   N_{\\text{Occ}_i} = \\frac{N_{*p_i}}{\\sum N_{*}}
   $$
-  Where
+  Where:
   - $N_{*p_i}$ is the number of stars hosting a planet in bin $i$.
   - $\\sum N_{*}$ is the total number of stars in the survey across all bins of the selection.
 """)
