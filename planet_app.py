@@ -157,7 +157,7 @@ def update_efficiency_plots(selected_data, data_gg, data_ps_planet, param1, para
     
     ax.set_title('Dynamic Efficiency Plot')
     st.pyplot(fig)
-
+    return eta, occ_rate
 
 
 def section4_main(data_ps_all, data_gg, data_ps_planet):
@@ -182,7 +182,21 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
         selected_indices = event_data["selection"]["point_indices"]
         if selected_indices:
             selected_data = filtered_data_ps_all.iloc[selected_indices]
-            update_efficiency_plots(selected_data, data_gg, data_ps_planet, x_param, y_param, bins_x, bins_y)
+            eta, occ_rate = update_efficiency_plots(selected_data, data_gg, data_ps_planet, x_param, y_param, bins_x, bins_y)
+            
+            corrected_occ_rate = np.sum(eta * occ_rate) / np.sum(eta) if np.sum(eta) > 0 else 0
+            st.write(f"Corrected Occurrence Rate: {corrected_occ_rate:.4f}")
+
+
+             st.markdown("""
+        **Corrected Occurrence Rate Formula:**
+        $$
+        \text{Corrected Occurrence Rate} = \frac{\sum (\eta_i \times \text{Occ}_i)}{\sum \eta_i}
+        $$
+        Where:
+        - $\eta_i$ is the efficiency of detection for bin $i$.
+        - $\text{Occ}_i$ is the occurrence rate for bin $i$.
+        """)
         else:
             st.write("No data selected. Please select data points in the graph.")
     else:
