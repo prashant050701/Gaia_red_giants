@@ -185,7 +185,7 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
             eta, occ_rate = update_efficiency_plots(selected_data, data_gg, data_ps_planet, x_param, y_param, bins_x, bins_y)
             
             corrected_occ_rate = np.sum(eta * occ_rate) / np.sum(eta) if np.sum(eta) > 0 else 0
-            st.write(f"Corrected Occurrence Rate: {corrected_occ_rate:.4f}")
+            st.write(f"Corrected Occurrence Rate: {corrected_occ_rate:.6f}")
 
 
             st.markdown("""
