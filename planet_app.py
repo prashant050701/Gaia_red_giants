@@ -189,20 +189,19 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
 
 
             st.markdown("""
-            **Corrected Occurrence Rate Formula:**
-            $$
-            \\text{Corrected Occurrence Rate} = \\frac{\\sum (\\eta_i \\times \\text{N_Occ}_i)}{\\sum \\eta_i}
-            $$
-            Where:
-            - $\\eta_i$ is the efficiency of detection for bin $i$.
-            - $\\text{N_Occ}_i$ is the occurrence rate for bin $i$, calculated as:
-              $$
-              \\text{N_Occ}_i = \\frac{N_{*p_i}}{\\sum N_{*}}
-              $$
-              where $N_{*p_i}$ is the number of stars hosting a planet in bin $i$, and $\\sum N_{*}$ is the total number of stars in the survey across all bins.
-
-**Note:** Each $\\eta_i$ value adjusts for the relative detection efficiency in each bin, ensuring that the overall rate is weighted appropriately.
+**Corrected Occurrence Rate Formula:**
+$$
+\\text{Corrected Occurrence Rate} = \\frac{\\sum (\\eta_i \\times \\text{N\\_{Occ\\_i}})}{\\sum \\eta_i}
+$$
+Where:
+- $\\eta_i$ is the efficiency of detection for bin $i$.
+- $\\text{N\\_{Occ\\_i}}$ is the occurrence rate for bin $i$, calculated as:
+  $$
+  \\text{N\\_{Occ\\_i}} = \\frac{N_{*p_i}}{\\sum N_{*}}
+  $$
+  where $N_{*p_i}$ is the number of stars hosting a planet in bin $i$, and $\\sum N_{*}$ is the total number of stars in the survey across all bins.
 """)
+
 
         else:
             st.write("No data selected. Please select data points in the graph.")
