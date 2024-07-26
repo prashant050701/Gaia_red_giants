@@ -191,11 +191,11 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
             st.markdown("""
                 **Corrected Occurrence Rate Formula:**
                 $$
-                \text{Corrected Occurrence Rate} = \frac{\sum (\eta_i \times \text{Occ}_i)}{\sum \eta_i}
+                    \\text{Corrected Occurrence Rate} = \\frac{\\sum (\\eta_i \\times \\text{Occ}_i)}{\\sum \\eta_i}
                 $$
-                Where:
-                - $\eta_i$ is the efficiency of detection for bin $i$.
-                - $\text{Occ}_i$ is the occurrence rate for bin $i$.
+                    Where:
+                - $\\eta_i$ is the efficiency of detection for bin $i$.
+                - $\\text{Occ}_i$ is the occurrence rate for bin $i$.
             """)
         else:
             st.write("No data selected. Please select data points in the graph.")
