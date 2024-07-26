@@ -169,8 +169,8 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
     x_param = st.sidebar.selectbox("Select X-axis Parameter", params, index=0, key="x_param_section4")
     y_param = st.sidebar.selectbox("Select Y-axis Parameter", params, index=1, key="y_param_section4")
     
-    bins_x = st.sidebar.number_input("Number of bins for X-axis", min_value=1, value=5, key="bins_x_section4")
-    bins_y = st.sidebar.number_input("Number of bins for Y-axis", min_value=1, value=5, key="bins_y_section4")
+    bins_x = st.sidebar.number_input("Number of bins for X-axis", min_value=1, value=3, key="bins_x_section4")
+    bins_y = st.sidebar.number_input("Number of bins for Y-axis", min_value=1, value=3, key="bins_y_section4")
     
     x_col, x_scale = get_column_name_and_scale(x_param, 'ps_all')
     y_col, y_scale = get_column_name_and_scale(y_param, 'ps_all')
