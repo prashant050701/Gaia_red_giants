@@ -253,8 +253,6 @@ def section3_settings(data, section):
     return param1, param2, xedges, yedges
 
 
-
-
 def main():
     st.title("Exoplanet Data Analysis")
 
