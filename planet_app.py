@@ -188,7 +188,7 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
             st.write(f"Corrected Occurrence Rate: {corrected_occ_rate:.4f}")
 
 
-             st.markdown("""
+            st.markdown("""
         **Corrected Occurrence Rate Formula:**
         $$
         \text{Corrected Occurrence Rate} = \frac{\sum (\eta_i \times \text{Occ}_i)}{\sum \eta_i}
