@@ -102,32 +102,40 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
 
     return fig
     
-def update_efficiency_plots(selected_data, data_gg, param1, param2, bins_x, bins_y):
+def update_efficiency_plots(selected_data, data_gg, data_ps_planet, param1, param2, bins_x, bins_y):
     col1, _ = get_column_name_and_scale(param1, 'ps_all')
     col2, _ = get_column_name_and_scale(param2, 'ps_all')
     col1_gg, _ = get_column_name_and_scale(param1, 'gg')
     col2_gg, _ = get_column_name_and_scale(param2, 'gg')
+    col1_ps, _ = get_column_name_and_scale(param1, 'ps')  # Assuming there is a 'ps' dataset mapping
+    col2_ps, _ = get_column_name_and_scale(param2, 'ps')
 
     xedges = np.linspace(selected_data[col1].min(), selected_data[col1].max(), bins_x + 1)
     yedges = np.linspace(selected_data[col2].min(), selected_data[col2].max(), bins_y + 1)
 
     n_ps_counts = np.zeros((bins_x, bins_y))
     n_g_counts = np.zeros((bins_x, bins_y))
+    n_ps_occ_counts = np.zeros((bins_x, bins_y))  # Array to hold counts of N_psOcc
 
     for i in range(bins_x):
         for j in range(bins_y):
             bin_x_min, bin_x_max = xedges[i], xedges[i + 1]
             bin_y_min, bin_y_max = yedges[j], yedges[j + 1]
+
             n_ps_counts[i, j] = selected_data[(selected_data[col1] >= bin_x_min) & (selected_data[col1] < bin_x_max) &
                                               (selected_data[col2] >= bin_y_min) & (selected_data[col2] < bin_y_max)].shape[0]
             n_g_counts[i, j] = data_gg[(data_gg[col1_gg] >= bin_x_min) & (data_gg[col1_gg] < bin_x_max) &
                                        (data_gg[col2_gg] >= bin_y_min) & (data_gg[col2_gg] < bin_y_max)].shape[0]
+            n_ps_occ_counts[i, j] = data_ps_planet[(data_ps_planet[col1_ps] >= bin_x_min) & (data_ps_planet[col1_ps] < bin_x_max) &
+                                                   (data_ps_planet[col2_ps] >= bin_y_min) & (data_ps_planet[col2_ps] < bin_y_max)].shape[0]
 
     total_ps_in_bins = n_ps_counts.sum()
     total_gg_in_bins = n_g_counts.sum()
+    #total_ps_planet_in_bins = n_ps_occ_counts.sum()
     n_ps_norm = n_ps_counts / total_ps_in_bins if total_ps_in_bins > 0 else n_ps_counts
     n_g_norm = n_g_counts / total_gg_in_bins if total_gg_in_bins > 0 else n_g_counts
-
+    occ_rate = n_ps_occ_counts / total_ps_in_bins if total_ps_in_bins > 0 else n_ps_occ_counts #dividing by stars with/without exoplanet to get occurrence rate
+    
     eta = np.divide(n_ps_norm, n_g_norm, out=np.zeros_like(n_ps_norm), where=n_g_norm != 0)
 
     fig, ax = plt.subplots()
@@ -136,25 +144,23 @@ def update_efficiency_plots(selected_data, data_gg, param1, param2, bins_x, bins
             eta_val = eta[i, j] if not np.isnan(eta[i, j]) else 0
             x_center = (xedges[i] + xedges[i + 1]) / 2
             y_center = (yedges[j] + yedges[j + 1]) / 2
-            ax.text(x_center, y_center, f'N_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}', color='blue', ha='center', va='center')
+            ax.text(x_center, y_center, f'N_Occ: {occ_rate[i, j]:.4f}\nN_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}', color='blue', ha='center', va='center')
 
     ax.set_xlim([xedges[0], xedges[-1]])
     ax.set_ylim([yedges[0], yedges[-1]])
     ax.set_xlabel(param1)
     ax.set_ylabel(param2)
     ax.grid(True)
-    
-    xedgeslabel = np.round(xedges, 3)
-    yedgeslabel = np.round(yedges, 3)
-    
-    plt.xticks(xedges, xedgeslabel)
-    plt.yticks(yedges, yedgeslabel)
+
+    plt.xticks(xedges, np.round(xedges, 3))
+    plt.yticks(yedges, np.round(yedges, 3))
     
     ax.set_title('Dynamic Efficiency Plot')
     st.pyplot(fig)
 
 
-def section4_main(data_ps_all, data_gg):
+
+def section4_main(data_ps_all, data_gg, data_ps_planet):
     st.header("Section 4: Interactive Data Selection and Analysis")
     params = ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax']
     st.sidebar.subheader("Section 4 Configuration")
@@ -169,9 +175,6 @@ def section4_main(data_ps_all, data_gg):
     x_col, x_scale = get_column_name_and_scale(x_param, 'ps_all')
     y_col, y_scale = get_column_name_and_scale(y_param, 'ps_all')
 
-    #filtered_data_ps_all[x_col] = np.log10(filtered_data_ps_all[x_col].replace(0, np.nan).dropna()) if x_scale == 'log' else filtered_data_ps_all[x_col]
-    #filtered_data_ps_all[y_col] = np.log10(filtered_data_ps_all[y_col].replace(0, np.nan).dropna()) if y_scale == 'log' else filtered_data_ps_all[y_col]
-
     fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis")
     event_data = st.plotly_chart(fig, use_container_width=True, on_select="rerun")
 
@@ -179,11 +182,12 @@ def section4_main(data_ps_all, data_gg):
         selected_indices = event_data["selection"]["point_indices"]
         if selected_indices:
             selected_data = filtered_data_ps_all.iloc[selected_indices]
-            update_efficiency_plots(selected_data, data_gg, x_param, y_param, bins_x, bins_y)
+            update_efficiency_plots(selected_data, data_gg, data_ps_planet, x_param, y_param, bins_x, bins_y)
         else:
             st.write("No data selected. Please select data points in the graph.")
     else:
         st.write("No data selected. Please select data points in the graph.")
+
 
 
 def section2_settings(data, section):
