@@ -348,7 +348,7 @@ def main():
     st.pyplot(fig)
 
 
-    section4_main(data_ps_all, data_gg)
+    section4_main(data_ps_all, data_gg, data_ps_planet)
 
 def get_column_name_and_scale(param, dataset):
     mapping = {
