@@ -69,15 +69,23 @@ def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, 
                          color_continuous_scale='Viridis', labels={"color": "logg"}, title=title)
     else:
         fig = px.scatter(data, x=teff_col, y=luminosity, title=title)
-    
+
     fig.update_xaxes(title="Teff (K)", autorange="reversed")
     
     if 'TESS' in title:
         fig.update_yaxes(title="V_mag")
     else:
         fig.update_yaxes(title="log(L/Lsun)")
+
+    fig.update_layout(legend=dict(
+        yanchor="top",
+        y=1.0,
+        xanchor="left",
+        x=0.01
+    ))
     
     st.plotly_chart(fig, use_container_width=True)
+
 
         
 def plot_distribution(data, columns, title):
