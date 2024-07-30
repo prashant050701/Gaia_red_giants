@@ -62,13 +62,10 @@ exoplanet_gaia_ids = set(exoplanets['Gaia ID'])
 def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, exoplanet_ids=None, use_cmap=True):
     luminosity = np.log10(data[log_l_col]) if log_conversion else data[log_l_col]
     data['has_exoplanet'] = data['source_id'].isin(exoplanet_ids)
-    data['marker_color'] = data['has_exoplanet'].map(lambda x: 'red' if x else 'blue')  # red for hosts, blue for non-hosts
     
     if use_cmap:
-        fig = px.scatter(data, x=teff_col, y=luminosity, color=logg_col,
-                         symbol='has_exoplanet',
+        fig = px.scatter(data, x=teff_col, y=luminosity, color=logg_col, symbol='has_exoplanet',
                          color_continuous_scale='Viridis', labels={"color": "logg"}, title=title)
-        fig.update_traces(marker=dict(line=dict(color=data['marker_color'], width=2)))
     else:
         fig = px.scatter(data, x=teff_col, y=luminosity, title=title)
     
@@ -79,7 +76,7 @@ def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, 
     else:
         fig.update_yaxes(title="log(L/Lsun)")
 
-    fig.update_layout(legend=dict(x=0, xanchor='left', y=1, yanchor='top'))
+    fig.update_layout(legend=dict(x=0,xanchor='left', y=1, yanchor='top'))
     
     st.plotly_chart(fig, use_container_width=True)
 
