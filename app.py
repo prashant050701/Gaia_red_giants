@@ -56,13 +56,20 @@ surveys = {
     "Keck HIRES": {"data": keck, "Teff": "Teff", "log_L": "log_L", "logg": "log(g)", "log_conversion": False}
 }
 
-def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, use_cmap=True):
+exoplanets = pd.read_csv("database/updated_exoplanet_data.csv")
+exoplanet_gaia_ids = set(exoplanets['Gaia ID'])
+
+
+def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, exoplanet_ids=None, use_cmap=True):
     luminosity = np.log10(data[log_l_col]) if log_conversion else data[log_l_col]
+    data['has_exoplanet'] = data['source_id'].isin(exoplanet_ids)
+    
     if use_cmap:
-        fig = px.scatter(data, x=teff_col, y=luminosity, color=logg_col, color_continuous_scale='Viridis', labels={"color": "logg"}, title=title)
+        fig = px.scatter(data, x=teff_col, y=luminosity, color=logg_col, symbol='has_exoplanet',
+                         color_continuous_scale='Viridis', labels={"color": "logg"}, title=title)
     else:
         fig = px.scatter(data, x=teff_col, y=luminosity, title=title)
-
+    
     fig.update_xaxes(title="Teff (K)", autorange="reversed")
     
     if 'TESS' in title:
@@ -184,27 +191,28 @@ plot_tess = st.checkbox("TESS")
 if plot_original or plot_gaia or plot_tess:
     if survey1 == "All Surveys":
         if plot_original:
-            plot_hr_diagram(all_data, "Teff", "Lum", "logg", "HR Diagram - All Surveys (Original Data)", log_conversion=False)
+            plot_hr_diagram(all_data, "Teff", "Lum", "logg", "HR Diagram - All Surveys (Original Data)", log_conversion=False, exoplanet_ids=exoplanet_gaia_ids)
         if plot_gaia:
             combined_gaia = pd.concat([gaia_data[key] for key in gaia_data])
             plot_hr_diagram(combined_gaia, "effective_temperature", "luminosity", "surface_gravity",
-                            "HR Diagram - All Surveys (Gaia Data)", True)
+                            "HR Diagram - All Surveys (Gaia Data)", True, exoplanet_ids=exoplanet_gaia_ids)
         if plot_tess:
             combined_tess = pd.concat([tess_data[key] for key in tess_data])
-            plot_hr_diagram(combined_tess, "Teff", "GAIAmag", "logg", "HR Diagram - All Surveys (TESS Data)", False, use_cmap=False)
+            plot_hr_diagram(combined_tess, "Teff", "GAIAmag", "logg", "HR Diagram - All Surveys (TESS Data)", False, use_cmap=False, exoplanet_ids=exoplanet_gaia_ids)
    
     else:
         if plot_original:
             data_info = surveys[survey1]
             plot_hr_diagram(data_info["data"], data_info["Teff"], data_info["log_L"], data_info["logg"],
-                            f"HR Diagram - {survey1} (Original Survey)", data_info["log_conversion"])
+                            f"HR Diagram - {survey1} (Original Survey)", data_info["log_conversion"], exoplanet_ids=exoplanet_gaia_ids)
         if plot_gaia:
             gaia = gaia_data[survey1]
             plot_hr_diagram(gaia, "effective_temperature", "luminosity", "surface_gravity",
-                            f"HR Diagram - {survey1} (Gaia Data)", True)
+                            f"HR Diagram - {survey1} (Gaia Data)", True, exoplanet_ids=exoplanet_gaia_ids)
         if plot_tess:
             tess = tess_data[survey1]
-            plot_hr_diagram(tess, "Teff", "GAIAmag", "logg", f"HR Diagram - {survey1} (TESS Data)", False, use_cmap=False)
+            plot_hr_diagram(tess, "Teff", "GAIAmag", "logg", f"HR Diagram - {survey1} (TESS Data)", False, use_cmap=False, exoplanet_ids=exoplanet_gaia_ids)
+
 
 st.header("Section 2: Distribution Plots")
 
