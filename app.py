@@ -66,13 +66,12 @@ def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, 
     data['has_exoplanet'] = data['source_id'].isin(exoplanet_ids)
 
     if use_cmap:
-        fig = px.scatter(data, x=teff_col, y=luminosity, color=logg_col,
-                         color_continuous_scale='Viridis', labels={"color": "logg"}, title=title)
-        # Highlight exoplanets in red
-        exoplanet_mask = data['has_exoplanet']
-        fig.add_scatter(x=data[teff_col][exoplanet_mask], y=luminosity[exoplanet_mask],
-                        mode='markers', marker=dict(color='red', size=10),
-                        name='Exoplanet Host')
+        fig = px.scatter(data, x=teff_col, y=luminosity, color=logg_col, color_continuous_scale='Viridis', labels={"color": "logg"}, title=title)
+
+        for has_exo, group in data.groupby('has_exoplanet'):
+            fig.add_scatter(x=group[teff_col], y=luminosity[group.index], mode='markers',
+                            marker=dict(size=10, color='red' if has_exo else 'blue'),
+                            name=f'Has Exoplanet: {has_exo}')
     else:
         fig = px.scatter(data, x=teff_col, y=luminosity, title=title)
     
@@ -83,9 +82,9 @@ def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, 
     else:
         fig.update_yaxes(title="log(L/Lsun)")
 
-    fig.update_layout(legend=dict( x=0, xanchor='left', y=1, yanchor='top'))
-    
+    fig.update_layout(legend=dict(x=0, xanchor='left', y=1, yanchor='top'))
     st.plotly_chart(fig, use_container_width=True)
+
 
         
 def plot_distribution(data, columns, title):
