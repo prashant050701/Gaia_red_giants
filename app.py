@@ -21,23 +21,47 @@ def read_source_ids(file_path):
 
     return source_ids
 
+lick_source_ids = read_source_ids("database/lick_GK_survey_with_gaia_id.csv")
 lick_gk = pd.read_csv("database/lick_GK_survey_with_gaia_id.csv")
+lick_gk['source_id'] = lick_source_ids
+
+express_source_ids = read_source_ids("database/express_post_MS_with_gaia_id.csv")
 express = pd.read_csv("database/express_post_MS_with_gaia_id.csv")
+express['source_id'] = express_source_ids
+
+eapsnet1_source_ids = read_source_ids("database/EAPSNet1_stellar_params_with_gaia_id.csv")
 eapsnet1 = pd.read_csv("database/EAPSNet1_stellar_params_with_gaia_id.csv")
+eapsnet1['source_id'] = eapsnet1_source_ids
+
+ppps_source_ids = read_source_ids("database/PPPS_star_with_gaia_id.csv")
 ppps = pd.read_csv("database/PPPS_star_with_gaia_id.csv")
+ppps['source_id'] = ppps_source_ids
+
+eapsnet3_source_ids = read_source_ids("database/EAPSNet3_stellar_params_with_gaia_id.csv")
 eapsnet3 = pd.read_csv("database/EAPSNet3_stellar_params_with_gaia_id.csv")
+eapsnet3['source_id'] = eapsnet3_source_ids
+
+eapsnet2_source_ids = read_source_ids("database/EAPSNet2_stellar_params_with_gaia_id.csv")
 eapsnet2 = pd.read_csv("database/EAPSNet2_stellar_params_with_gaia_id.csv")
+eapsnet2['source_id'] = eapsnet2_source_ids
 
 coralie_source_ids = read_source_ids("database/coralie_star_with_gaia_id.csv")
 coralie = pd.read_csv("database/coralie_star_with_gaia_id.csv")
 coralie['source_id'] = coralie_source_ids
 
+ptps_source_ids = read_source_ids("database/ptps_with_gaia_id.csv")
 ptps = pd.read_csv("database/ptps_with_gaia_id.csv")
+ptps['source_id'] = ptps_source_ids
+
+keck_source_ids = read_source_ids("database/keck_hires_with_gaia_id.csv")
 keck = pd.read_csv("database/keck_hires_with_gaia_id.csv")
+keck['source_id'] = keck_source_ids
 
 golden_giant_ptps = pd.read_csv("database/golden_sample/golden_giant_ptps-result.csv")
 
+all_data_source_ids = read_source_ids("database/all_planetary_survey_original.csv")
 all_data = pd.read_csv("database/all_planetary_survey_original.csv")
+all_data['source_id'] = all_data_source_ids
 
 gaia_data = {
     "Lick GK": pd.read_csv("database/lick_gk-result.csv"),
