@@ -102,26 +102,17 @@ exoplanet_gaia_ids = set(exoplanets['Gaia ID'].astype(str))
 
 def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, exoplanet_ids=None, use_cmap=True):
     luminosity = np.log10(data[log_l_col]) if log_conversion else data[log_l_col]
-
-    data = data.dropna(subset=[teff_col, log_l_col, logg_col])
     data['luminosity'] = luminosity
-
     data['has_exoplanet'] = data['source_id'].astype(str).isin(exoplanet_ids)
-
-    hosts = data[data['has_exoplanet']]
-    non_hosts = data[~data['has_exoplanet']]
+    data['Type'] = np.where(data['has_exoplanet'], 'Exoplanet Host', 'Non-Host')
 
     if use_cmap:
-        fig = px.scatter(non_hosts, x=teff_col, y='luminosity', color=logg_col,
-                         color_continuous_scale='Viridis', labels={"color": "logg"}, title=title, name='Non-Hosts')
-        fig.add_scatter(x=hosts[teff_col], y=hosts['luminosity'], mode='markers',
-                        marker=dict(color=hosts[logg_col], line=dict(color='red', width=2)),
-                        name='Exoplanet Hosts')
+        fig = px.scatter(data, x=teff_col, y='luminosity', color=logg_col,
+                         color_continuous_scale='Viridis', labels={"color": "logg"}, title=title,
+                         symbol='Type', symbol_map={'Exoplanet Host': 'circle', 'Non-Host': 'square'})
     else:
-        fig = px.scatter(non_hosts, x=teff_col, y='luminosity', title=title)
-        fig.add_scatter(x=hosts[teff_col], y=hosts['luminosity'], mode='markers',
-                        marker=dict(color='blue', line=dict(color='red', width=2)),
-                        name='Exoplanet Hosts')
+        fig = px.scatter(data, x=teff_col, y='luminosity', title=title, color='Type',
+                         category_orders={"Type": ["Non-Host", "Exoplanet Host"]})
 
     fig.update_xaxes(title="Teff (K)", autorange="reversed")
     if 'TESS' in title:
@@ -129,7 +120,7 @@ def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, 
     else:
         fig.update_yaxes(title="log(L/Lsun)")
     fig.update_layout(legend=dict(x=0, xanchor='left', y=1, yanchor='top'))
-    
+
     st.plotly_chart(fig, use_container_width=True)
 
         
