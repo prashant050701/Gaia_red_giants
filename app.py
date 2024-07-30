@@ -100,19 +100,24 @@ surveys = {
 exoplanets = pd.read_csv("database/updated_exoplanet_data.csv")
 exoplanet_gaia_ids = set(exoplanets['Gaia ID'].astype(str))
 
+import numpy as np
+import plotly.express as px
+import streamlit as st
+
 def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, exoplanet_ids=None, use_cmap=True):
     luminosity = np.log10(data[log_l_col]) if log_conversion else data[log_l_col]
     data['luminosity'] = luminosity
     data['has_exoplanet'] = data['source_id'].astype(str).isin(exoplanet_ids)
-    data['Type'] = np.where(data['has_exoplanet'], 'Exoplanet Host', 'Non-Host')
 
     if use_cmap:
         fig = px.scatter(data, x=teff_col, y='luminosity', color=logg_col,
-                         color_continuous_scale='Viridis', labels={"color": "logg"}, title=title,
-                         symbol='Type', symbol_map={'Exoplanet Host': 'circle', 'Non-Host': 'square'})
+                         color_continuous_scale='Viridis', labels={"color": "logg"}, title=title)
     else:
-        fig = px.scatter(data, x=teff_col, y='luminosity', title=title, color='Type',
-                         category_orders={"Type": ["Non-Host", "Exoplanet Host"]})
+        fig = px.scatter(data, x=teff_col, y='luminosity', title=title)
+
+    hosts = data[data['has_exoplanet']]
+    fig.add_scatter(x=hosts[teff_col], y=hosts['luminosity'], mode='markers',
+                    marker=dict(color='red', size=10), name='Exoplanet Hosts')
 
     fig.update_xaxes(title="Teff (K)", autorange="reversed")
     if 'TESS' in title:
@@ -122,6 +127,7 @@ def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, 
     fig.update_layout(legend=dict(x=0, xanchor='left', y=1, yanchor='top'))
 
     st.plotly_chart(fig, use_container_width=True)
+
 
         
 def plot_distribution(data, columns, title):
