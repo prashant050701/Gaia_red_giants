@@ -63,7 +63,7 @@ def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, 
     luminosity = np.log10(data[log_l_col]) if log_conversion else data[log_l_col]
     data['has_exoplanet'] = data['source_id'].isin(exoplanet_ids)
     st.write(exoplanet_gaia_ids)
-    st.write(set(data['source_id'].dropna.astype(int)))
+    st.write(set(data['source_id'].dropna().astype(int)))
     st.write(data['has_exoplanet']==True)
     
     if use_cmap:
