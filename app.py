@@ -104,13 +104,20 @@ def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, 
     luminosity = np.log10(data[log_l_col]) if log_conversion else data[log_l_col]
     data['has_exoplanet'] = data['source_id'].astype(str).isin(exoplanet_ids)
 
-    if use_cmap:
-        fig = px.scatter(data, x=teff_col, y=luminosity, color=logg_col,
-                         color_continuous_scale='Viridis', labels={"color": "logg"}, title=title)
-    else:
-        fig = px.scatter(data, x=teff_col, y=luminosity, title=title)
+    hosts = data[data['has_exoplanet']]
+    non_hosts = data[~data['has_exoplanet']]
 
-    fig.update_traces(marker=dict(line=dict(color=np.where(data['has_exoplanet'], 'red', 'rgba(0,0,0,0)'), width=2)))
+    if use_cmap:
+        fig = px.scatter(non_hosts, x=teff_col, y=luminosity, color=logg_col,
+                         color_continuous_scale='Viridis', labels={"color": "logg"}, title=title)
+
+        fig.add_scatter(x=hosts[teff_col], y=hosts[luminosity], mode='markers',
+                        marker=dict(color=hosts[logg_col], line=dict(color='red', width=2)),
+                        name='Exoplanet Hosts')
+    else:
+        fig = px.scatter(non_hosts, x=teff_col, y=luminosity, title=title)
+
+        fig.add_scatter(x=hosts[teff_col], y=hosts[luminosity], mode='markers', marker=dict(color='blue', line=dict(color='red', width=2)), name='Exoplanet Hosts')
 
     fig.update_xaxes(title="Teff (K)", autorange="reversed")
 
@@ -122,7 +129,6 @@ def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, 
     fig.update_layout(legend=dict(x=0, xanchor='left', y=1, yanchor='top'))
 
     st.plotly_chart(fig, use_container_width=True)
-
 
         
 def plot_distribution(data, columns, title):
