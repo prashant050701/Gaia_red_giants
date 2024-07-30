@@ -21,7 +21,7 @@ def load_all_data():
     data = pd.read_csv('database/updated_exoplanet_data.csv')
     data_ps_planet = pd.read_csv('database/updated_exoplanet_data.csv')
     data_gg = load_combine_csv_files()
-    data_ps_all = pd.read_csv('database/all_planetary_survey_original.csv')
+    data_ps_all = pd.read_csv('database/all_planetary_survey_original_unique.csv')
     return data, data_ps_planet, data_gg, data_ps_all
 
 
@@ -69,7 +69,7 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
     filtered_data = df[[param1, param2]].dropna()
     counts, xedges, yedges = np.histogram2d(filtered_data[param1], filtered_data[param2], bins=[bin_edges_param1, bin_edges_param2])
 
-    total_stars = 2950 
+    total_stars = 2582 
     occurrence_rates = counts / total_stars
 
     if normalize:
