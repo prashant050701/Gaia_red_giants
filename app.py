@@ -62,14 +62,16 @@ exoplanet_gaia_ids = set(exoplanets['Gaia ID'])
 
 def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, exoplanet_ids=None, use_cmap=True):
     luminosity = np.log10(data[log_l_col]) if log_conversion else data[log_l_col]
-    data['has_exoplanet'] = data['source_id'].isin(exoplanet_ids)
+    # Mark stars with exoplanets
+    data['color'] = data['source_id'].isin(exoplanet_ids).map({True: 'Red', False: 'Blue'})  # Red for stars with exoplanets, Blue otherwise
     
     if use_cmap:
-        fig = px.scatter(data, x=teff_col, y=luminosity, color=logg_col, symbol='has_exoplanet',
-                         color_continuous_scale='Viridis', labels={"color": "logg"}, title=title)
+        fig = px.scatter(data, x=teff_col, y=luminosity, color='color', title=title,
+                         labels={"color": "Star Type"}, color_discrete_map={'Red': 'red', 'Blue': 'blue'})
     else:
-        fig = px.scatter(data, x=teff_col, y=luminosity, title=title)
-
+        fig = px.scatter(data, x=teff_col, y=luminosity, color='color', title=title,
+                         labels={"color": "Star Type"}, color_discrete_map={'Red': 'red', 'Blue': 'blue'})
+    
     fig.update_xaxes(title="Teff (K)", autorange="reversed")
     
     if 'TESS' in title:
@@ -78,13 +80,14 @@ def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, 
         fig.update_yaxes(title="log(L/Lsun)")
 
     fig.update_layout(legend=dict(
-        yanchor="top",
-        y=1.0,
-        xanchor="left",
-        x=0.01
+        x=0,
+        xanchor='left',
+        y=1,
+        yanchor='top'
     ))
     
     st.plotly_chart(fig, use_container_width=True)
+
 
 
         
