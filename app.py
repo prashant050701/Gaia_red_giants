@@ -21,8 +21,7 @@ eapsnet1 = pd.read_csv("database/EAPSNet1_stellar_params_with_gaia_id.csv")
 ppps = pd.read_csv("database/PPPS_star_with_gaia_id.csv")
 eapsnet3 = pd.read_csv("database/EAPSNet3_stellar_params_with_gaia_id.csv")
 eapsnet2 = pd.read_csv("database/EAPSNet2_stellar_params_with_gaia_id.csv")
-coralie = pd.read_csv("database/coralie_star_with_gaia_id.csv", converters={'source_id': convert_id})
-
+coralie = pd.read_csv("database/coralie_star_with_gaia_id.csv")
 ptps = pd.read_csv("database/ptps_with_gaia_id.csv")
 keck = pd.read_csv("database/keck_hires_with_gaia_id.csv")
 
@@ -70,7 +69,7 @@ exoplanet_gaia_ids = set(exoplanets['Gaia ID'])
 def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, exoplanet_ids=None, use_cmap=True):
     luminosity = np.log10(data[log_l_col]) if log_conversion else data[log_l_col]
     data['has_exoplanet'] = data['source_id'].isin(exoplanet_ids)
-    st.write(data['source_id'])
+    st.write(data['source_id'].dtype)
     
     if use_cmap:
         fig = px.scatter(data, x=teff_col, y=luminosity, color=logg_col, symbol='has_exoplanet',
