@@ -102,32 +102,34 @@ exoplanet_gaia_ids = set(exoplanets['Gaia ID'].astype(str))
 
 def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, exoplanet_ids=None, use_cmap=True):
     luminosity = np.log10(data[log_l_col]) if log_conversion else data[log_l_col]
+
+    data = data.dropna(subset=[teff_col, log_l_col, logg_col])
+    data['luminosity'] = luminosity
+
     data['has_exoplanet'] = data['source_id'].astype(str).isin(exoplanet_ids)
 
     hosts = data[data['has_exoplanet']]
     non_hosts = data[~data['has_exoplanet']]
 
     if use_cmap:
-        fig = px.scatter(non_hosts, x=teff_col, y=luminosity, color=logg_col,
+        fig = px.scatter(non_hosts, x=teff_col, y='luminosity', color=logg_col,
                          color_continuous_scale='Viridis', labels={"color": "logg"}, title=title)
-
-        fig.add_scatter(x=hosts[teff_col], y=hosts[luminosity], mode='markers',
+        fig.add_scatter(x=hosts[teff_col], y=hosts['luminosity'], mode='markers',
                         marker=dict(color=hosts[logg_col], line=dict(color='red', width=2)),
                         name='Exoplanet Hosts')
     else:
-        fig = px.scatter(non_hosts, x=teff_col, y=luminosity, title=title)
-
-        fig.add_scatter(x=hosts[teff_col], y=hosts[luminosity], mode='markers', marker=dict(color='blue', line=dict(color='red', width=2)), name='Exoplanet Hosts')
+        fig = px.scatter(non_hosts, x=teff_col, y='luminosity', title=title)
+        fig.add_scatter(x=hosts[teff_col], y=hosts['luminosity'], mode='markers',
+                        marker=dict(color='blue', line=dict(color='red', width=2)),
+                        name='Exoplanet Hosts')
 
     fig.update_xaxes(title="Teff (K)", autorange="reversed")
-
     if 'TESS' in title:
         fig.update_yaxes(title="V_mag")
     else:
         fig.update_yaxes(title="log(L/Lsun)")
-
     fig.update_layout(legend=dict(x=0, xanchor='left', y=1, yanchor='top'))
-
+    
     st.plotly_chart(fig, use_container_width=True)
 
         
