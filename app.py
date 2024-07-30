@@ -57,7 +57,7 @@ surveys = {
 }
 
 exoplanets = pd.read_csv("database/updated_exoplanet_data.csv")
-exoplanet_gaia_ids = set(exoplanets['Gaia ID'].map(lambda x: '{:.0f}'.format(x)))
+exoplanet_gaia_ids = set(exoplanets['Gaia ID'].to_string(float_format='{:.0f}'.format))
 
 def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, exoplanet_ids=None, use_cmap=True):
     luminosity = np.log10(data[log_l_col]) if log_conversion else data[log_l_col]
