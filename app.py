@@ -8,13 +8,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 from streamlit_plotly_events import plotly_events
 
-
-def convert_id(x):
-    try:
-        return str(int(float(x)))
-    except (ValueError, TypeError):
-        return None
-
 lick_gk = pd.read_csv("database/lick_GK_survey_with_gaia_id.csv")
 express = pd.read_csv("database/express_post_MS_with_gaia_id.csv")
 eapsnet1 = pd.read_csv("database/EAPSNet1_stellar_params_with_gaia_id.csv")
@@ -69,7 +62,7 @@ exoplanet_gaia_ids = set(exoplanets['Gaia ID'])
 def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, exoplanet_ids=None, use_cmap=True):
     luminosity = np.log10(data[log_l_col]) if log_conversion else data[log_l_col]
     data['has_exoplanet'] = data['source_id'].isin(exoplanet_ids)
-    st.write(data['source_id'].dtype)
+    st.write(data['source_id'])
     
     if use_cmap:
         fig = px.scatter(data, x=teff_col, y=luminosity, color=logg_col, symbol='has_exoplanet',
