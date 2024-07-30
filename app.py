@@ -106,15 +106,18 @@ def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, 
     data['has_exoplanet'] = data['source_id'].astype(str).isin(exoplanet_ids)
 
     fig = px.scatter(data, x=teff_col, y='luminosity', color=logg_col,
-                     color_continuous_scale='Viridis', labels={"color": "logg"}, title=title)
+                     color_continuous_scale='Viridis', labels={"color": "logg"}, title=title,
+                     opacity=0)
 
     non_hosts = data[~data['has_exoplanet']]
     fig.add_scatter(x=non_hosts[teff_col], y=non_hosts['luminosity'], mode='markers',
-                    marker=dict(color='blue'), name='Non-Hosts')
+                    marker=dict(color=non_hosts[logg_col], colorscale='Viridis', line=dict(color='rgba(0,0,0,0)', width=0)),
+                    name='Non-Hosts')
 
     hosts = data[data['has_exoplanet']]
     fig.add_scatter(x=hosts[teff_col], y=hosts['luminosity'], mode='markers',
-                    marker=dict(color='red'), name='Exoplanet Hosts')
+                    marker=dict(color=hosts[logg_col], colorscale='Viridis', line=dict(color='red', width=1)),
+                    name='Exoplanet Hosts')
 
     fig.update_xaxes(title="Teff (K)", autorange="reversed")
     fig.update_yaxes(title="log(L/Lsun)")
