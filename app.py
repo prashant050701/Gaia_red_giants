@@ -28,7 +28,7 @@ ppps = pd.read_csv("database/PPPS_star_with_gaia_id.csv")
 eapsnet3 = pd.read_csv("database/EAPSNet3_stellar_params_with_gaia_id.csv")
 eapsnet2 = pd.read_csv("database/EAPSNet2_stellar_params_with_gaia_id.csv")
 
-coralie_source_ids = read_source_ids(file_path)
+coralie_source_ids = read_source_ids("database/coralie_star_with_gaia_id.csv")
 coralie = pd.read_csv("database/coralie_star_with_gaia_id.csv")
 coralie['source_id'] = coralie_source_ids
 
