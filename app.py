@@ -113,7 +113,7 @@ def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, 
 
     if use_cmap:
         fig = px.scatter(non_hosts, x=teff_col, y='luminosity', color=logg_col,
-                         color_continuous_scale='Viridis', labels={"color": "logg"}, title=title)
+                         color_continuous_scale='Viridis', labels={"color": "logg"}, title=title, name='Non-Hosts')
         fig.add_scatter(x=hosts[teff_col], y=hosts['luminosity'], mode='markers',
                         marker=dict(color=hosts[logg_col], line=dict(color='red', width=2)),
                         name='Exoplanet Hosts')
