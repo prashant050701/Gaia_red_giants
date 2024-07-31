@@ -23,6 +23,7 @@ def read_source_ids(file_path):
 
 lick_source_ids = read_source_ids("database/lick_GK_survey_with_gaia_id.csv")
 lick_gk = pd.read_csv("database/lick_GK_survey_with_gaia_id.csv")
+lick_gk['Teff'] = lick_gk['Teff'].replace(0.0, np.nan)
 lick_gk['source_id'] = lick_source_ids
 
 express_source_ids = read_source_ids("database/express_post_MS_with_gaia_id.csv")
@@ -47,6 +48,7 @@ eapsnet2['source_id'] = eapsnet2_source_ids
 
 coralie_source_ids = read_source_ids("database/coralie_star_with_gaia_id.csv")
 coralie = pd.read_csv("database/coralie_star_with_gaia_id.csv")
+coralie['Teff'] = coralie['Teff'].replace(0.0, np.nan)
 coralie['source_id'] = coralie_source_ids
 
 ptps_source_ids = read_source_ids("database/ptps_with_gaia_id.csv")
