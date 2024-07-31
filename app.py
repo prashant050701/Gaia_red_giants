@@ -456,7 +456,7 @@ fig.add_trace(go.Histogram(
     marker=dict(color='blue', line=dict(color='black', width=1))
 ))
 fig.add_trace(go.Histogram(
-    x=golden_giant_ptps[param_golden], nbinsx=50, name="Golden Giant - {param_golden}",
+    x=golden_giant_ptps[param_golden], nbinsx=50, name=f"Golden Giant - {param_golden}",
     histnorm='probability density', #will comment this later if count is needed
     marker=dict(color='red', line=dict(color='black', width=1))
 ))
