@@ -520,7 +520,7 @@ fig.add_trace(go.Scatter(
     line=dict(color='red')))
 
 fig.update_layout(
-    title_text='Cumulative Distribution Comparison - Section 7',
+    title_text='Cumulative Distribution Comparison',
     xaxis_title_text='Value',
     yaxis_title_text='Cumulative Probability')
 
