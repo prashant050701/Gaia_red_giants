@@ -503,27 +503,20 @@ if st.button(f"Perform {test_type_6} Test on Overlapping Ranges (Auto Mode)", ke
         st.error(message_6)
 
 
-st.header("Section 7: Cumulative Distributions")
-
-survey_7 = st.selectbox("Select Survey for Cumulative Distribution", ["All Surveys"] + list(surveys.keys()), key="survey_7")
-param_7 = st.selectbox("Select Parameter from Survey", all_data.columns if survey_7 == "All Surveys" else surveys[survey_7]['data'].columns, key="param_7")
-param_golden_7 = st.selectbox("Select Parameter from Golden Giant Data for Comparison", golden_giant_ptps.columns, key="param_golden_7")
-
-data_7 = all_data if survey_7 == "All Surveys" else surveys[survey_7]['data']
 fig = go.Figure()
 
 fig.add_trace(go.Scatter(
-    x=np.sort(data_7[param_7].dropna()),
-    y=np.linspace(0, 1, len(data_7[param_7].dropna()), endpoint=False),
+    x=np.sort(data_6[param_6].dropna()),
+    y=np.linspace(0, 1, len(data_6[param_6].dropna()), endpoint=False),
     mode='lines',
-    name=f"{survey_7} - {param_7}",
+    name=f"{survey_6} - {param_6}",
     line=dict(color='blue')))
 
 fig.add_trace(go.Scatter(
-    x=np.sort(golden_giant_ptps[param_golden_7].dropna()),
-    y=np.linspace(0, 1, len(golden_giant_ptps[param_golden_7].dropna()), endpoint=False),
+    x=np.sort(golden_giant_ptps[param_golden].dropna()),
+    y=np.linspace(0, 1, len(golden_giant_ptps[param_golden].dropna()), endpoint=False),
     mode='lines',
-    name=f"Golden Giant - {param_golden_7}",
+    name=f"Golden Giant - {param_golden}",
     line=dict(color='red')))
 
 fig.update_layout(
