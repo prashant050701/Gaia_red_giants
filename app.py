@@ -129,7 +129,7 @@ def plot_hr_diagram(data, teff_col, log_l_col, logg_col, title, log_conversion, 
 def plot_distribution(data, columns, title):
     for column in columns:
         fig, ax = plt.subplots(figsize=(8, 6))
-        sns.histplot(data[column], kde=True, ax=ax)
+        sns.histplot(data[column].dropna(), kde=True, ax=ax)
         ax.set_title(f"{title}: {column}")
         
         try:
