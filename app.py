@@ -270,7 +270,6 @@ plot_tess2 = st.checkbox("Plot Distributions from TESS")
 columns2 = []
 if survey2 == "All Surveys":
     if plot_original2:
-        all_data = pd.read_csv("database/all_planetary_survey_original.csv")
         columns2 = all_data.columns
     elif plot_gaia2:
         combined_gaia = pd.concat([gaia_data[key] for key in gaia_data])
@@ -291,7 +290,6 @@ selected_columns = st.multiselect("Select Parameters to Plot", columns2)
 if st.button("Plot Distributions"):
     if survey2 == "All Surveys":
         if plot_original2:
-            all_data = pd.read_csv("database/all_planetary_survey_original.csv")
             plot_distribution(all_data, selected_columns, f"Distributions - All Surveys (Original Data)")
         if plot_gaia2:
             combined_gaia = pd.concat([gaia_data[key] for key in gaia_data])
