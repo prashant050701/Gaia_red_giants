@@ -59,8 +59,8 @@ keck['source_id'] = keck_source_ids
 
 golden_giant_ptps = pd.read_csv("database/golden_sample/golden_giant_ptps-result.csv")
 
-all_data_source_ids = read_source_ids("database/all_planetary_survey_original.csv")
-all_data = pd.read_csv("database/all_planetary_survey_original.csv")
+all_data_source_ids = read_source_ids("database/all_planetary_survey_original_unique.csv")
+all_data = pd.read_csv("database/all_planetary_survey_original_unique.csv")
 all_data['source_id'] = all_data_source_ids
 
 gaia_data = {
