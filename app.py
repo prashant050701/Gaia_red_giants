@@ -64,6 +64,8 @@ golden_giant_ptps = pd.read_csv("database/golden_sample/golden_giant_ptps-result
 all_data_source_ids = read_source_ids("database/all_planetary_survey_original_unique.csv")
 all_data = pd.read_csv("database/all_planetary_survey_original_unique.csv")
 all_data['Teff'] = all_data['Teff'].replace(0.0, np.nan)
+all_data['Mass'] = all_data['Mass'].replace(0.0, np.nan)
+all_data['logg'] = all_data['logg'].replace(0.0, np.nan)
 all_data['source_id'] = all_data_source_ids
 
 gaia_data = {
