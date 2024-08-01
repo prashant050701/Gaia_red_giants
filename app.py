@@ -453,7 +453,7 @@ param_golden = st.selectbox("Select Parameter from Golden Giant Data", golden_gi
 #if st.button("Plot Interactive Histograms", key="plot_interactive_histograms_6"): # if needed as a button, will uncomment this
 fig = go.Figure()
 fig.add_trace(go.Histogram(
-    x=data_6[param_6], nbinsx=50, name=f"{survey_6} - {param_6}",
+    x=data_6[param_6].dropna(), nbinsx=50, name=f"{survey_6} - {param_6}",
     histnorm='probability density', #will comment this later if count is needed
     marker=dict(color='blue', line=dict(color='black', width=1))
 ))
