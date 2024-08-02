@@ -300,7 +300,7 @@ def main():
     st.write(f"Total number of samples: {len(column_data)}")
     st.write(f"Range of the {column_to_plot}: {range_of_data}")
     st.write(f"Median of the {column_to_plot}: {median_of_data}")
-    st.write(f"Standard Deviation (Dispersion) of the {column_to_plot}: {std_deviation}")
+    st.write(f"Standard Deviation (Dispersion) of the {column_to_plot}: {std_deviation:.3f}")
 
     st.sidebar.subheader("Section 2: Planetary 2D Histogram Settings")
     parameter1, parameter2, bin_edges_param1, bin_edges_param2 = section2_settings(data, "2")
