@@ -82,6 +82,17 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
     fig, ax = plt.subplots(figsize=(10, 8))
     mesh = ax.pcolormesh(bin_edges_param2, bin_edges_param1, occurrence_rates, shading='auto', cmap='Greys', edgecolor='black', linewidth=1)
     mesh.set_facecolor("none")
+    
+    if 'log' in scale_param1.lower():
+        ax.set_yscale('log')
+        ax.set_yticks(bin_edges_param1)
+        ax.get_yaxis().set_major_formatter(plt.ScalarFormatter())
+        
+    if 'log' in scale_param2.lower():
+        ax.set_xscale('log')
+        ax.set_xticks(bin_edges_param2)
+        ax.get_xaxis().set_major_formatter(plt.ScalarFormatter())
+    
 
     for i in range(len(bin_edges_param1) - 1):
         for j in range(len(bin_edges_param2) - 1):
