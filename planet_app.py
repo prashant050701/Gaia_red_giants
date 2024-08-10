@@ -94,19 +94,18 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
         ax.get_xaxis().set_major_formatter(plt.ScalarFormatter())
     
 
+    ax.set_xticks(bin_edges_param2)
+    ax.set_xticklabels([f'{x:.2f}' for x in bin_edges_param2])
+    ax.set_yticks(bin_edges_param1)
+    ax.set_yticklabels([f'{y:.2f}' for y in bin_edges_param1])
+
     for i in range(len(bin_edges_param1) - 1):
         for j in range(len(bin_edges_param2) - 1):
+            x_center = (bin_edges_param2[j] + bin_edges_param2[j+1]) / 2
+            y_center = (bin_edges_param1[i] + bin_edges_param1[i+1]) / 2
             percentage_value = occurrence_rates[i, j]
-            ax.text((bin_edges_param2[j] + bin_edges_param2[j+1]) / 2, (bin_edges_param1[i] + bin_edges_param1[i+1]) / 2, 
-                    f'{percentage_value:.4f}%',
-                    color='black', ha='center', va='center', fontsize=10)
+            ax.text(x_center, y_center, f'{percentage_value:.4f}%', color='black', ha='center', va='center', fontsize=10)
 
-    ax.set_xticks(bin_edges_param2)
-    ax.set_yticks(bin_edges_param1)
-    ax.set_xticklabels(np.round(bin_edges_param2, 2))
-    ax.set_yticklabels(np.round(bin_edges_param1, 2))
-
-    #ax.invert_yaxis()
     ax.set_xlabel(param2)
     ax.set_ylabel(param1)
     ax.set_title('Normalized Planet Occurrence Rates' if normalize else 'Planet Occurrence Rates')
