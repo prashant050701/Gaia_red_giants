@@ -101,8 +101,20 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
 
     for i in range(len(bin_edges_param1) - 1):
         for j in range(len(bin_edges_param2) - 1):
-            x_center = (bin_edges_param2[j] + bin_edges_param2[j+1]) / 2
-            y_center = (bin_edges_param1[i] + bin_edges_param1[i+1]) / 2
+            
+            if scale_param1 == "Logarithmic" and scale_param2 == "Logarithmic":
+                x_center = np.sqrt(bin_edges_param2[j] * bin_edges_param2[j+1])
+                y_center = np.sqrt(bin_edges_param1[i] * bin_edges_param1[i+1])
+            elif scale_param1 == "Logarithmic":
+                x_center = (bin_edges_param2[j] + bin_edges_param2[j+1]) / 2
+                y_center = np.sqrt(bin_edges_param1[i] * bin_edges_param1[i+1])
+            elif scale_param2 == "Logarithmic":
+                x_center = np.sqrt(bin_edges_param2[j] * bin_edges_param2[j+1])
+                y_center = (bin_edges_param1[i] + bin_edges_param1[i+1]) / 2
+            else:
+                x_center = (bin_edges_param2[j] + bin_edges_param2[j+1]) / 2
+                y_center = (bin_edges_param1[i] + bin_edges_param1[i+1]) / 2
+
             percentage_value = occurrence_rates[i, j]
             ax.text(x_center, y_center, f'{percentage_value:.4f}%', color='black', ha='center', va='center', fontsize=10)
 
