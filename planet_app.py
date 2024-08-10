@@ -64,7 +64,7 @@ def plot_histogram(data, column):
     ax.set_ylabel('Frequency')
     return fig
 
-def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2, normalize=False):
+def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, normalize=False):
     
     filtered_data = df[[param1, param2]].dropna()
     counts, xedges, yedges = np.histogram2d(filtered_data[param1], filtered_data[param2], bins=[bin_edges_param1, bin_edges_param2])
@@ -259,7 +259,7 @@ def section2_settings(data, section):
     else:
         bin_edges_param2 = np.linspace(min_param2, max_param2, bins_param2 + 1)
 
-    return parameter1, parameter2, bin_edges_param1, bin_edges_param2
+    return parameter1, parameter2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2
 
 def section3_settings(data, section):
     parameters = ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax']
@@ -314,12 +314,12 @@ def main():
     st.write(f"Standard Deviation (Dispersion) of the {column_to_plot}: {std_deviation:.3f}")
 
     st.sidebar.subheader("Section 2: Planetary 2D Histogram Settings")
-    parameter1, parameter2, bin_edges_param1, bin_edges_param2 = section2_settings(data, "2")
+    parameter1, parameter2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2 = section2_settings(data, "2")
     survey2 = st.sidebar.selectbox("Select Survey (Section 2)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey2')
     filtered_data = filter_data(data.copy(), "2", survey2)
     
     st.header("Section 2: Occurrence Rate")
-    occurrence_figure = plot_occurrence_rates(filtered_data, parameter1, parameter2, bin_edges_param1, bin_edges_param2, normalize=False)
+    occurrence_figure = plot_occurrence_rates(filtered_data, parameter1, parameter2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, normalize=False)
     st.pyplot(occurrence_figure)
     
     
