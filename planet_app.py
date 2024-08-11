@@ -258,6 +258,8 @@ def section2_settings(data, section):
     custom_scale_param1 = st.sidebar.radio(f"Custom scale for {parameter1}?", ["No", "Yes"], key=f'custom_scale_param1_section_{section}')
     custom_scale_param2 = st.sidebar.radio(f"Custom scale for {parameter2}?", ["No", "Yes"], key=f'custom_scale_param2_section_{section}')
 
+    show_error = st.sidebar.checkbox("Show Error", value=False, key=f'show_error_section_{section}')
+
     if custom_scale_param1 == "Yes":
         min_param1 = st.sidebar.number_input(f"Minimum {parameter1}:", value=float(data[parameter1].min()), key=f'min_param1_section_{section}')
         max_param1 = st.sidebar.number_input(f"Maximum {parameter1}:", value=float(data[parameter1].max()), key=f'max_param1_section_{section}')
@@ -270,8 +272,8 @@ def section2_settings(data, section):
     else:
         min_param2, max_param2 = data[parameter2].min(), data[parameter2].max()
 
-    bins_param1 = st.sidebar.number_input(f"Number of bins for {parameter1}", min_value=1, max_value=50, value=4, step=1, key=f'bins_param1_section_{section}')
-    bins_param2 = st.sidebar.number_input(f"Number of bins for {parameter2}", min_value=1, max_value=50, value=4, step=1, key=f'bins_param2_section_{section}')
+    bins_param1 = st.sidebar.number_input(f"Number of bins for {parameter1}", min_value=1, max_value=50, value=3, step=1, key=f'bins_param1_section_{section}')
+    bins_param2 = st.sidebar.number_input(f"Number of bins for {parameter2}", min_value=1, max_value=50, value=3, step=1, key=f'bins_param2_section_{section}')
 
     if scale_param1 == "Logarithmic":
         bin_edges_param1 = np.logspace(np.log10(min_param1), np.log10(max_param1), bins_param1 + 1)
@@ -282,8 +284,6 @@ def section2_settings(data, section):
         bin_edges_param2 = np.logspace(np.log10(min_param2), np.log10(max_param2), bins_param2 + 1)
     else:
         bin_edges_param2 = np.linspace(min_param2, max_param2, bins_param2 + 1)
-
-    show_error = st.sidebar.checkbox("Show Error", value=False, key=f'show_error_section_{section}')
 
     return parameter1, parameter2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, show_error
 
