@@ -84,11 +84,11 @@ def plot_occurrence_rates(df, surveys_df, param1, param2, bin_edges_param1, bin_
 
     errors = calculate_occurrence_error(counts, total_stars)
 
-    # if normalize:
-    #     param1_bin_sizes = np.diff(bin_edges_param1)
-    #     param2_bin_sizes = np.diff(bin_edges_param2)
-    #     occurrence_rates /= np.outer(param1_bin_sizes, param2_bin_sizes)
-    #     errors /= np.outer(param1_bin_sizes, param2_bin_sizes)
+    if normalize:
+        param1_bin_sizes = np.diff(bin_edges_param1)
+        param2_bin_sizes = np.diff(bin_edges_param2)
+        occurrence_rates /= np.outer(param1_bin_sizes, param2_bin_sizes)
+        errors /= np.outer(param1_bin_sizes, param2_bin_sizes)
         
     occurrence_rates *= 100
     errors *= 100
@@ -133,6 +133,8 @@ def plot_occurrence_rates(df, surveys_df, param1, param2, bin_edges_param1, bin_
 
             if show_error:
                 if scale_param1 == "Linear" and scale_param2 == "Linear":
+                    error_y_position = y_center - 0.15 * (bin_edges_param1[i+1] - bin_edges_param1[i])
+                elif scale_param1 == "Linear" and scale_param2 == "Logarithmic":
                     error_y_position = y_center - 0.15 * (bin_edges_param1[i+1] - bin_edges_param1[i])
                 else:
                     error_y_position = y_center - 0.25 * y_center
