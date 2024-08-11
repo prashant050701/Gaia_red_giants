@@ -135,8 +135,9 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
                 ax.text(x_center, error_y_position, f'±{error_value:.3f}%', color='gray', ha='center', va='center', fontsize=10)
 
 
-    ax.set_xlabel(param2)
-    ax.set_ylabel(param1)
+    ax.set_xlabel(param2, fontsize=18)
+    ax.set_ylabel(param1, fontsize=18)
+    
     ax.set_title('Normalized Planet Occurrence Rates' if normalize else 'Planet Occurrence Rates')
 
     return fig
