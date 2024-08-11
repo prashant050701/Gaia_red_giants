@@ -84,11 +84,11 @@ def plot_occurrence_rates(df, surveys_df, param1, param2, bin_edges_param1, bin_
 
     errors = calculate_occurrence_error(counts, total_stars)
 
-    if normalize:
-        param1_bin_sizes = np.diff(bin_edges_param1)
-        param2_bin_sizes = np.diff(bin_edges_param2)
-        occurrence_rates /= np.outer(param1_bin_sizes, param2_bin_sizes)
-        errors /= np.outer(param1_bin_sizes, param2_bin_sizes)
+    # if normalize:
+    #     param1_bin_sizes = np.diff(bin_edges_param1)
+    #     param2_bin_sizes = np.diff(bin_edges_param2)
+    #     occurrence_rates /= np.outer(param1_bin_sizes, param2_bin_sizes)
+    #     errors /= np.outer(param1_bin_sizes, param2_bin_sizes)
         
     occurrence_rates *= 100
     errors *= 100
