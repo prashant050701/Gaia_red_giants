@@ -127,8 +127,11 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
             ax.text(x_center, y_center, f'{percentage_value:.3f}%', color='black', ha='center', va='center', fontsize=10)
 
             if show_error:
-                error_value = errors[i, j]
-                ax.text(x_center, y_center - 0.1 * y_center, f'±{error_value:.3f}%', color='gray', ha='center', va='center', fontsize=8)
+            if scale_param1 == "Linear" and scale_param2 == "Linear":
+                error_y_position = y_center - 0.05 * (bin_edges_param1[i+1] - bin_edges_param1[i])
+            else:
+                error_y_position = y_center - 0.05 * y_center
+
 
     ax.set_xlabel(param2)
     ax.set_ylabel(param1)
