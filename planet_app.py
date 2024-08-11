@@ -345,7 +345,7 @@ def main():
     filtered_data = filter_data(data.copy(), "2", survey2)
     
     st.header("Section 2: Occurrence Rate")
-    occurrence_figure = plot_occurrence_rates(filtered_data, parameter1, parameter2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, normalize=False, show_error)
+    occurrence_figure = plot_occurrence_rates(filtered_data, parameter1, parameter2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, normalize=False, show_error=show_error)
     st.pyplot(occurrence_figure)
     
     
