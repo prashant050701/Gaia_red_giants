@@ -153,7 +153,7 @@ def update_efficiency_plots(selected_data, data_gg, data_ps_planet, param1, para
     col2, _ = get_column_name_and_scale(param2, 'ps_all')
     col1_gg, _ = get_column_name_and_scale(param1, 'gg')
     col2_gg, _ = get_column_name_and_scale(param2, 'gg')
-    col1_ps, _ = get_column_name_and_scale(param1, 'ps')  # Assuming there is a 'ps' dataset mapping
+    col1_ps, _ = get_column_name_and_scale(param1, 'ps')
     col2_ps, _ = get_column_name_and_scale(param2, 'ps')
 
     xedges = np.linspace(selected_data[col1].min(), selected_data[col1].max(), bins_x + 1)
@@ -161,7 +161,7 @@ def update_efficiency_plots(selected_data, data_gg, data_ps_planet, param1, para
 
     n_ps_counts = np.zeros((bins_x, bins_y))
     n_g_counts = np.zeros((bins_x, bins_y))
-    n_ps_occ_counts = np.zeros((bins_x, bins_y))  # Array to hold counts of N_psOcc
+    n_ps_occ_counts = np.zeros((bins_x, bins_y))
 
     for i in range(bins_x):
         for j in range(bins_y):
