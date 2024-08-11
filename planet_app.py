@@ -131,6 +131,8 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
                     error_y_position = y_center - 0.05 * (bin_edges_param1[i+1] - bin_edges_param1[i])
                 else:
                     error_y_position = y_center - 0.05 * y_center
+                error_value = errors[i, j]
+                ax.text(x_center, error_y_position, f'±{error_value:.3f}%', color='gray', ha='center', va='center', fontsize=8)
 
 
     ax.set_xlabel(param2)
