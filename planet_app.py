@@ -26,13 +26,15 @@ def load_all_data():
 
 
 def filter_data(df, section, survey, filter_type='main'):
+    is_giant = False
     st.sidebar.subheader(f"Filters for Section {section}")
     giants_key = f"giants_only_{filter_type}_section_{section}"
     if st.sidebar.checkbox("Giants only", key=giants_key):
+        is_giant = True
         if 'log_g' in df.columns:
-            df = df[df['log_g'] < 3.7]
+            df = df[df['log_g'] < 3.75]
         elif 'logg' in df.columns:
-            df = df[df['logg'] < 3.7]
+            df = df[df['logg'] < 3.75]
 
         #return df
 
@@ -54,7 +56,7 @@ def filter_data(df, section, survey, filter_type='main'):
         if source_file:
             df = df[df['source_file'] == source_file]
 
-    return df
+    return df, is_giant
 
 def plot_histogram(data, column):
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -69,12 +71,15 @@ def calculate_occurrence_error(counts, total_stars):
     errors = np.sqrt((occurrence_rates * (1 - occurrence_rates)) / total_stars)
     return errors
 
-def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, normalize=False, show_error=False):
+def plot_occurrence_rates(df, surveys_df, param1, param2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, normalize=False, show_error=False, is_giant=False):
     
     filtered_data = df[[param1, param2]].dropna()
     counts, xedges, yedges = np.histogram2d(filtered_data[param1], filtered_data[param2], bins=[bin_edges_param1, bin_edges_param2])
 
-    total_stars = 2582 
+    total_stars = surveys_df.shape[0]
+    if is_giant:
+        total_stars = surveys_df[surveys_df['logg'] <= 3.75].shape[0]
+    
     occurrence_rates = counts / total_stars
 
     errors = calculate_occurrence_error(counts, total_stars)
@@ -206,7 +211,7 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
     params = ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax']
     st.sidebar.subheader("Section 4 Configuration")
     survey4 = st.sidebar.selectbox("Select Survey", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey4')
-    filtered_data_ps_all = filter_data(data_ps_all.copy(), "4", survey4)
+    filtered_data_ps_all,_ = filter_data(data_ps_all.copy(), "4", survey4)
     x_param = st.sidebar.selectbox("Select X-axis Parameter", params, index=0, key="x_param_section4")
     y_param = st.sidebar.selectbox("Select Y-axis Parameter", params, index=1, key="y_param_section4")
     
@@ -329,7 +334,7 @@ def main():
 
     st.sidebar.subheader("Section 1: Histogram Filters")
     survey1 = st.sidebar.selectbox("Select Survey (Section 1)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey1')
-    filtered_data = filter_data(data.copy(), "1", survey1)
+    filtered_data,_ = filter_data(data.copy(), "1", survey1)
     st.header("Section 1: Histogram")
     numeric_columns = data.select_dtypes(include=[np.number]).columns.tolist()
     column_to_plot = st.selectbox("Select Column for Histogram", numeric_columns, key='column_hist_1')
@@ -348,18 +353,18 @@ def main():
     st.sidebar.subheader("Section 2: Planetary 2D Histogram Settings")
     parameter1, parameter2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, show_error = section2_settings(data, "2")
     survey2 = st.sidebar.selectbox("Select Survey (Section 2)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey2')
-    filtered_data = filter_data(data.copy(), "2", survey2)
+    filtered_data,is_giant = filter_data(data.copy(), "2", survey2)
     
     st.header("Section 2: Occurrence Rate")
-    occurrence_figure = plot_occurrence_rates(filtered_data, parameter1, parameter2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, normalize=False, show_error=show_error)
+    occurrence_figure = plot_occurrence_rates(filtered_data, data_ps_all, parameter1, parameter2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, normalize=False, show_error=show_error, is_giant=is_giant)
     st.pyplot(occurrence_figure)
     
     
     st.header("Section 3: Planetary Search Efficiency")
     st.sidebar.header('Section 3: Parameter Selection')
     survey3 = st.sidebar.selectbox("Select Survey (Section 3)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey3')
-    filtered_data_ps_planet = filter_data(data_ps_planet.copy(), "3: Planetary Search Data", survey3)
-    filtered_data_gg = filter_data(data_gg.copy(), "3: Golden Sample Data", 'All')
+    filtered_data_ps_planet,_ = filter_data(data_ps_planet.copy(), "3: Planetary Search Data", survey3)
+    filtered_data_gg,_ = filter_data(data_gg.copy(), "3: Golden Sample Data", 'All')
     
     param1, param2, xedges, yedges = section3_settings(filtered_data_ps_planet, "3")
     col1_ps_planet, scale1_ps_planet = get_column_name_and_scale(param1, 'ps')
