@@ -66,7 +66,7 @@ def plot_histogram(data, column):
 
 def calculate_occurrence_error(counts, total_stars):
     occurrence_rates = counts / total_stars
-    errors = np.sqrt((occurrence_rates * (1 - occurrence_rates)) / total_stars) * 100
+    errors = np.sqrt((occurrence_rates * (1 - occurrence_rates)) / total_stars)
     return errors
 
 def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, normalize=False, show_error=False):
@@ -124,11 +124,11 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
                 y_center = (bin_edges_param1[i] + bin_edges_param1[i+1]) / 2
 
             percentage_value = occurrence_rates[i, j]
-            ax.text(x_center, y_center, f'{percentage_value:.4f}%', color='black', ha='center', va='center', fontsize=10)
+            ax.text(x_center, y_center, f'{percentage_value:.3f}%', color='black', ha='center', va='center', fontsize=10)
 
             if show_error:
                 error_value = errors[i, j]
-                ax.text(x_center, y_center - 0.05 * y_center, f'±{error_value:.4f}%', color='gray', ha='center', va='center', fontsize=8)
+                ax.text(x_center, y_center - 0.1 * y_center, f'±{error_value:.3f}%', color='gray', ha='center', va='center', fontsize=8)
 
     ax.set_xlabel(param2)
     ax.set_ylabel(param1)
