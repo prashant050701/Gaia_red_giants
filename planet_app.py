@@ -64,7 +64,12 @@ def plot_histogram(data, column):
     ax.set_ylabel('Frequency')
     return fig
 
-def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, normalize=False):
+def calculate_occurrence_error(counts, total_stars):
+    occurrence_rates = counts / total_stars
+    errors = np.sqrt((occurrence_rates * (1 - occurrence_rates)) / total_stars) * 100
+    return errors
+
+def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, normalize=False, show_error=False):
     
     filtered_data = df[[param1, param2]].dropna()
     counts, xedges, yedges = np.histogram2d(filtered_data[param1], filtered_data[param2], bins=[bin_edges_param1, bin_edges_param2])
@@ -72,12 +77,16 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
     total_stars = 2582 
     occurrence_rates = counts / total_stars
 
+    errors = calculate_occurrence_error(counts, total_stars)
+
     if normalize:
         param1_bin_sizes = np.diff(bin_edges_param1)
         param2_bin_sizes = np.diff(bin_edges_param2)
         occurrence_rates /= np.outer(param1_bin_sizes, param2_bin_sizes)
+        errors /= np.outer(param1_bin_sizes, param2_bin_sizes)
         
     occurrence_rates *= 100
+    errors *= 100
 
     fig, ax = plt.subplots(figsize=(10, 8))
     mesh = ax.pcolormesh(bin_edges_param2, bin_edges_param1, occurrence_rates, shading='auto', cmap='Greys', edgecolor='black', linewidth=1)
@@ -93,7 +102,6 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
         ax.set_xticks(bin_edges_param2)
         ax.get_xaxis().set_major_formatter(plt.ScalarFormatter())
     
-
     ax.set_xticks(bin_edges_param2)
     ax.set_xticklabels([f'{x:.2f}' for x in bin_edges_param2])
     ax.set_yticks(bin_edges_param1)
@@ -118,11 +126,16 @@ def plot_occurrence_rates(df, param1, param2, bin_edges_param1, bin_edges_param2
             percentage_value = occurrence_rates[i, j]
             ax.text(x_center, y_center, f'{percentage_value:.4f}%', color='black', ha='center', va='center', fontsize=10)
 
+            if show_error:
+                error_value = errors[i, j]
+                ax.text(x_center, y_center - 0.05 * y_center, f'±{error_value:.4f}%', color='gray', ha='center', va='center', fontsize=8)
+
     ax.set_xlabel(param2)
     ax.set_ylabel(param1)
     ax.set_title('Normalized Planet Occurrence Rates' if normalize else 'Planet Occurrence Rates')
 
     return fig
+
     
 def update_efficiency_plots(selected_data, data_gg, data_ps_planet, param1, param2, bins_x, bins_y):
     col1, _ = get_column_name_and_scale(param1, 'ps_all')
@@ -270,7 +283,9 @@ def section2_settings(data, section):
     else:
         bin_edges_param2 = np.linspace(min_param2, max_param2, bins_param2 + 1)
 
-    return parameter1, parameter2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2
+    show_error = st.sidebar.checkbox("Show Error", value=False, key=f'show_error_section_{section}')
+
+    return parameter1, parameter2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, show_error
 
 def section3_settings(data, section):
     parameters = ['Mass', 'Teff', 'Fe/H', 'log_g', 'radius', 'parallax']
@@ -325,12 +340,12 @@ def main():
     st.write(f"Standard Deviation (Dispersion) of the {column_to_plot}: {std_deviation:.3f}")
 
     st.sidebar.subheader("Section 2: Planetary 2D Histogram Settings")
-    parameter1, parameter2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2 = section2_settings(data, "2")
+    parameter1, parameter2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, show_error = section2_settings(data, "2")
     survey2 = st.sidebar.selectbox("Select Survey (Section 2)", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey2')
     filtered_data = filter_data(data.copy(), "2", survey2)
     
     st.header("Section 2: Occurrence Rate")
-    occurrence_figure = plot_occurrence_rates(filtered_data, parameter1, parameter2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, normalize=False)
+    occurrence_figure = plot_occurrence_rates(filtered_data, parameter1, parameter2, bin_edges_param1, bin_edges_param2, scale_param1, scale_param2, normalize=False, show_error)
     st.pyplot(occurrence_figure)
     
     
