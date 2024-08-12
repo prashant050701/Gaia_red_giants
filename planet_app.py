@@ -392,7 +392,7 @@ def main():
 
     total_ps_planet_in_bins = np.sum(n_ps_planet_counts)
     total_gg_in_bins = np.sum(n_g_counts)
-    n_ps_planet_norm = n_ps_planet_counts / total_ps_planet_in_bins if total_ps_planet_in_bins > 0 else n_ps_planet_counts
+    n_ps_planet_norm = n_ps_planet_counts / total_ps_planet_in_bins if total_ps_planet_in_bins > 0 else n_ps_planet_counts #no. of stars with exoplanet/total of same from all bins
     n_g_norm = n_g_counts / total_gg_in_bins if total_gg_in_bins > 0 else n_g_counts
 
     eta = np.divide(n_ps_planet_norm, n_g_norm, out=np.zeros_like(n_ps_planet_norm), where=n_g_norm != 0)
