@@ -305,8 +305,10 @@ def section3_settings(data, section):
     param1 = st.sidebar.selectbox(f"Select X-axis parameter (Section {section})", parameters, key=f'param1_section_{section}')
     param2 = st.sidebar.selectbox(f"Select Y-axis parameter (Section {section})", parameters, key=f'param2_section_{section}')
 
-    col1, scale1 = get_column_name_and_scale(param1, 'ps')
-    col2, scale2 = get_column_name_and_scale(param2, 'ps')
+    #col1, scale1 = get_column_name_and_scale(param1, 'ps')
+    #col2, scale2 = get_column_name_and_scale(param2, 'ps')
+    col1, scale1 = get_column_name_and_scale(param1, 'ps_all')
+    col2, scale2 = get_column_name_and_scale(param2, 'ps_all')
 
     custom_scale_param1 = st.sidebar.radio(f"Custom scale for {param1}?", ["No", "Yes"], key=f'custom_scale_param1_section_{section}')
     if custom_scale_param1 == "Yes":
