@@ -392,7 +392,7 @@ def main():
 
     bins = len(xedges) - 1
     #n_ps_planet_counts = np.zeros((bins, bins))
-    n_ps_planet = np.zeros((bins, bins))
+    n_ps_counts = np.zeros((bins, bins))
     n_g_counts = np.zeros((bins, bins))
 
     for i in range(bins):
