@@ -421,7 +421,7 @@ def main():
             x_center = (xedges[j] + xedges[j + 1]) / 2
             y_center = (yedges[i] + yedges[i + 1]) / 2
             #ax.text(x_center, y_center, f'N_psOcc: {n_ps_planet_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}',color='blue', ha='center', va='center')
-            ax.text(x_center, y_center, f'N_psOcc: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}',color='blue', ha='center', va='center')
+            ax.text(x_center, y_center, f'N_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}',color='blue', ha='center', va='center')
             
     ax.set_xlim([xedges[0], xedges[-1]])
     ax.set_ylim([yedges[0], yedges[-1]])
