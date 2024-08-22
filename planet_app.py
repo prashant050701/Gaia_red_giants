@@ -194,8 +194,8 @@ def update_efficiency_plots(selected_data, data_gg, data_ps_planet, param1, para
             eta_new_val = eta_new[i,j] if not np.isnan(eta_new[i,j]) else 0
             x_center = (xedges[i] + xedges[i + 1]) / 2
             y_center = (yedges[j] + yedges[j + 1]) / 2
-            #ax.text(x_center, y_center, f'N_Occ: {occ_rate[i, j]:.4f}\nN_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}', color='blue', ha='center', va='center')
-            ax.text(x_center, y_center, f'N_Occ: {occ_rate[i, j]:.4f}\nN_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_new_val:.4f}', color='blue', ha='center', va='center')
+            ax.text(x_center, y_center, f'N_Occ: {occ_rate[i, j]:.4f}\nN_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}', color='blue', ha='center', va='center')
+            #ax.text(x_center, y_center, f'N_Occ: {occ_rate[i, j]:.4f}\nN_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_new_val:.4f}', color='blue', ha='center', va='center')
             
     ax.set_xlim([xedges[0], xedges[-1]])
     ax.set_ylim([yedges[0], yedges[-1]])
@@ -243,21 +243,23 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
             st.write(f"Corrected Occurrence Rate: {corrected_occ_rate:.6f}")
 
 
-            st.markdown("""
+st.markdown("""
 **Corrected Occurrence Rate Formula:**
 $$
-\\text{Corrected Occurrence Rate} = \\frac{\\sum (\\eta_i \\times N\\_{\\text{Occ}_i})}{\\sum \\eta_i}
+\\text{Corrected Occurrence Rate} = \\frac{\\sum \\left(\\frac{N_{p_i}}{N_{g_i}} \\times N\\_{\\text{Occ}_i}\\right)}{\\sum \\left(\\frac{N_{p_i}}{N_{g_i}}\\right)}
 $$
 Where:
-- $\\eta_i$ is the efficiency of detection for bin $i$.
+- $N_{p_i}$ is the number of planets detected in bin $i$.
+- $N_{g_i}$ is the number of stars with good detection efficiency in bin $i$.
 - $N\\_{\\text{Occ}_i}$ is the occurrence rate for bin $i$, calculated as:
   $$
-  N\\_{\\text{Occ}_i} = \\frac{N_{*p_i}}{\\sum N_{*}}
+  N\\_{\\text{Occ}_i} = \\frac{N_{*p_i}}{\\frac{N_{p_i}}{N_{g_i}} \\times \\sum N_{*}}
   $$
   Where:
   - $N_{*p_i}$ is the number of stars hosting a planet in bin $i$.
   - $\\sum N_{*}$ is the total number of stars in the survey across all bins of the selection.
 """)
+
 
         else:
             st.write("No data selected. Please select data points in the graph.")
