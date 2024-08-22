@@ -185,15 +185,18 @@ def update_efficiency_plots(selected_data, data_gg, data_ps_planet, param1, para
     occ_rate = n_ps_occ_counts / total_ps_in_bins if total_ps_in_bins > 0 else n_ps_occ_counts #dividing by stars with/without exoplanet to get occurrence rate
     
     eta = np.divide(n_ps_norm, n_g_norm, out=np.zeros_like(n_ps_norm), where=n_g_norm != 0)
+    eta_new = np.divide(n_g_norm, n_ps_norm, out=np.zeros_like(n_g_norm), where=n_ps_norm != 0)
 
     fig, ax = plt.subplots()
     for i in range(bins_x):
         for j in range(bins_y):
             eta_val = eta[i, j] if not np.isnan(eta[i, j]) else 0
+            eta_new_val = eta_new[i,j] if not np.isnan(eta_new[i,j]) else 0
             x_center = (xedges[i] + xedges[i + 1]) / 2
             y_center = (yedges[j] + yedges[j + 1]) / 2
-            ax.text(x_center, y_center, f'N_Occ: {occ_rate[i, j]:.4f}\nN_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}', color='blue', ha='center', va='center')
-
+            #ax.text(x_center, y_center, f'N_Occ: {occ_rate[i, j]:.4f}\nN_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}', color='blue', ha='center', va='center')
+            ax.text(x_center, y_center, f'N_Occ: {occ_rate[i, j]:.4f}\nN_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_new_val:.4f}', color='blue', ha='center', va='center')
+            
     ax.set_xlim([xedges[0], xedges[-1]])
     ax.set_ylim([yedges[0], yedges[-1]])
     ax.set_xlabel(param1)
@@ -205,7 +208,7 @@ def update_efficiency_plots(selected_data, data_gg, data_ps_planet, param1, para
     
     ax.set_title('Dynamic Efficiency Plot')
     st.pyplot(fig)
-    return eta, occ_rate
+    return eta, eta_new, occ_rate
 
 
 def section4_main(data_ps_all, data_gg, data_ps_planet):
@@ -230,10 +233,10 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
         selected_indices = event_data["selection"]["point_indices"]
         if selected_indices:
             selected_data = filtered_data_ps_all.iloc[selected_indices]
-            eta, occ_rate = update_efficiency_plots(selected_data, data_gg, data_ps_planet, x_param, y_param, bins_x, bins_y)
+            eta, eta_new, occ_rate = update_efficiency_plots(selected_data, data_gg, data_ps_planet, x_param, y_param, bins_x, bins_y)
             #eta_new = 1/eta
-            #corrected_occ_rate = np.sum(eta_new * occ_rate) / np.sum(eta_new) if np.sum(eta_new) > 0 else 0
-            corrected_occ_rate = np.sum(eta * occ_rate) / np.sum(eta) if np.sum(eta) > 0 else 0
+            corrected_occ_rate = np.sum(eta_new * occ_rate) / np.sum(eta_new) if np.sum(eta_new) > 0 else 0
+            #corrected_occ_rate = np.sum(eta * occ_rate) / np.sum(eta) if np.sum(eta) > 0 else 0
             st.write(f"Corrected Occurrence Rate: {corrected_occ_rate:.6f}")
 
 
