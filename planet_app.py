@@ -246,15 +246,15 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
 st.markdown("""
 **Corrected Occurrence Rate Formula:**
 $$
-\\text{Corrected Occurrence Rate} = \\frac{\\sum (\\eta_i \\times N\\_{\\text{Occ}_i})}{\\sum \\eta_i}
+\\text{Corrected Occurrence Rate} = \\frac{\\sum \\left(\\frac{N\\_{\\text{Occ}_i}}{\\eta_i}\\right)}{\\sum \\left(\\frac{1}{\\eta_i}\\right)}
 $$
 Where:
 - $\\eta_i$ is the efficiency of detection for bin $i$, defined as:
   $$
-  \\eta_i = \\frac{N_{p_i}}{N_{g_i}}
+  \\eta_i = \\frac{N_{ps_i}}{N_{g_i}}
   $$
-  - $N_{p_i}$ is the number of planets detected in bin $i$.
-  - $N_{g_i}$ is the number of stars with good detection efficiency in bin $i$.
+  - $N_{ps_i}$ is the normalised number of stars from the planetary survey in bin $i$.
+  - $N_{g_i}$ is the normalised number of stars from the Gaia Golden Sample in bin $i$.
 - $N\\_{\\text{Occ}_i}$ is the occurrence rate for bin $i$, calculated as:
   $$
   N\\_{\\text{Occ}_i} = \\frac{N_{*p_i}}{\\sum N_{*}}
@@ -263,7 +263,6 @@ Where:
   - $N_{*p_i}$ is the number of stars hosting a planet in bin $i$.
   - $\\sum N_{*}$ is the total number of stars in the survey across all bins of the selection.
 """)
-
 
 
         else:
