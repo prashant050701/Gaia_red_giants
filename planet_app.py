@@ -241,9 +241,9 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
             #log_eta[np.isneginf(log_eta)] = 0
             st.write("occ_rate:", occ_rate)
             st.write("log_eta:", log_eta)
-            corrected_occ_rate = np.sum(occ_rate / log_eta) / (np.sum(1/log_eta)) if np.sum(log_eta) > 0 else 0
+            #corrected_occ_rate = np.sum(occ_rate / log_eta) / (np.sum(1/log_eta)) if np.sum(log_eta) > 0 else 0
             #corrected_occ_rate = np.sum(occ_rate/log_eta) / 1/(np.sum(log_eta)) if np.sum(log_eta) > 0 else 0
-            #corrected_occ_rate = (np.sum(np.divide(occ_rate, log_eta, out=np.zeros_like(occ_rate), where=log_eta != 0)) / (1 / np.sum(log_eta)) if np.sum(log_eta) > 0 else 0)
+            corrected_occ_rate = (np.sum(np.divide(occ_rate, log_eta, where=log_eta != 0)) / np.sum(np.divide(1, log_eta, where=log_eta != 0)) if np.sum(log_eta) > 0 else 0)
 
             #corrected_occ_rate = np.sum(log_eta_new * occ_rate) / np.sum(log_eta_new) if np.sum(log_eta_new) > 0 else 0
             #corrected_occ_rate = np.sum(eta_new * occ_rate) / np.sum(eta_new) if np.sum(eta_new) > 0 else 0
