@@ -237,7 +237,7 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
             #eta_new = 1/eta
             k = 1
             log_eta_new = np.log(k + eta_new)
-            corrected_occ_rate = np.sum(occ_rate/log_eta_new) / 1/(np.sum(log_eta_new)) if np.sum(log_eta_new) > 0 else 0
+            corrected_occ_rate = np.sum(occ_rate/log_eta) / 1/(np.sum(log_eta)) if np.sum(log_eta) > 0 else 0
             #corrected_occ_rate = np.sum(log_eta_new * occ_rate) / np.sum(log_eta_new) if np.sum(log_eta_new) > 0 else 0
             #corrected_occ_rate = np.sum(eta_new * occ_rate) / np.sum(eta_new) if np.sum(eta_new) > 0 else 0
             #corrected_occ_rate = np.sum(eta * occ_rate) / np.sum(eta) if np.sum(eta) > 0 else 0
@@ -247,7 +247,7 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
             st.markdown("""
     **Corrected Occurrence Rate Formula:**
     $$
-    \\text{Corrected Occurrence Rate} = \\frac{\\sum \\left(\\frac{1}{\\log(k + \\frac{1}{\\eta_i})} \\times N\\_{\\text{Occ}_i}\\right)}{\\sum \\frac{1}{\\log(k + \\frac{1}{\\eta_i})}}
+    \\text{Corrected Occurrence Rate} = \\frac{\\sum \\left(\\frac{1}{\\log(k + \\eta_i}) \\times N\\_{\\text{Occ}_i}\\right)}{\\sum \\frac{1}{\\log(k + \\eta_i})}
     %\\text{Corrected Occurrence Rate} = \\frac{\\sum \\left(\\log(k + \\frac{1}{\\eta_i}) \\times N\\_{\\text{Occ}_i}\\right)}{\\sum \\log(k + \\frac{1}{\\eta_i})}
     %\\text{Corrected Occurrence Rate} = \\frac{\\sum \\left(\\frac{1}{\\eta_i} \\times N\\_{\\text{Occ}_i}\\right)}{\\sum \\frac{1}{\\eta_i}}
 
