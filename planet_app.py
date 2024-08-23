@@ -236,8 +236,8 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
             eta, eta_new, occ_rate = update_efficiency_plots(selected_data, data_gg, data_ps_planet, x_param, y_param, bins_x, bins_y)
             #eta_new = 1/eta
             k = 1
-            log_eta_new = np.log(k + eta_new)
-            log_eta = np.log(k + eta)
+            log_eta_new = np.log10(k + eta_new)
+            log_eta = np.log10(k + eta)
             #log_eta[np.isneginf(log_eta)] = 0
             st.write("occ_rate:", occ_rate)
             st.write("log_eta:", log_eta)
