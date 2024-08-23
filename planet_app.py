@@ -237,6 +237,7 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
             #eta_new = 1/eta
             k = 1
             log_eta_new = np.log(k + eta_new)
+            log_eta = np.log(k + eta)
             corrected_occ_rate = np.sum(occ_rate/log_eta) / 1/(np.sum(log_eta)) if np.sum(log_eta) > 0 else 0
             #corrected_occ_rate = np.sum(log_eta_new * occ_rate) / np.sum(log_eta_new) if np.sum(log_eta_new) > 0 else 0
             #corrected_occ_rate = np.sum(eta_new * occ_rate) / np.sum(eta_new) if np.sum(eta_new) > 0 else 0
