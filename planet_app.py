@@ -426,17 +426,28 @@ def main():
 
     n_g_norm = n_g_counts / total_gg_in_bins if total_gg_in_bins > 0 else n_g_counts
 
+    #Ask Prof if taking them as Binomial distribution is right?
+    sigma_n_ps = np.sqrt((n_ps_norm * (1 - n_ps_norm)) / total_ps_in_bins)
+    sigma_n_g = np.sqrt((n_g_norm * (1 - n_g_norm)) / total_gg_in_bins)
+
     #eta = np.divide(n_ps_planet_norm, n_g_norm, out=np.zeros_like(n_ps_planet_norm), where=n_g_norm != 0)
     eta = np.divide(n_ps_norm, n_g_norm, out=np.zeros_like(n_ps_norm), where=n_g_norm != 0)
+    sigma_eta = eta * np.sqrt((sigma_n_ps / n_ps_norm) ** 2 + (sigma_n_g / n_g_norm) ** 2)
     
     fig, ax = plt.subplots()
     for i in range(bins):
         for j in range(bins):
             eta_val = eta[i, j] if not np.isnan(eta[i, j]) else 0
+            sigma_eta_val = sigma_eta[i, j] if not np.isnan(sigma_eta[i, j]) else 0
             x_center = (xedges[j] + xedges[j + 1]) / 2
             y_center = (yedges[i] + yedges[i + 1]) / 2
+
+            n_ps_text = f'N_ps: {n_ps_norm[i, j]:.4f} ± {sigma_n_ps[i, j]:.4f}'
+            n_g_text = f'N_g: {n_g_norm[i, j]:.4f} ± {sigma_n_g[i, j]:.4f}'
+            eta_text = f'\u03B7: {eta_val:.4f} ± {sigma_eta_val:.4f}'
+            
             #ax.text(x_center, y_center, f'N_psOcc: {n_ps_planet_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}',color='blue', ha='center', va='center')
-            ax.text(x_center, y_center, f'N_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}',color='blue', ha='center', va='center')
+            ax.text(x_center, y_center, f'{n_ps_text}\n{n_g_text}\n{eta_text}', color='blue', ha='center', va='center', fontsize=8)
             
     ax.set_xlim([xedges[0], xedges[-1]])
     ax.set_ylim([yedges[0], yedges[-1]])
