@@ -450,7 +450,7 @@ def main():
                 eta_text = f'\u03B7: {eta_val:.4f} ± {sigma_eta_val:.4f}'
                 ax.text(x_center, y_center, f'{n_ps_text}\n{n_g_text}\n{eta_text}', color='blue', ha='center', va='center', fontsize=8)
             else:
-                ax.text(x_center, y_center, f'N_psOcc: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}',color='blue', ha='center', va='center')
+                ax.text(x_center, y_center, f'N_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}',color='blue', ha='center', va='center')
             
             #ax.text(x_center, y_center, f'N_psOcc: {n_ps_planet_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}',color='blue', ha='center', va='center')
             
