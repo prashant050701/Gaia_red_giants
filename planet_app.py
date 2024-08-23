@@ -239,6 +239,8 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
             log_eta_new = np.log(k + eta_new)
             log_eta = np.log(k + eta)
             #log_eta[np.isneginf(log_eta)] = 0
+            log_eta[np.isneginf(log_eta)] = 0
+            log_eta[np.isnan(log_eta)] = 0
             st.write("occ_rate:", occ_rate)
             st.write("log_eta:", log_eta)
             sum_occ_rate_div_log_eta = 0.0
