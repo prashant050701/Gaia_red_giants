@@ -243,7 +243,8 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
             #corrected_occ_rate = np.sum(log_eta_new * occ_rate) / np.sum(log_eta_new) if np.sum(log_eta_new) > 0 else 0
             #corrected_occ_rate = np.sum(eta_new * occ_rate) / np.sum(eta_new) if np.sum(eta_new) > 0 else 0
             #corrected_occ_rate = np.sum(eta * occ_rate) / np.sum(eta) if np.sum(eta) > 0 else 0
-            st.write(f"Corrected Occurrence Rate: {corrected_occ_rate:.6f}")
+            #st.write(f"Corrected Occurrence Rate: {corrected_occ_rate:.6f}")
+            st.markdown(f"<p style='color:red;'>Corrected Occurrence Rate: {corrected_occ_rate:.6f}</p>", unsafe_allow_html=True)
 
 
             st.markdown("""
