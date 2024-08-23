@@ -337,11 +337,13 @@ def section3_settings(data, section):
     else:
         min_param2, max_param2 = data[col2].min(), data[col2].max()
 
+    show_error = st.sidebar.checkbox("Show Error", value=False, key=f'show_error_section_{section}')
+
     bins = st.sidebar.number_input('Number of bins', min_value=1, value=3, key=f'bins_section_{section}')
     xedges = np.linspace(min_param1, max_param1, bins + 1)
     yedges = np.linspace(min_param2, max_param2, bins + 1)
 
-    return param1, param2, xedges, yedges
+    return param1, param2, xedges, yedges, show_error
 
 
 def main():
@@ -386,11 +388,11 @@ def main():
     
     filtered_data_gg,_ = filter_data(data_gg.copy(), "3: Golden Sample Data", 'All')
     
-    #param1, param2, xedges, yedges = section3_settings(filtered_data_ps_planet, "3")
+    #param1, param2, xedges, yedges, show_error = section3_settings(filtered_data_ps_planet, "3")
     #col1_ps_planet, scale1_ps_planet = get_column_name_and_scale(param1, 'ps')
     #col2_ps_planet, scale2_ps_planet = get_column_name_and_scale(param2, 'ps')
     
-    param1, param2, xedges, yedges = section3_settings(filtered_data_ps, "3")
+    param1, param2, xedges, yedges, show_error = section3_settings(filtered_data_ps, "3")
     col1_ps, scale1_ps = get_column_name_and_scale(param1, 'ps_all')
     col2_ps, scale2_ps = get_column_name_and_scale(param2, 'ps_all')
     
@@ -442,12 +444,16 @@ def main():
             x_center = (xedges[j] + xedges[j + 1]) / 2
             y_center = (yedges[i] + yedges[i + 1]) / 2
 
-            n_ps_text = f'N_ps: {n_ps_norm[i, j]:.4f} ± {sigma_n_ps[i, j]:.4f}'
-            n_g_text = f'N_g: {n_g_norm[i, j]:.4f} ± {sigma_n_g[i, j]:.4f}'
-            eta_text = f'\u03B7: {eta_val:.4f} ± {sigma_eta_val:.4f}'
+            if show_error:
+                n_ps_text = f'N_ps: {n_ps_norm[i, j]:.4f}'# ± {sigma_n_ps[i, j]:.4f}'
+                n_g_text = f'N_g: {n_g_norm[i, j]:.4f}' #± {sigma_n_g[i, j]:.4f}'
+                eta_text = f'\u03B7: {eta_val:.4f} ± {sigma_eta_val:.4f}'
+                ax.text(x_center, y_center, f'{n_ps_text}\n{n_g_text}\n{eta_text}', color='blue', ha='center', va='center', fontsize=8)
+            else:
+                ax.text(x_center, y_center, f'N_psOcc: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}',color='blue', ha='center', va='center')
             
             #ax.text(x_center, y_center, f'N_psOcc: {n_ps_planet_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}',color='blue', ha='center', va='center')
-            ax.text(x_center, y_center, f'{n_ps_text}\n{n_g_text}\n{eta_text}', color='blue', ha='center', va='center', fontsize=8)
+            
             
     ax.set_xlim([xedges[0], xedges[-1]])
     ax.set_ylim([yedges[0], yedges[-1]])
