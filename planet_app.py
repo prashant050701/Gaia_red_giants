@@ -259,7 +259,7 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
 
             sigma_corrected_occ_rate = np.sqrt(np.sum((sigma_occ_rate / log_eta) ** 2 + (occ_rate * sigma_eta / ((k + eta) * np.log(10) * log_eta**2)) ** 2)) / np.sum(np.divide(1, log_eta, where=log_eta != 0))
 
-            
+            st.write(f"Aggregated Occurrence Rate [Uncorrected]: {np.sum(occ_rate):.6f} ± {sigma_occ_rate:.6f}")
             st.write(f"Corrected Occurrence Rate: {corrected_occ_rate:.6f} ± {sigma_corrected_occ_rate:.6f}")
 
 
