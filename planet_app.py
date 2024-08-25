@@ -183,8 +183,16 @@ def update_efficiency_plots(selected_data, data_gg, data_ps_planet, param1, para
     n_ps_norm = n_ps_counts / total_ps_in_bins if total_ps_in_bins > 0 else n_ps_counts
     n_g_norm = n_g_counts / total_gg_in_bins if total_gg_in_bins > 0 else n_g_counts
     occ_rate = n_ps_occ_counts / total_ps_in_bins if total_ps_in_bins > 0 else n_ps_occ_counts #dividing by stars with/without exoplanet to get occurrence rate
+
+    sigma_n_ps = np.sqrt((n_ps_norm * (1 - n_ps_norm)) / total_ps_in_bins)
+    sigma_n_g = np.sqrt((n_g_norm * (1 - n_g_norm)) / total_gg_in_bins)
+    sigma_occ_rate = np.sqrt((occ_rate * (1 - occ_rate)) / total_ps_planet_in_bins)
+
     
     eta = np.divide(n_ps_norm, n_g_norm, out=np.zeros_like(n_ps_norm), where=n_g_norm != 0)
+    sigma_eta = eta * np.sqrt((sigma_n_ps / n_ps_norm) ** 2 + (sigma_n_g / n_g_norm) ** 2)
+
+    
     eta_new = np.divide(n_g_norm, n_ps_norm, out=np.zeros_like(n_g_norm), where=n_ps_norm != 0)
 
     fig, ax = plt.subplots()
@@ -208,7 +216,7 @@ def update_efficiency_plots(selected_data, data_gg, data_ps_planet, param1, para
     
     ax.set_title('Dynamic Efficiency Plot')
     st.pyplot(fig)
-    return eta, eta_new, occ_rate
+    return eta, eta_new, occ_rate, sigma_eta, sigma_occ_rate
 
 
 def section4_main(data_ps_all, data_gg, data_ps_planet):
@@ -233,7 +241,7 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
         selected_indices = event_data["selection"]["point_indices"]
         if selected_indices:
             selected_data = filtered_data_ps_all.iloc[selected_indices]
-            eta, eta_new, occ_rate = update_efficiency_plots(selected_data, data_gg, data_ps_planet, x_param, y_param, bins_x, bins_y)
+            eta, eta_new, occ_rate, sigma_eta, sigma_occ_rate = update_efficiency_plots(selected_data, data_gg, data_ps_planet, x_param, y_param, bins_x, bins_y)
             #eta_new = 1/eta
             k = 1
             log_eta_new = np.log10(k + eta_new)
@@ -247,7 +255,11 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
             #corrected_occ_rate = np.sum(log_eta_new * occ_rate) / np.sum(log_eta_new) if np.sum(log_eta_new) > 0 else 0
             #corrected_occ_rate = np.sum(eta_new * occ_rate) / np.sum(eta_new) if np.sum(eta_new) > 0 else 0
             #corrected_occ_rate = np.sum(eta * occ_rate) / np.sum(eta) if np.sum(eta) > 0 else 0
-            st.write(f"Corrected Occurrence Rate: {corrected_occ_rate:.6f}")
+
+            sigma_corrected_occ_rate = np.sqrt(np.sum((sigma_occ_rate / log_eta) ** 2 + (occ_rate * sigma_eta / (eta * log_eta)) ** 2)) / np.sum(np.divide(1, log_eta, where=log_eta != 0)) if np.sum(log_eta) > 0 else 0
+
+            
+            st.write(f"Corrected Occurrence Rate: {corrected_occ_rate:.6f} ± {sigma_corrected_occ_rate:.6f}")
 
 
             st.markdown("""
