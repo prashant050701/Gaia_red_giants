@@ -185,6 +185,11 @@ def update_efficiency_plots(selected_data, data_gg, data_ps_planet, param1, para
     n_g_norm = n_g_counts / total_gg_in_bins if total_gg_in_bins > 0 else n_g_counts
     occ_rate = n_ps_occ_counts / total_ps_in_bins if total_ps_in_bins > 0 else n_ps_occ_counts #dividing by stars with/without exoplanet to get occurrence rate
 
+    st.write(f"Stars with planets in each bin: {n_ps__occ_counts:.6f}")
+    st.write(f"Stars in each bin from Planet Search: {n_g_counts:.6f}")
+    st.write(f"Stars in each bin from Gaia: {n_ps_counts:.6f}")
+    
+    
     sigma_n_ps = np.sqrt((n_ps_norm * (1 - n_ps_norm)) / total_ps_in_bins)
     sigma_n_g = np.sqrt((n_g_norm * (1 - n_g_norm)) / total_gg_in_bins)
     sigma_occ_rate = np.sqrt((occ_rate * (1 - occ_rate)) / total_ps_in_bins)
