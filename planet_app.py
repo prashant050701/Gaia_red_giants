@@ -231,6 +231,7 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
     st.sidebar.subheader("Section 4 Configuration")
     survey4 = st.sidebar.selectbox("Select Survey", ['All', 'Lick', 'EAPSNet1', 'EAPSNet2', 'EAPSNet3', 'Keck HIRES', 'PTPS', 'PPPS', 'Express', 'Coralie'], key='survey4')
     filtered_data_ps_all,_ = filter_data(data_ps_all.copy(), "4", survey4)
+    filtered_data_ps_all = filtered_data_ps_all[filtered_data_ps_all['Teff'] != 0.0]
     x_param = st.sidebar.selectbox("Select X-axis Parameter", params, index=0, key="x_param_section4")
     y_param = st.sidebar.selectbox("Select Y-axis Parameter", params, index=1, key="y_param_section4")
     
@@ -239,6 +240,7 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
     
     x_col, x_scale = get_column_name_and_scale(x_param, 'ps_all')
     y_col, y_scale = get_column_name_and_scale(y_param, 'ps_all')
+    
 
     #fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis")
     fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis",
