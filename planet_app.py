@@ -21,7 +21,7 @@ def load_all_data():
     data = pd.read_csv('database/updated_exoplanet_data.csv')
     data_ps_planet = pd.read_csv('database/updated_exoplanet_data.csv')
     data_gg = load_combine_csv_files()
-    data_ps_all = pd.read_csv('database/all_planetary_survey_original_unique.csv')
+    data_ps_all = pd.read_csv('database/all_planetary_survey_original_unique_with_host.csv')
     return data, data_ps_planet, data_gg, data_ps_all
 
 
