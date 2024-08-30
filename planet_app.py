@@ -185,9 +185,9 @@ def update_efficiency_plots(selected_data, data_gg, data_ps_planet, param1, para
     n_g_norm = n_g_counts / total_gg_in_bins if total_gg_in_bins > 0 else n_g_counts
     occ_rate = n_ps_occ_counts / total_ps_in_bins if total_ps_in_bins > 0 else n_ps_occ_counts #dividing by stars with/without exoplanet to get occurrence rate
 
-    st.write(f"Stars with planets in each bin: {n_ps_occ_counts}")
-    st.write(f"Stars in each bin from Planet Search: {n_ps_counts}")
-    st.write(f"Stars in each bin from Gaia: {n_g_counts}")
+    # st.write(f"Stars with planets in each bin: {n_ps_occ_counts}")
+    # st.write(f"Stars in each bin from Planet Search: {n_ps_counts}")
+    # st.write(f"Stars in each bin from Gaia: {n_g_counts}")
     
     
     sigma_n_ps = np.sqrt((n_ps_norm * (1 - n_ps_norm)) / total_ps_in_bins)
@@ -240,7 +240,10 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
     x_col, x_scale = get_column_name_and_scale(x_param, 'ps_all')
     y_col, y_scale = get_column_name_and_scale(y_param, 'ps_all')
 
-    fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis")
+    #fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis")
+    fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis",
+                 color=filtered_data_ps_all['host'].map({True: 'red', False: 'blue'}))
+
     event_data = st.plotly_chart(fig, use_container_width=True, on_select="rerun")
 
     if event_data and "selection" in event_data:
@@ -252,7 +255,7 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
             k = 1
             log_eta_new = np.log10(k + eta_new)
             log_eta = np.log10(k + eta)
-            st.write("log_eta:", log_eta)
+            # st.write("log_eta:", log_eta)
 
             total_occ_rate = np.sum(occ_rate)
             total_sigma_occ_rate = np.sqrt(np.sum(sigma_occ_rate**2))
