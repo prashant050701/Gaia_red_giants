@@ -283,9 +283,9 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
     **Corrected Occurrence Rate Formula:**
     $$
     %\\text{Corrected Occurrence Rate} = \\frac{\\sum \\left(N\\_{\\text{Occ}_i} \\times \\log\\left(k + \\frac{1}{\\eta_i}\\right)\\right)}{\\sum \\log\\left(k + \\frac{1}{\\eta_i}\\right)}
-    \\text{Corrected Occurrence Rate} = \\frac{\\sum \\left(\\frac{1}{\\log(k + \\eta_i)} \\times N\\_{\\text{Occ}_i}\\right)}{\\sum \\frac{1}{\\log(k + \\eta_i)}}
+    %\\text{Corrected Occurrence Rate} = \\frac{\\sum \\left(\\frac{1}{\\log(k + \\eta_i)} \\times N\\_{\\text{Occ}_i}\\right)}{\\sum \\frac{1}{\\log(k + \\eta_i)}}
     %\\text{Corrected Occurrence Rate} = \\frac{\\sum \\left(\\log(k + \\frac{1}{\\eta_i}) \\times N\\_{\\text{Occ}_i}\\right)}{\\sum \\log(k + \\frac{1}{\\eta_i})}
-    %\\text{Corrected Occurrence Rate} = \\frac{\\sum \\left(\\frac{1}{\\eta_i} \\times N\\_{\\text{Occ}_i}\\right)}{\\sum \\frac{1}{\\eta_i}}
+    \\text{Corrected Occurrence Rate} = {\\sum \\left(\\frac{1}{\\eta_i} \\times N\\_{\\text{Occ}_i}\\right)}}
 
     %\\text{Corrected Occurrence Rate} = \\frac{\\sum \\left(\\frac{N\\_{\\text{Occ}_i}}{\\eta_i}\\right)}{\\sum \\left(\\frac{1}{\\eta_i}\\right)}
     $$
