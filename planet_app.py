@@ -221,7 +221,7 @@ def update_efficiency_plots(selected_data, data_gg, data_ps_planet, param1, para
     plt.xticks(xedges, np.round(xedges, 3))
     plt.yticks(yedges, np.round(yedges, 3))
     
-    ax.set_title('Dynamic Efficiency Plot')
+    #ax.set_title('Dynamic Efficiency Plot')
     st.pyplot(fig)
     return eta, eta_new, occ_rate, sigma_eta, sigma_eta_new, sigma_occ_rate
 
