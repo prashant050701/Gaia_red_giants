@@ -263,15 +263,18 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
             total_occ_rate = np.sum(occ_rate)
             total_sigma_occ_rate = np.sqrt(np.sum(sigma_occ_rate**2))
             
-
+            corrected_occ_rate = np.sum(occ_rate/log_eta)
             #corrected_occ_rate = np.sum(occ_rate / log_eta) / (np.sum(1/log_eta)) if np.sum(log_eta) > 0 else 0
+            #corrected_occ_rate = np.sum(occ_rate/log_eta) / 1/(np.sum(log_eta)) if np.sum(log_eta) > 0 else 0
             #corrected_occ_rate = np.sum(occ_rate/log_eta) / 1/(np.sum(log_eta)) if np.sum(log_eta) > 0 else 0
             #corrected_occ_rate = (np.sum(np.divide(occ_rate, log_eta, where=log_eta != 0)) / np.sum(np.divide(1, log_eta, where=log_eta != 0)) if np.sum(log_eta) > 0 else 0)
             #corrected_occ_rate = (np.sum(occ_rate * log_eta_new) / np.sum(log_eta) if np.sum(log_eta_new) > 0 else 0)
             #corrected_occ_rate = np.sum(log_eta_new * occ_rate) / np.sum(log_eta_new) if np.sum(log_eta_new) > 0 else 0
-            corrected_occ_rate = np.sum(eta_new * occ_rate) #/ np.sum(eta_new) if np.sum(eta_new) > 0 else 0
+            corrected_occ_rate = np.sum(eta_new * occ_rate) #/ np.sum(eta_new) if np.sum(eta_new) > 0 else 0 #this one
             #corrected_occ_rate = np.sum(eta * occ_rate) / np.sum(eta) if np.sum(eta) > 0 else 0
-            sigma_corrected_occ_rate = np.sqrt(np.sum((eta_new ** 2) * (sigma_occ_rate ** 2) + (occ_rate ** 2) * (sigma_eta_new ** 2)))
+            
+            #sigma_corrected_occ_rate = np.sqrt(np.sum((eta_new ** 2) * (sigma_occ_rate ** 2) + (occ_rate ** 2) * (sigma_eta_new ** 2))) #this one
+            sigma_corrected_occ_rate = np.sqrt(np.sum((sigma_occ_rate / log_eta) ** 2 + (occ_rate * sigma_eta / (log_eta ** 2 * eta * np.log(10))) ** 2))
             #sigma_corrected_occ_rate = np.sqrt(np.sum((sigma_occ_rate / log_eta) ** 2 + (occ_rate * sigma_eta / ((k + eta) * np.log(10) * log_eta**2)) ** 2)) / np.sum(np.divide(1, log_eta, where=log_eta != 0))
 
             
