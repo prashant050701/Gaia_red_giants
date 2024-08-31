@@ -243,9 +243,9 @@ def section4_main(data_ps_all, data_gg, data_ps_planet):
     y_col, y_scale = get_column_name_and_scale(y_param, 'ps_all')
     
 
-    #fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis")
-    fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis",
-                 color=filtered_data_ps_all['host'].map({True: 'Host', False: 'Non-host'}))
+    fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis")
+    #fig = px.scatter(filtered_data_ps_all, x=x_col, y=y_col, title="Select data points for efficiency analysis",
+                 #color=filtered_data_ps_all['host'].map({True: 'Host', False: 'Non-host'}))
 
     event_data = st.plotly_chart(fig, use_container_width=True, on_select="rerun")
 
