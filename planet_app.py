@@ -209,7 +209,19 @@ def update_efficiency_plots(selected_data, data_gg, data_ps_planet, param1, para
             eta_new_val = eta_new[i,j] if not np.isnan(eta_new[i,j]) else 0
             x_center = (xedges[i] + xedges[i + 1]) / 2
             y_center = (yedges[j] + yedges[j + 1]) / 2
-            ax.text(x_center, y_center, f'N_Occ: {occ_rate[i, j]:.4f}\nN_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}', color='blue', ha='center', va='center')
+            #ax.text(x_center, y_center, f'N_Occ: {occ_rate[i, j]:.4f}\nN_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_val:.4f}', color='blue', ha='center', va='center')
+            ax.text(
+                x_center, 
+                y_center, 
+                f'$N_{{\\mathrm{{occ}}}}$: {occ_rate[i, j]:.4f}\n'
+                f'$N_{{\\mathrm{{ps}}}}$: {n_ps_norm[i, j]:.4f}\n'
+                f'$N_{{\\mathrm{{g}}}}$: {n_g_norm[i, j]:.4f}\n'
+                f'$\eta$: {eta_val:.4f}', 
+                color='blue', 
+                ha='center', 
+                va='center'
+                )
+
             #ax.text(x_center, y_center, f'N_Occ: {occ_rate[i, j]:.4f}\nN_ps: {n_ps_norm[i, j]:.4f}\nN_g: {n_g_norm[i, j]:.4f}\n\u03B7: {eta_new_val:.4f}', color='blue', ha='center', va='center')
             
     ax.set_xlim([xedges[0], xedges[-1]])
